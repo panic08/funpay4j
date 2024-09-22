@@ -1,12 +1,13 @@
 package ru.funpay4j.core;
 
-import com.google.gson.Gson;
 import okhttp3.OkHttpClient;
 import ru.funpay4j.client.FunPayParser;
 import ru.funpay4j.client.jsoup.JsoupFunPayParser;
 import ru.funpay4j.core.commands.lot.GetLot;
 import ru.funpay4j.core.exceptions.FunPayApiException;
 import ru.funpay4j.core.objects.lot.Lot;
+
+import java.util.Objects;
 
 /**
  * This FunPay executor is used to execute commands
@@ -19,8 +20,11 @@ public class FunPayExecutor {
 
     public FunPayExecutor() {
         OkHttpClient httpClient = new OkHttpClient();
-        Gson objectMapper = new Gson();
         this.funPayParser = new JsoupFunPayParser(httpClient);
+    }
+
+    public FunPayExecutor(OkHttpClient httpClient) {
+        this.funPayParser = new JsoupFunPayParser(Objects.requireNonNull(httpClient));
     }
 
     public Lot execute(GetLot command) throws FunPayApiException {
