@@ -3,6 +3,7 @@ plugins {
 }
 
 group = 'ru.funpay4j'
+version = '1.0.0'
 
 repositories {
     mavenCentral()
