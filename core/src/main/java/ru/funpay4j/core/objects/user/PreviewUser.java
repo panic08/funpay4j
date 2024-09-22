@@ -20,6 +20,8 @@ public class PreviewUser {
 
     private String username;
 
+    private String avatarPhotoLink;
+
     private int ratingCount;
 
     private boolean isOnline;

@@ -103,6 +103,7 @@ public class JsoupFunPayParser implements FunPayParser {
         PreviewUser seller = PreviewUser.builder()
                 .userId(parseUserIdFromPreviewOffer(offerItem))
                 .username(offerItem.getElementsByClass("media-user-name").text())
+                .avatarPhotoLink(parseUserAvatarPhotoLinkFromPreviewOffer(offerItem))
                 .isOnline(offerItem.getElementsByClass("media media-user online style-circle").first() != null)
                 .ratingCount(sellerRatingCount)
                 .build();
@@ -120,5 +121,10 @@ public class JsoupFunPayParser implements FunPayParser {
     private long parseUserIdFromPreviewOffer(Element offerItem) {
         String href = offerItem.getElementsByClass("avatar-photo").attr("data-href");
         return Long.parseLong(href.substring(25, href.length() - 1));
+    }
+
+    private String parseUserAvatarPhotoLinkFromPreviewOffer(Element offerItem) {
+        String style = offerItem.getElementsByClass("avatar-photo").attr("style");
+        return style.substring(22, style.length() - 2);
     }
 }
