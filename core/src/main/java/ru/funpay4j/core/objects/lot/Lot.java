@@ -22,7 +22,7 @@ public class Lot {
 
     private String description;
 
-    private List<LotCounter> counters;
+    private List<LotCounter> lotCounters;
 
     private List<PreviewOffer> previewOffers;
 }

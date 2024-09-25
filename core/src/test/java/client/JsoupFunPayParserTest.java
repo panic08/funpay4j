@@ -52,6 +52,6 @@ class JsoupFunPayParserTest {
 
         assertNotNull(result);
         assertFalse(result.getPreviewOffers().isEmpty());
-        assertFalse(result.getCounters().isEmpty());
+        assertFalse(result.getLotCounters().isEmpty());
     }
 }

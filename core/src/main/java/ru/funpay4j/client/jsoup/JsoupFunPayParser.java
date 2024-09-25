@@ -39,7 +39,7 @@ public class JsoupFunPayParser implements FunPayParser {
         Lot currentLot = new Lot();
 
         currentLot.setId(command.getLotId());
-        currentLot.setCounters(new LinkedList<>());
+        currentLot.setLotCounters(new LinkedList<>());
         currentLot.setPreviewOffers(new LinkedList<>());
 
         String getLotByIdURL = baseURL + "/lots/" + command.getLotId() + "/";
@@ -72,7 +72,7 @@ public class JsoupFunPayParser implements FunPayParser {
                 String counterParam = counterItem.getElementsByClass("counter-param").text();
                 int counterValue = Integer.parseInt(counterItem.getElementsByClass("counter-value").text());
 
-                currentLot.getCounters().add(
+                currentLot.getLotCounters().add(
                         LotCounter.builder()
                                 .lotId(lotId)
                                 .param(counterParam)
