@@ -16,9 +16,9 @@ import ru.funpay4j.core.objects.offer.PreviewOffer;
 import ru.funpay4j.core.objects.user.PreviewUser;
 
 import java.io.IOException;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 public class JsoupFunPayParser implements FunPayParser {
     private final OkHttpClient httpClient;
@@ -36,95 +36,98 @@ public class JsoupFunPayParser implements FunPayParser {
 
     @Override
     public Lot parse(GetLot command) {
-        String getLotURL = baseURL + "/lots/" + command.getLotId() + "/";
+        Lot currentLot = new Lot();
 
-        try (Response funPayHtmlPage = httpClient.newCall(new Request.Builder().get().url(getLotURL).build()).execute()) {
-            String funPayHtmlPageBody = Objects.requireNonNull(funPayHtmlPage.body()).string();
+        currentLot.setId(command.getLotId());
+        currentLot.setCounters(new LinkedList<>());
+        currentLot.setPreviewOffers(new LinkedList<>());
+
+        String getLotByIdURL = baseURL + "/lots/" + command.getLotId() + "/";
+        try (Response funPayHtmlPage = httpClient.newCall(new Request.Builder().get().url(getLotByIdURL).build()).execute()){
+            String funPayHtmlPageBody = funPayHtmlPage.body().string();
+
             Document funPayDocument = Jsoup.parse(funPayHtmlPageBody);
 
-            return parseLot(funPayDocument, command);
+            Element funPayContentWithCdElement = funPayDocument.getElementsByClass("content-with-cd").first();
+
+            String lotTitle = funPayContentWithCdElement.selectFirst("h1").text();
+            String lotDescription = funPayContentWithCdElement.selectFirst("p").text();
+
+            currentLot.setTitle(lotTitle);
+            currentLot.setDescription(lotDescription);
+
+            List<Element> funPayCountersElements = funPayDocument.getElementsByClass("counter-list")
+                    .first()
+                    .select("a");
+
+            for (Element counterItem : funPayCountersElements) {
+                String counterHrefAttributeValue = counterItem.attr("href");
+
+                int lotId = Integer.parseInt(counterHrefAttributeValue.substring(24, counterHrefAttributeValue.length() - 1));
+
+                if (lotId == command.getLotId()) {
+                    continue;
+                }
+
+                String counterParam = counterItem.getElementsByClass("counter-param").text();
+                int counterValue = Integer.parseInt(counterItem.getElementsByClass("counter-value").text());
+
+                currentLot.getCounters().add(
+                        LotCounter.builder()
+                                .lotId(lotId)
+                                .param(counterParam)
+                                .counter(counterValue)
+                                .build()
+                );
+            }
+
+            List<Element> funPayPreviewOffersElements = funPayDocument.getElementsByClass("tc table-hover table-clickable tc-short showcase-table tc-lazyload tc-sortable showcase-has-promo")
+                    .first()
+                    .select("a");
+
+            for (Element offerItem : funPayPreviewOffersElements) {
+                String offerHrefAttributeValue = offerItem.attr("href");
+                String offerSellerStyleAttributeValue = offerItem.getElementsByClass("avatar-photo").attr("style");
+
+                long offerId = Long.parseLong(offerHrefAttributeValue.substring(33));
+                String shortDescription = offerItem.getElementsByClass("tc-desc-text").text();
+                double price = Double.parseDouble(offerItem.getElementsByClass("tc-price").attr("data-s"));
+                boolean isAutoDelivery = offerItem.getElementsByClass("auto-dlv-icon").first() != null;
+                boolean isPromo = offerItem.getElementsByClass("promo-offer-icon").first() != null;
+
+                String sellerDataHrefAttributeValue = offerItem.getElementsByClass("avatar-photo")
+                        .attr("data-href");
+                Element sellerRatingCountElement = offerItem.getElementsByClass("rating-mini-count").first();
+
+                long sellerUserId = Long.parseLong(sellerDataHrefAttributeValue.substring(25, sellerDataHrefAttributeValue.length() - 1));
+                String sellerUsername = offerItem.getElementsByClass("media-user-name").text();
+                boolean isSellerOnline = offerItem.getElementsByClass("media media-user online style-circle").first() != null;
+                int sellerRatingCount = sellerRatingCountElement == null ? 0 : Integer.parseInt(sellerRatingCountElement.text());
+
+                currentLot.getPreviewOffers().add(
+                        PreviewOffer.builder()
+                                .offerId(offerId)
+                                .shortDescription(shortDescription)
+                                .price(price)
+                                .isAutoDelivery(isAutoDelivery)
+                                .isPromo(isPromo)
+                                .seller(
+                                        PreviewUser.builder()
+                                                .avatarPhotoLink(offerSellerStyleAttributeValue.substring(22, offerSellerStyleAttributeValue.length() - 2))
+                                                .userId(sellerUserId)
+                                                .username(sellerUsername)
+                                                .isOnline(isSellerOnline)
+                                                .ratingCount(sellerRatingCount)
+                                                .build()
+                                )
+                                .build()
+                );
+            }
+
         } catch (IOException e) {
-            throw new FunPayApiException("Error fetching or parsing data " + e.getMessage());
+            throw new FunPayApiException(e.getMessage());
         }
-    }
 
-    private Lot parseLot(Document doc, GetLot command) {
-        Lot lot = new Lot();
-        lot.setId(command.getLotId());
-
-        Element contentElement = doc.getElementsByClass("content-with-cd").first();
-        lot.setTitle(contentElement.selectFirst("h1").text());
-        lot.setDescription(contentElement.selectFirst("p").text());
-
-        lot.setCounters(parseCounters(doc, command));
-        lot.setPreviewOffers(parsePreviewOffers(doc));
-
-        return lot;
-    }
-
-    private List<LotCounter> parseCounters(Document doc, GetLot command) {
-        return doc.getElementsByClass("counter-list").first()
-                .select("a").stream()
-                .map(this::parseCounter)
-                .filter(counter -> counter.getLotId() != command.getLotId())
-                .collect(Collectors.toList());
-    }
-
-    private LotCounter parseCounter(Element counterItem) {
-        String href = counterItem.attr("href");
-        int lotId = Integer.parseInt(href.substring(24, href.length() - 1));
-        String param = counterItem.getElementsByClass("counter-param").text();
-        int value = Integer.parseInt(counterItem.getElementsByClass("counter-value").text());
-
-        return LotCounter.builder()
-                .lotId(lotId)
-                .param(param)
-                .counter(value)
-                .build();
-    }
-
-    private List<PreviewOffer> parsePreviewOffers(Document doc) {
-        return doc.getElementsByClass("tc table-hover table-clickable tc-short showcase-table tc-lazyload tc-sortable showcase-has-promo").first()
-                .select("a").stream()
-                .map(this::parsePreviewOffer)
-                .collect(Collectors.toList());
-    }
-
-    private PreviewOffer parsePreviewOffer(Element offerItem) {
-        long offerId = Long.parseLong(offerItem.attr("href").substring(33));
-        String shortDescription = offerItem.getElementsByClass("tc-desc-text").text();
-        double price = Double.parseDouble(offerItem.getElementsByClass("tc-price").attr("data-s"));
-        boolean isAutoDelivery = offerItem.getElementsByClass("auto-dlv-icon").first() != null;
-        boolean isPromo = offerItem.getElementsByClass("promo-offer-icon").first() != null;
-
-        Element ratingCountElement = offerItem.getElementsByClass("rating-mini-count").first();
-        int sellerRatingCount = ratingCountElement == null ? 0 : Integer.parseInt(ratingCountElement.text());
-
-        PreviewUser seller = PreviewUser.builder()
-                .userId(parseUserIdFromPreviewOffer(offerItem))
-                .username(offerItem.getElementsByClass("media-user-name").text())
-                .avatarPhotoLink(parseUserAvatarPhotoLinkFromPreviewOffer(offerItem))
-                .isOnline(offerItem.getElementsByClass("media media-user online style-circle").first() != null)
-                .ratingCount(sellerRatingCount)
-                .build();
-
-        return PreviewOffer.builder()
-                .offerId(offerId)
-                .shortDescription(shortDescription)
-                .price(price)
-                .isAutoDelivery(isAutoDelivery)
-                .isPromo(isPromo)
-                .seller(seller)
-                .build();
-    }
-
-    private long parseUserIdFromPreviewOffer(Element offerItem) {
-        String href = offerItem.getElementsByClass("avatar-photo").attr("data-href");
-        return Long.parseLong(href.substring(25, href.length() - 1));
-    }
-
-    private String parseUserAvatarPhotoLinkFromPreviewOffer(Element offerItem) {
-        String style = offerItem.getElementsByClass("avatar-photo").attr("style");
-        return style.substring(22, style.length() - 2);
+        return currentLot;
     }
 }
