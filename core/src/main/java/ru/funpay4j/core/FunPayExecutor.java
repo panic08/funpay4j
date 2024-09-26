@@ -3,10 +3,13 @@ package ru.funpay4j.core;
 import okhttp3.OkHttpClient;
 import ru.funpay4j.client.FunPayParser;
 import ru.funpay4j.client.jsoup.JsoupFunPayParser;
+import ru.funpay4j.core.commands.game.GetPromoGames;
 import ru.funpay4j.core.commands.lot.GetLot;
 import ru.funpay4j.core.exceptions.FunPayApiException;
+import ru.funpay4j.core.objects.game.PromoGame;
 import ru.funpay4j.core.objects.lot.Lot;
 
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -28,6 +31,10 @@ public class FunPayExecutor {
     }
 
     public Lot execute(GetLot command) throws FunPayApiException {
+        return funPayParser.parse(command);
+    }
+
+    public List<PromoGame> execute(GetPromoGames command) throws FunPayApiException {
         return funPayParser.parse(command);
     }
 }

@@ -1,21 +1,24 @@
 package ru.funpay4j.client.jsoup;
 
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
+import com.google.gson.JsonParser;
+import okhttp3.*;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import ru.funpay4j.client.FunPayParser;
 import ru.funpay4j.client.FunPayURL;
+import ru.funpay4j.core.commands.game.GetPromoGames;
 import ru.funpay4j.core.commands.lot.GetLot;
 import ru.funpay4j.core.exceptions.FunPayApiException;
+import ru.funpay4j.core.objects.game.PromoGame;
+import ru.funpay4j.core.objects.game.PromoGameCounter;
 import ru.funpay4j.core.objects.lot.Lot;
 import ru.funpay4j.core.objects.lot.LotCounter;
 import ru.funpay4j.core.objects.offer.PreviewOffer;
 import ru.funpay4j.core.objects.user.PreviewUser;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -124,10 +127,62 @@ public class JsoupFunPayParser implements FunPayParser {
                 );
             }
 
+            return currentLot;
         } catch (IOException e) {
             throw new FunPayApiException(e.getMessage());
         }
+    }
 
-        return currentLot;
+    @Override
+    public List<PromoGame> parse(GetPromoGames command) {
+        List<PromoGame> currentPromoGames = new ArrayList<>();
+
+        String getPromoGamesURL = baseURL + "/games/promoFilter";
+        RequestBody requestBody = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("query", command.getQuery())
+                .build();
+
+        try (Response response = httpClient.newCall(new Request.Builder().post(requestBody).url(getPromoGamesURL)
+                .addHeader("x-requested-with", "XMLHttpRequest").build()).execute()){
+            String promoGamesHtml = JsonParser.parseString(response.body().string()).getAsJsonObject().get("html").getAsString();
+
+            List<Element> promoGameElements = Jsoup.parse(promoGamesHtml).getElementsByClass("promo-games");
+
+            for (Element promoGameElement : promoGameElements) {
+                Element titleElement = promoGameElement.getElementsByClass("game-title").first().selectFirst("a");
+                String titleElementHrefAttributeValue = titleElement.attr("href");
+
+                long lotId = Long.parseLong(titleElementHrefAttributeValue.substring(24, titleElementHrefAttributeValue.length() - 1));
+                String title = titleElement.text();
+
+                List<PromoGameCounter> promoGameCounters = new ArrayList<>();
+
+                for (Element promoGameCounterElement : promoGameElement.getElementsByClass("list-inline").select("li")) {
+                    Element counterTitleElement = promoGameCounterElement.selectFirst("a");
+                    String counterTitleElementHrefAttributeValue = counterTitleElement.attr("href");
+
+                    long counterLotId = Long.parseLong(counterTitleElementHrefAttributeValue.substring(24, counterTitleElementHrefAttributeValue.length() - 1));
+
+                    if (counterLotId == lotId) {
+                        continue;
+                    }
+
+                    String counterTitle = counterTitleElement.text();
+
+                    promoGameCounters.add(PromoGameCounter.builder().lotId(counterLotId).title(counterTitle).build());
+                }
+
+                currentPromoGames.add(PromoGame.builder()
+                        .lotId(lotId)
+                        .title(title)
+                        .promoGameCounters(promoGameCounters)
+                        .build());
+            }
+
+            return currentPromoGames;
+        } catch (IOException e) {
+            throw new FunPayApiException(e.getMessage());
+        }
     }
 }

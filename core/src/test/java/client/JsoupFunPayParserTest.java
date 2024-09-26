@@ -7,12 +7,15 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.funpay4j.client.jsoup.JsoupFunPayParser;
+import ru.funpay4j.core.commands.game.GetPromoGames;
 import ru.funpay4j.core.commands.lot.GetLot;
+import ru.funpay4j.core.objects.game.PromoGame;
 import ru.funpay4j.core.objects.lot.Lot;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -24,7 +27,8 @@ class JsoupFunPayParserTest {
     private JsoupFunPayParser parser;
     private MockWebServer mockWebServer;
 
-    private static final String GET_LOT_HTML_PATH = "src/test/resources/html/client/getLotTest.html";
+    private static final String GET_LOT_HTML_RESPONSE_PATH = "src/test/resources/html/client/getLotResponse.html";
+    private static final String GET_PROMO_GAMES_JSON_RESPONSE_PATH = "src/test/resources/json/client/getPromoGamesResponse.json";
 
     @BeforeEach
     void setUp() {
@@ -39,12 +43,11 @@ class JsoupFunPayParserTest {
 
     @Test
     void testGetLot() throws IOException{
-        String htmlContent = new String(Files.readAllBytes(Paths.get(GET_LOT_HTML_PATH)));
+        String htmlContent = new String(Files.readAllBytes(Paths.get(GET_LOT_HTML_RESPONSE_PATH)));
 
         this.mockWebServer.enqueue(
                 new MockResponse()
                         .setBody(htmlContent)
-                        .setHeader("Content-Type", "text/html; charset=utf-8")
                         .setResponseCode(200)
         );
 
@@ -53,5 +56,21 @@ class JsoupFunPayParserTest {
         assertNotNull(result);
         assertFalse(result.getPreviewOffers().isEmpty());
         assertFalse(result.getLotCounters().isEmpty());
+    }
+
+    @Test
+    void testGetPromoGame() throws IOException {
+        String jsonContent = new String(Files.readAllBytes(Paths.get(GET_PROMO_GAMES_JSON_RESPONSE_PATH)));
+
+        this.mockWebServer.enqueue(
+                new MockResponse()
+                        .setBody(jsonContent)
+                        .setResponseCode(200)
+        );
+
+        List<PromoGame> promoGames = parser.parse(GetPromoGames.builder().query("dota").build());
+
+        assertNotNull(promoGames);
+        assertFalse(promoGames.get(0).getPromoGameCounters().isEmpty());
     }
 }
