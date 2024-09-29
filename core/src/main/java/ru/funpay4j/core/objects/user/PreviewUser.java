@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 /**
  * This object represents the FunPay PreviewUser
@@ -14,15 +15,13 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
+@SuperBuilder
 public class PreviewUser {
     private long userId;
 
     private String username;
 
     private String avatarPhotoLink;
-
-    private int ratingCount;
 
     private boolean isOnline;
 }

@@ -9,9 +9,9 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import ru.funpay4j.client.FunPayParser;
 import ru.funpay4j.client.FunPayURL;
-import ru.funpay4j.core.commands.game.GetOffer;
-import ru.funpay4j.core.commands.game.GetPromoGames;
-import ru.funpay4j.core.commands.lot.GetLot;
+import ru.funpay4j.core.methods.offer.GetOffer;
+import ru.funpay4j.core.methods.game.GetPromoGames;
+import ru.funpay4j.core.methods.lot.GetLot;
 import ru.funpay4j.core.exceptions.FunPayApiException;
 import ru.funpay4j.core.objects.game.PromoGame;
 import ru.funpay4j.core.objects.game.PromoGameCounter;
@@ -19,7 +19,7 @@ import ru.funpay4j.core.objects.lot.Lot;
 import ru.funpay4j.core.objects.lot.LotCounter;
 import ru.funpay4j.core.objects.offer.Offer;
 import ru.funpay4j.core.objects.offer.PreviewOffer;
-import ru.funpay4j.core.objects.user.PreviewUser;
+import ru.funpay4j.core.objects.user.PreviewSeller;
 
 import java.io.IOException;
 import java.util.*;
@@ -121,7 +121,7 @@ public class JsoupFunPayParser implements FunPayParser {
                                 .isAutoDelivery(isAutoDelivery)
                                 .isPromo(isPromo)
                                 .seller(
-                                        PreviewUser.builder()
+                                        PreviewSeller.builder()
                                                 .avatarPhotoLink(previewOfferSellerStyleAttributeValue.substring(22, previewOfferSellerStyleAttributeValue.length() - 2))
                                                 .userId(sellerUserId)
                                                 .username(sellerUsername)
@@ -230,7 +230,7 @@ public class JsoupFunPayParser implements FunPayParser {
             }
 
             boolean isAutoDelivery = !funPayDocument.getElementsByClass("offer-header-auto-dlv-label").isEmpty();
-            //Select a floating point number from a string like “jgrejgjer23.99gfdgf”
+            //Select a floating point number from a string like "от 1111.32 ₽"
             double price = Double.parseDouble(totalPriceValue.replaceAll("[^0-9.]", "").split("\\s+")[0]);
             List<String> attachmentLinks = new ArrayList<>();
             Map<String, String> parameters = new HashMap<>();
@@ -263,7 +263,7 @@ public class JsoupFunPayParser implements FunPayParser {
             long sellerUserId = Long.parseLong(sellerUsernameElementHrefAttributeValue.substring(25, sellerUsernameElementHrefAttributeValue.length() - 1));
             String sellerUsername = sellerUsernameElement.text();
             String sellerAvatarPhotoLink = sellerImgElement.attr("src");
-            //Select price from string
+            //Select rating from string like "219 отзывов за 2 года"
             int sellerRatingCount = Integer.parseInt(sellerRatingCountElement.text().replaceAll("\\D.*", ""));
             boolean isSellerOnline = funPayDocument.getElementsByClass("media media-user online").first() != null;
 
@@ -275,7 +275,7 @@ public class JsoupFunPayParser implements FunPayParser {
                     .price(price)
                     .attachmentLinks(attachmentLinks)
                     .parameters(parameters)
-                    .seller(PreviewUser.builder()
+                    .seller(PreviewSeller.builder()
                             .userId(sellerUserId)
                             .username(sellerUsername)
                             .avatarPhotoLink(sellerAvatarPhotoLink)
