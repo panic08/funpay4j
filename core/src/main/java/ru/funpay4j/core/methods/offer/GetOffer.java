@@ -1,4 +1,4 @@
-package ru.funpay4j.core.commands.game;
+package ru.funpay4j.core.methods.offer;
 
 import lombok.*;
 
@@ -13,7 +13,6 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class GetPromoGames {
-    @NonNull
-    private String query;
+public class GetOffer {
+    private long offerId;
 }

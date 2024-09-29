@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.funpay4j.core.objects.user.PreviewSeller;
 import ru.funpay4j.core.objects.user.PreviewUser;
 
 import java.util.Objects;
@@ -29,5 +30,5 @@ public class PreviewOffer {
 
     private boolean isPromo;
 
-    private PreviewUser seller;
+    private PreviewSeller seller;
 }

@@ -4,16 +4,15 @@ import lombok.NonNull;
 import okhttp3.OkHttpClient;
 import ru.funpay4j.client.FunPayParser;
 import ru.funpay4j.client.jsoup.JsoupFunPayParser;
-import ru.funpay4j.core.commands.game.GetOffer;
-import ru.funpay4j.core.commands.game.GetPromoGames;
-import ru.funpay4j.core.commands.lot.GetLot;
+import ru.funpay4j.core.methods.offer.GetOffer;
+import ru.funpay4j.core.methods.game.GetPromoGames;
+import ru.funpay4j.core.methods.lot.GetLot;
 import ru.funpay4j.core.exceptions.FunPayApiException;
 import ru.funpay4j.core.objects.game.PromoGame;
 import ru.funpay4j.core.objects.lot.Lot;
 import ru.funpay4j.core.objects.offer.Offer;
 
 import java.util.List;
-import java.util.Objects;
 
 /**
  * This FunPay executor is used to execute commands
