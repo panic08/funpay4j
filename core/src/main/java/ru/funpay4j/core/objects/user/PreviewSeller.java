@@ -17,5 +17,5 @@ import lombok.experimental.SuperBuilder;
 @ToString(callSuper = true)
 @SuperBuilder
 public class PreviewSeller extends PreviewUser {
-    private int ratingCount;
+    private int reviewCount;
 }
