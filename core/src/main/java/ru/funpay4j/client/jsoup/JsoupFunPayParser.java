@@ -106,12 +106,12 @@ public class JsoupFunPayParser implements FunPayParser {
 
                 String sellerDataHrefAttributeValue = previewOffer.getElementsByClass("avatar-photo")
                         .attr("data-href");
-                Element sellerRatingCountElement = previewOffer.getElementsByClass("rating-mini-count").first();
+                Element sellerReviewCountElement = previewOffer.getElementsByClass("rating-mini-count").first();
 
                 long sellerUserId = Long.parseLong(sellerDataHrefAttributeValue.substring(25, sellerDataHrefAttributeValue.length() - 1));
                 String sellerUsername = previewOffer.getElementsByClass("media-user-name").text();
                 boolean isSellerOnline = previewOffer.getElementsByClass("media media-user online style-circle").first() != null;
-                int sellerRatingCount = sellerRatingCountElement == null ? 0 : Integer.parseInt(sellerRatingCountElement.text());
+                int sellerReviewCount = sellerReviewCountElement == null ? 0 : Integer.parseInt(sellerReviewCountElement.text());
 
                 previewOffers.add(
                         PreviewOffer.builder()
@@ -126,7 +126,7 @@ public class JsoupFunPayParser implements FunPayParser {
                                                 .userId(sellerUserId)
                                                 .username(sellerUsername)
                                                 .isOnline(isSellerOnline)
-                                                .ratingCount(sellerRatingCount)
+                                                .reviewCount(sellerReviewCount)
                                                 .build()
                                 )
                                 .build()
@@ -256,7 +256,7 @@ public class JsoupFunPayParser implements FunPayParser {
                     .selectFirst("a");
             Element sellerImgElement = funPayDocument.getElementsByClass("media-user").first()
                             .selectFirst("img");
-            Element sellerRatingCountElement = funPayDocument.getElementsByClass("text-mini text-light mb5").first();
+            Element sellerReviewCountElement = funPayDocument.getElementsByClass("text-mini text-light mb5").first();
 
             String sellerUsernameElementHrefAttributeValue = sellerUsernameElement.attr("href");
 
@@ -264,7 +264,7 @@ public class JsoupFunPayParser implements FunPayParser {
             String sellerUsername = sellerUsernameElement.text();
             String sellerAvatarPhotoLink = sellerImgElement.attr("src");
             //Select rating from string like "219 отзывов за 2 года"
-            int sellerRatingCount = Integer.parseInt(sellerRatingCountElement.text().replaceAll("\\D.*", ""));
+            int sellerReviewCount = Integer.parseInt(sellerReviewCountElement.text().replaceAll("\\D.*", ""));
             boolean isSellerOnline = funPayDocument.getElementsByClass("media media-user online").first() != null;
 
             return Offer.builder()
@@ -279,7 +279,7 @@ public class JsoupFunPayParser implements FunPayParser {
                             .userId(sellerUserId)
                             .username(sellerUsername)
                             .avatarPhotoLink(sellerAvatarPhotoLink)
-                            .ratingCount(sellerRatingCount)
+                            .reviewCount(sellerReviewCount)
                             .isOnline(isSellerOnline)
                             .build())
                     .build();
