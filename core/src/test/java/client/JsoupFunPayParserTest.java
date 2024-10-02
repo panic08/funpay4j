@@ -10,9 +10,12 @@ import ru.funpay4j.client.jsoup.JsoupFunPayParser;
 import ru.funpay4j.core.methods.offer.GetOffer;
 import ru.funpay4j.core.methods.game.GetPromoGames;
 import ru.funpay4j.core.methods.lot.GetLot;
+import ru.funpay4j.core.methods.user.GetUser;
 import ru.funpay4j.core.objects.game.PromoGame;
 import ru.funpay4j.core.objects.lot.Lot;
 import ru.funpay4j.core.objects.offer.Offer;
+import ru.funpay4j.core.objects.user.Seller;
+import ru.funpay4j.core.objects.user.User;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -29,6 +32,7 @@ class JsoupFunPayParserTest {
     private JsoupFunPayParser parser;
     private MockWebServer mockWebServer;
 
+    private static final String GET_USER_HTML_RESPONSE_PATH = "src/test/resources/html/client/getUserResponse.html";
     private static final String GET_LOT_HTML_RESPONSE_PATH = "src/test/resources/html/client/getLotResponse.html";
     private static final String GET_OFFER_HTML_RESPONSE_PATH = "src/test/resources/html/client/getOfferResponse.html";
     private static final String GET_PROMO_GAMES_JSON_RESPONSE_PATH = "src/test/resources/json/client/getPromoGamesResponse.json";
@@ -96,5 +100,24 @@ class JsoupFunPayParserTest {
         assertFalse(result.getParameters().isEmpty());
         assertNotNull(result.getSeller());
         assertTrue(result.getSeller().isOnline());
+    }
+
+    @Test
+    void testGetUser() throws IOException {
+        String htmlContent = new String(Files.readAllBytes(Paths.get(GET_USER_HTML_RESPONSE_PATH)));
+
+        this.mockWebServer.enqueue(
+                new MockResponse()
+                        .setBody(htmlContent)
+                        .setResponseCode(200)
+        );
+
+        Seller result = (Seller) parser.parse(GetUser.builder().userId(2).build());
+
+        assertNotNull(result);
+        assertFalse(result.isOnline());
+        assertFalse(result.getBadges().isEmpty());
+        assertFalse(result.getLastReviews().isEmpty());
+        assertFalse(result.getPreviewOffers().isEmpty());
     }
 }

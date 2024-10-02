@@ -13,6 +13,7 @@ import ru.funpay4j.core.methods.offer.GetOffer;
 import ru.funpay4j.core.methods.game.GetPromoGames;
 import ru.funpay4j.core.methods.lot.GetLot;
 import ru.funpay4j.core.exceptions.FunPayApiException;
+import ru.funpay4j.core.methods.user.GetUser;
 import ru.funpay4j.core.objects.game.PromoGame;
 import ru.funpay4j.core.objects.game.PromoGameCounter;
 import ru.funpay4j.core.objects.lot.Lot;
@@ -20,6 +21,9 @@ import ru.funpay4j.core.objects.lot.LotCounter;
 import ru.funpay4j.core.objects.offer.Offer;
 import ru.funpay4j.core.objects.offer.PreviewOffer;
 import ru.funpay4j.core.objects.user.PreviewSeller;
+import ru.funpay4j.core.objects.user.Seller;
+import ru.funpay4j.core.objects.user.SellerReview;
+import ru.funpay4j.core.objects.user.User;
 
 import java.io.IOException;
 import java.util.*;
@@ -233,7 +237,6 @@ public class JsoupFunPayParser implements FunPayParser {
             //Select a floating point number from a string like "от 1111.32 ₽"
             double price = Double.parseDouble(totalPriceValue.replaceAll("[^0-9.]", "").split("\\s+")[0]);
             List<String> attachmentLinks = new ArrayList<>();
-            Map<String, String> parameters = new HashMap<>();
 
             if (paramItemElements.size() > 2) {
                 for (Element attachmentElement : paramItemElements.get(2).getElementsByClass("attachments-item")) {
@@ -242,6 +245,8 @@ public class JsoupFunPayParser implements FunPayParser {
                     attachmentLinks.add(attachmentLink);
                 }
             }
+
+            Map<String, String> parameters = new HashMap<>();
 
             for (Element paramItemElement : paramListElement.getElementsByClass("row").first().getElementsByClass("col-xs-6")) {
                 Element parameterElement = paramItemElement.getElementsByClass("param-item").first();
@@ -283,6 +288,136 @@ public class JsoupFunPayParser implements FunPayParser {
                             .isOnline(isSellerOnline)
                             .build())
                     .build();
+        } catch (IOException e) {
+            throw new FunPayApiException(e.getMessage());
+        }
+    }
+
+    @Override
+    public User parse(GetUser command) {
+        String getLotByIdURL = baseURL + "/users/" + command.getUserId() + "/";
+        try (Response funPayHtmlPage = httpClient.newCall(new Request.Builder().get().url(getLotByIdURL).build()).execute()) {
+            String funPayHtmlPageBody = funPayHtmlPage.body().string();
+
+            Document funPayDocument = Jsoup.parse(funPayHtmlPageBody);
+
+            if (isNonExistentFunPayPage(funPayDocument)) {
+                throw new FunPayApiException("User with userId " + command.getUserId() + " does not exist");
+            }
+
+            Element containerProfileHeader = funPayDocument.getElementsByClass("container profile-header").first();
+
+            Element profileElement = funPayDocument.getElementsByClass("profile").first();
+
+            Element avatarPhotoElement = containerProfileHeader.getElementsByClass("avatar-photo").first();
+            Element userBadgesElement = profileElement.getElementsByClass("user-badges").first();
+
+            String avatarPhotoElementStyle = avatarPhotoElement.attr("style");
+
+            String username = profileElement.getElementsByClass("mr4").text();
+            String avatarPhotoLink = avatarPhotoElementStyle.substring(22, avatarPhotoElementStyle.length() - 2);
+            boolean isOnline = profileElement.getElementsByClass("mb40 online").first() != null;
+            List<String> badges = new ArrayList<>();
+
+            if (userBadgesElement != null) {
+                for (Element badgeElement : userBadgesElement.children()) {
+                    badges.add(badgeElement.text());
+                }
+            }
+
+            String registeredAt = profileElement.getElementsByClass("text-nowrap").first().text();
+
+            Element sellerElement = funPayDocument.getElementsByClass("param-item mb10").first();
+
+            //if user is seller too
+            if (sellerElement != null) {
+                String ratingStr = sellerElement.getElementsByClass("big").first().text();
+
+                double rating = ratingStr.equals("?") ? 0 : Double.parseDouble(ratingStr);
+                //Select rating from string like "219 отзывов за 2 года"
+                int reviewCount = Integer.parseInt(sellerElement.getElementsByClass("text-mini text-light mb5").text()
+                        .replaceAll("\\D.*", ""));
+
+                List<PreviewOffer> previewOffers = new ArrayList<>();
+
+                List<Element> previewOfferElements = funPayDocument.getElementsByClass("tc-item");
+
+                for (Element previewOfferElement : previewOfferElements) {
+                    Element previewOfferPriceElement = previewOfferElement.getElementsByClass("tc-price").first();
+
+                    String previewOfferElementHrefAttributeValue = previewOfferElement.attr("href");
+
+                    long offerId = Long.parseLong(previewOfferElementHrefAttributeValue.substring(33));
+                    String shortDescription = previewOfferElement.getElementsByClass("tc-desc-text").text();
+                    double price = Double.parseDouble(previewOfferPriceElement.attr("data-s"));
+                    boolean isAutoDelivery = previewOfferPriceElement.getElementsByClass("auto-dlv-icon").first() != null;
+                    //Since the promo value is not shown in the profile in offers
+                    boolean isPromo = false;
+
+                    previewOffers.add(PreviewOffer.builder()
+                            .offerId(offerId)
+                            .shortDescription(shortDescription)
+                            .price(price)
+                            .isAutoDelivery(isAutoDelivery)
+                            .isPromo(isPromo)
+                            .seller(PreviewSeller.builder()
+                                    .userId(command.getUserId())
+                                    .username(username)
+                                    .avatarPhotoLink(avatarPhotoLink)
+                                    .isOnline(isOnline)
+                                    .reviewCount(reviewCount)
+                                    .build())
+                            .build());
+                }
+
+                List<SellerReview> lastReviews = new ArrayList<>();
+
+                List<Element> lastReviewElements = funPayDocument.getElementsByClass("review-container");
+
+                for (Element lastReviewElement : lastReviewElements) {
+                    Element reviewCompiledReview = lastReviewElement.getElementsByClass("review-compiled-review").first();
+
+                    String[] gameTitlePriceSplit = reviewCompiledReview.getElementsByClass("review-item-detail").text()
+                            .split(", ");
+
+                    String gameTitle = gameTitlePriceSplit[0];
+                    //Select a floating point number from a string like "от 1111.32 ₽"
+                    double price = Double.parseDouble(gameTitlePriceSplit[1].replaceAll("[^0-9.]", "").split("\\s+")[0]);
+                    String text = reviewCompiledReview.getElementsByClass("review-item-text").text();
+                    int stars = Integer.parseInt(reviewCompiledReview.getElementsByClass("rating").first()
+                            .child(0).className().substring(6));
+
+                    lastReviews.add(SellerReview.builder()
+                            .gameTitle(gameTitle)
+                            .price(price)
+                            .text(text)
+                            .stars(stars)
+                            .build());
+                }
+
+                return Seller.builder()
+                        .id(command.getUserId())
+                        .username(username)
+                        .avatarPhotoLink(avatarPhotoLink)
+                        .isOnline(isOnline)
+                        .badges(badges)
+                        .registeredAt(registeredAt)
+                        .rating(rating)
+                        .reviewCount(reviewCount)
+                        .previewOffers(previewOffers)
+                        .lastReviews(lastReviews)
+                        .build();
+            } else {
+                return User.builder()
+                        .id(command.getUserId())
+                        .username(username)
+                        .avatarPhotoLink(avatarPhotoLink)
+                        .isOnline(isOnline)
+                        .badges(badges)
+                        .registeredAt(registeredAt)
+                        .build();
+            }
+
         } catch (IOException e) {
             throw new FunPayApiException(e.getMessage());
         }
