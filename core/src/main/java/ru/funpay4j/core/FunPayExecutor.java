@@ -8,9 +8,11 @@ import ru.funpay4j.core.methods.offer.GetOffer;
 import ru.funpay4j.core.methods.game.GetPromoGames;
 import ru.funpay4j.core.methods.lot.GetLot;
 import ru.funpay4j.core.exceptions.FunPayApiException;
+import ru.funpay4j.core.methods.user.GetUser;
 import ru.funpay4j.core.objects.game.PromoGame;
 import ru.funpay4j.core.objects.lot.Lot;
 import ru.funpay4j.core.objects.offer.Offer;
+import ru.funpay4j.core.objects.user.User;
 
 import java.util.List;
 
@@ -42,6 +44,10 @@ public class FunPayExecutor {
     }
 
     public Offer execute(GetOffer command) throws FunPayApiException {
+        return funPayParser.parse(command);
+    }
+
+    public User execute(GetUser command) throws FunPayApiException {
         return funPayParser.parse(command);
     }
 }
