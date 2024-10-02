@@ -14,6 +14,7 @@ import ru.funpay4j.core.objects.lot.Lot;
 import ru.funpay4j.core.objects.offer.Offer;
 import ru.funpay4j.core.objects.user.User;
 
+import java.net.Proxy;
 import java.util.List;
 
 /**
@@ -31,7 +32,11 @@ public class FunPayExecutor {
         this.funPayParser = new JsoupFunPayParser(httpClient);
     }
 
-    public FunPayExecutor(OkHttpClient httpClient) {
+    public FunPayExecutor(@NonNull Proxy proxy) {
+        OkHttpClient httpClient = new OkHttpClient.Builder()
+                .proxy(proxy)
+                .build();
+
         this.funPayParser = new JsoupFunPayParser(httpClient);
     }
 
