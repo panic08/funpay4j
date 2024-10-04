@@ -3,17 +3,16 @@ package ru.funpay4j.client.jsoup;
 import com.google.gson.JsonParser;
 import lombok.NonNull;
 import okhttp3.*;
-import org.jetbrains.annotations.NotNull;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import ru.funpay4j.client.FunPayParser;
 import ru.funpay4j.client.FunPayURL;
-import ru.funpay4j.core.methods.offer.GetOffer;
-import ru.funpay4j.core.methods.game.GetPromoGames;
-import ru.funpay4j.core.methods.lot.GetLot;
+import ru.funpay4j.core.commands.offer.GetOffer;
+import ru.funpay4j.core.commands.game.GetPromoGames;
+import ru.funpay4j.core.commands.lot.GetLot;
 import ru.funpay4j.core.exceptions.FunPayApiException;
-import ru.funpay4j.core.methods.user.GetUser;
+import ru.funpay4j.core.commands.user.GetUser;
 import ru.funpay4j.core.objects.game.PromoGame;
 import ru.funpay4j.core.objects.game.PromoGameCounter;
 import ru.funpay4j.core.objects.lot.Lot;
@@ -28,6 +27,12 @@ import ru.funpay4j.core.objects.user.User;
 import java.io.IOException;
 import java.util.*;
 
+/**
+ * This parser uses Jsoup to parse commands
+ *
+ * @author panic08
+ * @since 1.0.0
+ */
 public class JsoupFunPayParser implements FunPayParser {
     @NonNull
     private final OkHttpClient httpClient;
@@ -35,20 +40,24 @@ public class JsoupFunPayParser implements FunPayParser {
     @NonNull
     private final String baseURL;
 
-    public JsoupFunPayParser(@NotNull OkHttpClient httpClient) {
+    public JsoupFunPayParser(@NonNull OkHttpClient httpClient) {
         this.httpClient = httpClient;
         this.baseURL = FunPayURL.DEFAULT_URL;
     }
 
-    public JsoupFunPayParser(@NotNull OkHttpClient httpClient, @NotNull String baseURL) {
+    public JsoupFunPayParser(@NonNull OkHttpClient httpClient, @NonNull String baseURL) {
         this.httpClient = httpClient;
         this.baseURL = baseURL;
     }
 
+    /**
+     * Parse lot information by lot id
+     * @param command command to be parsed
+     * @return lot
+     */
     @Override
-    public Lot parse(GetLot command) {
-        String getLotByIdURL = baseURL + "/lots/" + command.getLotId() + "/";
-        try (Response funPayHtmlPage = httpClient.newCall(new Request.Builder().get().url(getLotByIdURL).build()).execute()) {
+    public Lot parse(@NonNull GetLot command) {
+        try (Response funPayHtmlPage = httpClient.newCall(new Request.Builder().get().url(baseURL + "/lots/" + command.getLotId() + "/").build()).execute()) {
             String funPayHtmlPageBody = funPayHtmlPage.body().string();
 
             Document funPayDocument = Jsoup.parse(funPayHtmlPageBody);
@@ -149,17 +158,21 @@ public class JsoupFunPayParser implements FunPayParser {
         }
     }
 
+    /**
+     * Parse promoGames information by query
+     * @param command command to be parsed
+     * @return promoGames
+     */
     @Override
-    public List<PromoGame> parse(GetPromoGames command) {
+    public List<PromoGame> parse(@NonNull GetPromoGames command) {
         List<PromoGame> currentPromoGames = new ArrayList<>();
 
-        String getPromoGamesURL = baseURL + "/games/promoFilter";
         RequestBody requestBody = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart("query", command.getQuery())
                 .build();
 
-        try (Response response = httpClient.newCall(new Request.Builder().post(requestBody).url(getPromoGamesURL)
+        try (Response response = httpClient.newCall(new Request.Builder().post(requestBody).url(baseURL + "/games/promoFilter")
                 .addHeader("x-requested-with", "XMLHttpRequest").build()).execute()) {
             String promoGamesHtml = JsonParser.parseString(response.body().string()).getAsJsonObject().get("html").getAsString();
 
@@ -202,10 +215,14 @@ public class JsoupFunPayParser implements FunPayParser {
         }
     }
 
+    /**
+     * Parse offer information by offer id
+     * @param command command to be parsed
+     * @return offer
+     */
     @Override
-    public Offer parse(GetOffer command) {
-        String getLotByIdURL = baseURL + "/lots/offer?id=" + command.getOfferId();
-        try (Response funPayHtmlPage = httpClient.newCall(new Request.Builder().get().url(getLotByIdURL).build()).execute()) {
+    public Offer parse(@NonNull GetOffer command) {
+        try (Response funPayHtmlPage = httpClient.newCall(new Request.Builder().get().url(baseURL + "/lots/offer?id=" + command.getOfferId()).build()).execute()) {
             String funPayHtmlPageBody = funPayHtmlPage.body().string();
 
             Document funPayDocument = Jsoup.parse(funPayHtmlPageBody);
@@ -215,8 +232,10 @@ public class JsoupFunPayParser implements FunPayParser {
             }
 
             Element paramListElement = funPayDocument.getElementsByClass("param-list").first();
+            //Get paramItemElements nested in the current item and not in any other way
             List<Element> paramItemElements = funPayDocument.select(".param-list > .param-item");
 
+            //Selected total price in rubles
             String totalPriceValue = funPayDocument.getElementsByClass("form-control input-lg selectpicker")
                     .first()
                     .children()
@@ -226,6 +245,7 @@ public class JsoupFunPayParser implements FunPayParser {
             String shortDescription = null;
             String detailedDescription = null;
 
+            //if there is no shortDescription
             if (paramItemElements.size() == 1) {
                 detailedDescription = paramItemElements.get(0).selectFirst("div").text();
             } else if (paramItemElements.size() >= 2) {
@@ -234,10 +254,11 @@ public class JsoupFunPayParser implements FunPayParser {
             }
 
             boolean isAutoDelivery = !funPayDocument.getElementsByClass("offer-header-auto-dlv-label").isEmpty();
-            //Select a floating point number from a string like "от 1111.32 ₽"
+            //Select a floating point number from a string like "from 1111.32 ₽"
             double price = Double.parseDouble(totalPriceValue.replaceAll("[^0-9.]", "").split("\\s+")[0]);
             List<String> attachmentLinks = new ArrayList<>();
 
+            //if the offer has attachments
             if (paramItemElements.size() > 2) {
                 for (Element attachmentElement : paramItemElements.get(2).getElementsByClass("attachments-item")) {
                     String attachmentLink = attachmentElement.selectFirst("a").attr("href");
@@ -268,7 +289,7 @@ public class JsoupFunPayParser implements FunPayParser {
             long sellerUserId = Long.parseLong(sellerUsernameElementHrefAttributeValue.substring(25, sellerUsernameElementHrefAttributeValue.length() - 1));
             String sellerUsername = sellerUsernameElement.text();
             String sellerAvatarPhotoLink = sellerImgElement.attr("src");
-            //Select rating from string like "219 отзывов за 2 года"
+            //Select rating from string like "219 reviews over 2 years"
             int sellerReviewCount = Integer.parseInt(sellerReviewCountElement.text().replaceAll("\\D.*", ""));
             boolean isSellerOnline = funPayDocument.getElementsByClass("media media-user online").first() != null;
 
@@ -293,10 +314,14 @@ public class JsoupFunPayParser implements FunPayParser {
         }
     }
 
+    /**
+     * Parse user information by user id
+     * @param command command to be parsed
+     * @return user
+     */
     @Override
-    public User parse(GetUser command) {
-        String getLotByIdURL = baseURL + "/users/" + command.getUserId() + "/";
-        try (Response funPayHtmlPage = httpClient.newCall(new Request.Builder().get().url(getLotByIdURL).build()).execute()) {
+    public User parse(@NonNull GetUser command) {
+        try (Response funPayHtmlPage = httpClient.newCall(new Request.Builder().get().url(baseURL + "/users/" + command.getUserId() + "/").build()).execute()) {
             String funPayHtmlPageBody = funPayHtmlPage.body().string();
 
             Document funPayDocument = Jsoup.parse(funPayHtmlPageBody);
@@ -334,7 +359,7 @@ public class JsoupFunPayParser implements FunPayParser {
                 String ratingStr = sellerElement.getElementsByClass("big").first().text();
 
                 double rating = ratingStr.equals("?") ? 0 : Double.parseDouble(ratingStr);
-                //Select rating from string like "219 отзывов за 2 года"
+                //Select rating from string like "219 reviews over 2 years"
                 int reviewCount = Integer.parseInt(sellerElement.getElementsByClass("text-mini text-light mb5").text()
                         .replaceAll("\\D.*", ""));
 
@@ -381,7 +406,7 @@ public class JsoupFunPayParser implements FunPayParser {
                             .split(", ");
 
                     String gameTitle = gameTitlePriceSplit[0];
-                    //Select a floating point number from a string like "от 1111.32 ₽"
+                    //Select a floating point number from a string like "from 1111.32 ₽"
                     double price = Double.parseDouble(gameTitlePriceSplit[1].replaceAll("[^0-9.]", "").split("\\s+")[0]);
                     String text = reviewCompiledReview.getElementsByClass("review-item-text").text();
                     int stars = Integer.parseInt(reviewCompiledReview.getElementsByClass("rating").first()

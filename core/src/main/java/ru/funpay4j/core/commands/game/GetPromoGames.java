@@ -1,4 +1,4 @@
-package ru.funpay4j.core.methods.game;
+package ru.funpay4j.core.commands.game;
 
 import lombok.*;
 
