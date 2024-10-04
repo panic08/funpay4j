@@ -1,9 +1,9 @@
-package ru.funpay4j.core.methods.user;
+package ru.funpay4j.core.commands.offer;
 
 import lombok.*;
 
 /**
- * Use this method to get User
+ * Use this method to get PromoGames
  *
  * @author panic08
  * @since 1.0.0
@@ -13,6 +13,6 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class GetUser {
-    private long userId;
+public class GetOffer {
+    private long offerId;
 }

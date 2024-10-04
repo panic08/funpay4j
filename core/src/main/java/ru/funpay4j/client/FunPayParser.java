@@ -1,9 +1,9 @@
 package ru.funpay4j.client;
 
-import ru.funpay4j.core.methods.offer.GetOffer;
-import ru.funpay4j.core.methods.game.GetPromoGames;
-import ru.funpay4j.core.methods.lot.GetLot;
-import ru.funpay4j.core.methods.user.GetUser;
+import ru.funpay4j.core.commands.offer.GetOffer;
+import ru.funpay4j.core.commands.game.GetPromoGames;
+import ru.funpay4j.core.commands.lot.GetLot;
+import ru.funpay4j.core.commands.user.GetUser;
 import ru.funpay4j.core.objects.game.PromoGame;
 import ru.funpay4j.core.objects.lot.Lot;
 import ru.funpay4j.core.objects.offer.Offer;

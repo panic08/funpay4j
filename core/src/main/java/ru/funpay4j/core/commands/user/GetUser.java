@@ -1,9 +1,9 @@
-package ru.funpay4j.core.methods.lot;
+package ru.funpay4j.core.commands.user;
 
 import lombok.*;
 
 /**
- * Use this method to get Lot
+ * Use this method to get User
  *
  * @author panic08
  * @since 1.0.0
@@ -13,6 +13,6 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class GetLot {
-    private long lotId;
+public class GetUser {
+    private long userId;
 }
