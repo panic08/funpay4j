@@ -1,12 +1,23 @@
-package client;
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-import okhttp3.OkHttpClient;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import ru.funpay4j.client.jsoup.JsoupFunPayParser;
+import ru.funpay4j.core.FunPayExecutor;
 import ru.funpay4j.core.commands.offer.GetOffer;
 import ru.funpay4j.core.commands.game.GetPromoGames;
 import ru.funpay4j.core.commands.lot.GetLot;
@@ -27,8 +38,8 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author panic08
  * @since 1.0.0
  */
-class JsoupFunPayParserTest {
-    private JsoupFunPayParser parser;
+class FunPayExecutorTest {
+    private FunPayExecutor funPayExecutor;
     private MockWebServer mockWebServer;
 
     private static final String GET_USER_HTML_RESPONSE_PATH = "src/test/resources/html/client/getUserResponse.html";
@@ -39,7 +50,7 @@ class JsoupFunPayParserTest {
     @BeforeEach
     void setUp() {
         this.mockWebServer = new MockWebServer();
-        this.parser = new JsoupFunPayParser(new OkHttpClient(), this.mockWebServer.url("/").toString());
+        this.funPayExecutor = new FunPayExecutor(this.mockWebServer.url("/").toString());
     }
 
     @AfterEach
@@ -57,7 +68,7 @@ class JsoupFunPayParserTest {
                         .setResponseCode(200)
         );
 
-        Lot result = parser.parse(GetLot.builder().lotId(149).build());
+        Lot result = funPayExecutor.execute(GetLot.builder().lotId(149).build());
 
         assertNotNull(result);
         assertFalse(result.getPreviewOffers().isEmpty());
@@ -74,7 +85,7 @@ class JsoupFunPayParserTest {
                         .setResponseCode(200)
         );
 
-        List<PromoGame> result = parser.parse(GetPromoGames.builder().query("dota").build());
+        List<PromoGame> result = funPayExecutor.execute(GetPromoGames.builder().query("dota").build());
 
         assertNotNull(result);
         assertFalse(result.isEmpty());
@@ -91,7 +102,7 @@ class JsoupFunPayParserTest {
                         .setResponseCode(200)
         );
 
-        Offer result = parser.parse(GetOffer.builder().offerId(33502824).build());
+        Offer result = funPayExecutor.execute(GetOffer.builder().offerId(33502824).build());
 
         assertNotNull(result);
         assertTrue(result.isAutoDelivery());
@@ -111,7 +122,7 @@ class JsoupFunPayParserTest {
                         .setResponseCode(200)
         );
 
-        Seller result = (Seller) parser.parse(GetUser.builder().userId(2).build());
+        Seller result = (Seller) funPayExecutor.execute(GetUser.builder().userId(2).build());
 
         assertNotNull(result);
         assertFalse(result.isOnline());
