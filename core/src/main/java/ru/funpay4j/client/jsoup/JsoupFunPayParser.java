@@ -1,3 +1,17 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package ru.funpay4j.client.jsoup;
 
 import com.google.gson.JsonParser;
@@ -7,12 +21,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import ru.funpay4j.client.FunPayParser;
-import ru.funpay4j.client.FunPayURL;
-import ru.funpay4j.core.commands.offer.GetOffer;
-import ru.funpay4j.core.commands.game.GetPromoGames;
-import ru.funpay4j.core.commands.lot.GetLot;
 import ru.funpay4j.core.exceptions.FunPayApiException;
-import ru.funpay4j.core.commands.user.GetUser;
 import ru.funpay4j.core.objects.game.PromoGame;
 import ru.funpay4j.core.objects.game.PromoGameCounter;
 import ru.funpay4j.core.objects.lot.Lot;
@@ -28,7 +37,7 @@ import java.io.IOException;
 import java.util.*;
 
 /**
- * This parser uses Jsoup to parse commands
+ * This implementation of FunPayParser uses Jsoup to parse
  *
  * @author panic08
  * @since 1.0.0
@@ -40,30 +49,23 @@ public class JsoupFunPayParser implements FunPayParser {
     @NonNull
     private final String baseURL;
 
-    public JsoupFunPayParser(@NonNull OkHttpClient httpClient) {
-        this.httpClient = httpClient;
-        this.baseURL = FunPayURL.DEFAULT_URL;
-    }
-
     public JsoupFunPayParser(@NonNull OkHttpClient httpClient, @NonNull String baseURL) {
         this.httpClient = httpClient;
         this.baseURL = baseURL;
     }
 
     /**
-     * Parse lot information by lot id
-     * @param command command to be parsed
-     * @return lot
+     * {@inheritDoc}
      */
     @Override
-    public Lot parse(@NonNull GetLot command) {
-        try (Response funPayHtmlPage = httpClient.newCall(new Request.Builder().get().url(baseURL + "/lots/" + command.getLotId() + "/").build()).execute()) {
+    public Lot parseLot(long lotId) {
+        try (Response funPayHtmlPage = httpClient.newCall(new Request.Builder().get().url(baseURL + "/lots/" + lotId + "/").build()).execute()) {
             String funPayHtmlPageBody = funPayHtmlPage.body().string();
 
             Document funPayDocument = Jsoup.parse(funPayHtmlPageBody);
 
             if (isNonExistentFunPayPage(funPayDocument)) {
-                throw new FunPayApiException("Lot with lotId " + command.getLotId() + " does not exist");
+                throw new FunPayApiException("Lot with lotId " + lotId + " does not exist");
             }
 
             Element funPayContentWithCdElement = funPayDocument.getElementsByClass("content-with-cd").first();
@@ -85,9 +87,9 @@ public class JsoupFunPayParser implements FunPayParser {
                     continue;
                 }
 
-                int lotId = Integer.parseInt(counterHrefAttributeValue.substring(24, counterHrefAttributeValue.length() - 1));
+                long counterLotId = Integer.parseInt(counterHrefAttributeValue.substring(24, counterHrefAttributeValue.length() - 1));
 
-                if (lotId == command.getLotId()) {
+                if (lotId == counterLotId) {
                     continue;
                 }
 
@@ -96,7 +98,7 @@ public class JsoupFunPayParser implements FunPayParser {
 
                 lotCounters.add(
                         LotCounter.builder()
-                                .lotId(lotId)
+                                .lotId(counterLotId)
                                 .param(counterParam)
                                 .counter(counterValue)
                                 .build()
@@ -147,7 +149,7 @@ public class JsoupFunPayParser implements FunPayParser {
             }
 
             return Lot.builder()
-                    .id(command.getLotId())
+                    .id(lotId)
                     .title(title)
                     .description(description)
                     .lotCounters(lotCounters)
@@ -159,17 +161,15 @@ public class JsoupFunPayParser implements FunPayParser {
     }
 
     /**
-     * Parse promoGames information by query
-     * @param command command to be parsed
-     * @return promoGames
+     * {@inheritDoc}
      */
     @Override
-    public List<PromoGame> parse(@NonNull GetPromoGames command) {
+    public List<PromoGame> parsePromoGames(@NonNull String query) {
         List<PromoGame> currentPromoGames = new ArrayList<>();
 
         RequestBody requestBody = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
-                .addFormDataPart("query", command.getQuery())
+                .addFormDataPart("query", query)
                 .build();
 
         try (Response response = httpClient.newCall(new Request.Builder().post(requestBody).url(baseURL + "/games/promoFilter")
@@ -216,19 +216,17 @@ public class JsoupFunPayParser implements FunPayParser {
     }
 
     /**
-     * Parse offer information by offer id
-     * @param command command to be parsed
-     * @return offer
+     * {@inheritDoc}
      */
     @Override
-    public Offer parse(@NonNull GetOffer command) {
-        try (Response funPayHtmlPage = httpClient.newCall(new Request.Builder().get().url(baseURL + "/lots/offer?id=" + command.getOfferId()).build()).execute()) {
+    public Offer parseOffer(long offerId) {
+        try (Response funPayHtmlPage = httpClient.newCall(new Request.Builder().get().url(baseURL + "/lots/offer?id=" + offerId).build()).execute()) {
             String funPayHtmlPageBody = funPayHtmlPage.body().string();
 
             Document funPayDocument = Jsoup.parse(funPayHtmlPageBody);
 
             if (isNonExistentFunPayPage(funPayDocument)) {
-                throw new FunPayApiException("Offer with offerId " + command.getOfferId() + " does not exist");
+                throw new FunPayApiException("Offer with offerId " + offerId + " does not exist");
             }
 
             Element paramListElement = funPayDocument.getElementsByClass("param-list").first();
@@ -294,7 +292,7 @@ public class JsoupFunPayParser implements FunPayParser {
             boolean isSellerOnline = funPayDocument.getElementsByClass("media media-user online").first() != null;
 
             return Offer.builder()
-                    .id(command.getOfferId())
+                    .id(offerId)
                     .shortDescription(shortDescription)
                     .detailedDescription(detailedDescription)
                     .isAutoDelivery(isAutoDelivery)
@@ -315,19 +313,17 @@ public class JsoupFunPayParser implements FunPayParser {
     }
 
     /**
-     * Parse user information by user id
-     * @param command command to be parsed
-     * @return user
+     * {@inheritDoc}
      */
     @Override
-    public User parse(@NonNull GetUser command) {
-        try (Response funPayHtmlPage = httpClient.newCall(new Request.Builder().get().url(baseURL + "/users/" + command.getUserId() + "/").build()).execute()) {
+    public User parseUser(long userId) {
+        try (Response funPayHtmlPage = httpClient.newCall(new Request.Builder().get().url(baseURL + "/users/" + userId + "/").build()).execute()) {
             String funPayHtmlPageBody = funPayHtmlPage.body().string();
 
             Document funPayDocument = Jsoup.parse(funPayHtmlPageBody);
 
             if (isNonExistentFunPayPage(funPayDocument)) {
-                throw new FunPayApiException("User with userId " + command.getUserId() + " does not exist");
+                throw new FunPayApiException("User with userId " + userId + " does not exist");
             }
 
             Element containerProfileHeader = funPayDocument.getElementsByClass("container profile-header").first();
@@ -386,7 +382,7 @@ public class JsoupFunPayParser implements FunPayParser {
                             .isAutoDelivery(isAutoDelivery)
                             .isPromo(isPromo)
                             .seller(PreviewSeller.builder()
-                                    .userId(command.getUserId())
+                                    .userId(userId)
                                     .username(username)
                                     .avatarPhotoLink(avatarPhotoLink)
                                     .isOnline(isOnline)
@@ -421,7 +417,7 @@ public class JsoupFunPayParser implements FunPayParser {
                 }
 
                 return Seller.builder()
-                        .id(command.getUserId())
+                        .id(userId)
                         .username(username)
                         .avatarPhotoLink(avatarPhotoLink)
                         .isOnline(isOnline)
@@ -434,7 +430,7 @@ public class JsoupFunPayParser implements FunPayParser {
                         .build();
             } else {
                 return User.builder()
-                        .id(command.getUserId())
+                        .id(userId)
                         .username(username)
                         .avatarPhotoLink(avatarPhotoLink)
                         .isOnline(isOnline)
