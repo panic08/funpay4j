@@ -396,17 +396,22 @@ public class JsoupFunPayParser implements FunPayParser {
                 List<Element> lastReviewElements = funPayDocument.getElementsByClass("review-container");
 
                 for (Element lastReviewElement : lastReviewElements) {
-                    Element reviewCompiledReview = lastReviewElement.getElementsByClass("review-compiled-review").first();
+                    Element reviewCompiledReviewElement = lastReviewElement.getElementsByClass("review-compiled-review").first();
+                    Element starsElement = reviewCompiledReviewElement.getElementsByClass("rating").first();
 
-                    String[] gameTitlePriceSplit = reviewCompiledReview.getElementsByClass("review-item-detail").text()
+                    String[] gameTitlePriceSplit = reviewCompiledReviewElement.getElementsByClass("review-item-detail").text()
                             .split(", ");
 
                     String gameTitle = gameTitlePriceSplit[0];
                     //Select a floating point number from a string like "from 1111.32 ₽"
                     double price = Double.parseDouble(gameTitlePriceSplit[1].replaceAll("[^0-9.]", "").split("\\s+")[0]);
-                    String text = reviewCompiledReview.getElementsByClass("review-item-text").text();
-                    int stars = Integer.parseInt(reviewCompiledReview.getElementsByClass("rating").first()
-                            .child(0).className().substring(6));
+                    String text = reviewCompiledReviewElement.getElementsByClass("review-item-text").text();
+                    int stars = 0;
+
+                    //if the review has rating
+                    if (starsElement != null) {
+                        stars = Integer.parseInt(starsElement.child(0).className().substring(6));
+                    }
 
                     lastReviews.add(SellerReview.builder()
                             .gameTitle(gameTitle)
