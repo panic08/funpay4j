@@ -83,9 +83,7 @@ public class JsoupFunPayParser implements FunPayParser {
                 String counterHrefAttributeValue = counterItem.attr("href");
 
                 //Skip chips, as they are not supported yet
-                if (counterHrefAttributeValue.contains("chips")) {
-                    continue;
-                }
+                if (counterHrefAttributeValue.contains("chips")) continue;
 
                 long counterLotId = Integer.parseInt(counterHrefAttributeValue.substring(24, counterHrefAttributeValue.length() - 1));
 
@@ -185,6 +183,9 @@ public class JsoupFunPayParser implements FunPayParser {
             for (Element promoGameElement : promoGameElements) {
                 Element titleElement = promoGameElement.getElementsByClass("game-title").first().selectFirst("a");
                 String titleElementHrefAttributeValue = titleElement.attr("href");
+
+                //Skip chips, as they are not supported yet
+                if (titleElementHrefAttributeValue.contains("chips")) continue;
 
                 long lotId = Long.parseLong(titleElementHrefAttributeValue.substring(24, titleElementHrefAttributeValue.length() - 1));
                 String title = titleElement.text();
