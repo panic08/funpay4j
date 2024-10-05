@@ -13,8 +13,8 @@ The funpay4j library is a Java wrapper for FunPay private api
 - [Usage](#usage)
     - [Terms and Conditions](#terms-and-conditions)
     - [Quick Usage](#quick-usage)
-      - [Create FunPayExecutor](#create-funpayexecutor)
-      - [Get seller](#get-seller)
+        - [Create FunPayExecutor](#create-funpayexecutor)
+        - [Get seller](#get-seller)
 - [Contributing](#contributing)
 
 # Install
@@ -42,11 +42,11 @@ dependencies {
 </repositories>
 
 <dependencies>
-    <dependency>
-        <groupId>com.github.panic08</groupId>
-        <artifactId>funpay4j</artifactId>
-        <version>1.0.0</version>
-    </dependency>
+<dependency>
+    <groupId>com.github.panic08</groupId>
+    <artifactId>funpay4j</artifactId>
+    <version>1.0.0</version>
+</dependency>
 </dependencies>
 ```
 
@@ -70,7 +70,6 @@ This library is for personal use and for educational purposes due to the fact th
 
 Contributors are not responsible for usage and maintainability. Due to the nature of this project, some features of the library are not guaranteed as they make change and break in the future. This library is licensed under ASL
 
----
 ## Quick Usage
 
 ### Create FunPayExecutor
@@ -91,7 +90,7 @@ User user = funPayExecutor.execute(GetUser.builder().userId(1).build());
 Seller seller = null;
         
 if (user instanceof Seller) {
-    seller = (Seller) user;
+seller = (Seller) user;
 }
 ```
 
