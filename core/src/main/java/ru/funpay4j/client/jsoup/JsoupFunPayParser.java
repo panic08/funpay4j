@@ -114,34 +114,38 @@ public class JsoupFunPayParser implements FunPayParser {
                 String previewOfferSellerStyleAttributeValue = previewOffer.getElementsByClass("avatar-photo").attr("style");
 
                 long offerId = Long.parseLong(previewOfferHrefAttributeValue.substring(33));
-                String shortDescription = previewOffer.getElementsByClass("tc-desc-text").text();
-                double price = Double.parseDouble(previewOffer.getElementsByClass("tc-price").attr("data-s"));
-                boolean isAutoDelivery = previewOffer.getElementsByClass("auto-dlv-icon").first() != null;
-                boolean isPromo = previewOffer.getElementsByClass("promo-offer-icon").first() != null;
+                String previewOfferShortDescription = previewOffer.getElementsByClass("tc-desc-text").text();
+                double previewOfferPrice = Double.parseDouble(previewOffer.getElementsByClass("tc-price").attr("data-s"));
+                boolean isHasPreviewOfferAutoDelivery = previewOffer.getElementsByClass("auto-dlv-icon").first() != null;
+                boolean isHasPreviewOfferPromo = previewOffer.getElementsByClass("promo-offer-icon").first() != null;
 
-                String sellerDataHrefAttributeValue = previewOffer.getElementsByClass("avatar-photo")
+                String previewSellerDataHrefAttributeValue = previewOffer.getElementsByClass("avatar-photo")
                         .attr("data-href");
-                Element sellerReviewCountElement = previewOffer.getElementsByClass("rating-mini-count").first();
+                Element previewSellerReviewCountElement = previewOffer.getElementsByClass("rating-mini-count").first();
 
-                long sellerUserId = Long.parseLong(sellerDataHrefAttributeValue.substring(25, sellerDataHrefAttributeValue.length() - 1));
-                String sellerUsername = previewOffer.getElementsByClass("media-user-name").text();
-                boolean isSellerOnline = previewOffer.getElementsByClass("media media-user online style-circle").first() != null;
-                int sellerReviewCount = sellerReviewCountElement == null ? 0 : Integer.parseInt(sellerReviewCountElement.text());
+                long previewSellerUserId = Long.parseLong(previewSellerDataHrefAttributeValue.substring(25, previewSellerDataHrefAttributeValue.length() - 1));
+                String previewSellerUsername = previewOffer.getElementsByClass("media-user-name").text();
+                String previewSellerAvatarPhotoLink = previewOfferSellerStyleAttributeValue.substring(22, previewOfferSellerStyleAttributeValue.length() - 2);
+                boolean isPreviewSellerOnline = previewOffer.getElementsByClass("media media-user online style-circle").first() != null;
+                int previewSellerReviewCount = previewSellerReviewCountElement == null ? 0 : Integer.parseInt(previewSellerReviewCountElement.text());
+
+                //if the previewUser has a regular photo
+                if (previewSellerAvatarPhotoLink.equals("/img/layout/avatar.png")) previewSellerAvatarPhotoLink = null;
 
                 previewOffers.add(
                         PreviewOffer.builder()
                                 .offerId(offerId)
-                                .shortDescription(shortDescription)
-                                .price(price)
-                                .isAutoDelivery(isAutoDelivery)
-                                .isPromo(isPromo)
+                                .shortDescription(previewOfferShortDescription)
+                                .price(previewOfferPrice)
+                                .isAutoDelivery(isHasPreviewOfferAutoDelivery)
+                                .isPromo(isHasPreviewOfferPromo)
                                 .seller(
                                         PreviewSeller.builder()
-                                                .avatarPhotoLink(previewOfferSellerStyleAttributeValue.substring(22, previewOfferSellerStyleAttributeValue.length() - 2))
-                                                .userId(sellerUserId)
-                                                .username(sellerUsername)
-                                                .isOnline(isSellerOnline)
-                                                .reviewCount(sellerReviewCount)
+                                                .userId(previewSellerUserId)
+                                                .username(previewSellerUsername)
+                                                .avatarPhotoLink(previewSellerAvatarPhotoLink)
+                                                .isOnline(isPreviewSellerOnline)
+                                                .reviewCount(previewSellerReviewCount)
                                                 .build()
                                 )
                                 .build()
@@ -276,20 +280,24 @@ public class JsoupFunPayParser implements FunPayParser {
                 parameters.put(key, value);
             }
 
-            Element sellerUsernameElement = funPayDocument.getElementsByClass("media-user-name").first()
+            Element previewSellerUsernameElement = funPayDocument.getElementsByClass("media-user-name").first()
                     .selectFirst("a");
-            Element sellerImgElement = funPayDocument.getElementsByClass("media-user").first()
+            Element previewSellerImgElement = funPayDocument.getElementsByClass("media-user").first()
                             .selectFirst("img");
-            Element sellerReviewCountElement = funPayDocument.getElementsByClass("text-mini text-light mb5").first();
+            Element previewSellerReviewCountElement = funPayDocument.getElementsByClass("text-mini text-light mb5").first();
 
-            String sellerUsernameElementHrefAttributeValue = sellerUsernameElement.attr("href");
+            String previewSellerUsernameElementHrefAttributeValue = previewSellerUsernameElement.attr("href");
 
-            long sellerUserId = Long.parseLong(sellerUsernameElementHrefAttributeValue.substring(25, sellerUsernameElementHrefAttributeValue.length() - 1));
-            String sellerUsername = sellerUsernameElement.text();
-            String sellerAvatarPhotoLink = sellerImgElement.attr("src");
+            long previewSellerUserId = Long.parseLong(previewSellerUsernameElementHrefAttributeValue.substring(25, previewSellerUsernameElementHrefAttributeValue.length() - 1));
+            String previewSellerUsername = previewSellerUsernameElement.text();
+            String previewSellerAvatarPhotoLink = previewSellerImgElement.attr("src");
+
+            //if the previewUser has a regular photo
+            if (previewSellerAvatarPhotoLink.equals("/img/layout/avatar.png")) previewSellerAvatarPhotoLink = null;
+
             //Select rating from string like "219 reviews over 2 years"
-            int sellerReviewCount = Integer.parseInt(sellerReviewCountElement.text().replaceAll("\\D.*", ""));
-            boolean isSellerOnline = funPayDocument.getElementsByClass("media media-user online").first() != null;
+            int previewSellerReviewCount = Integer.parseInt(previewSellerReviewCountElement.text().replaceAll("\\D.*", ""));
+            boolean isPreviewSellerOnline = funPayDocument.getElementsByClass("media media-user online").first() != null;
 
             return Offer.builder()
                     .id(offerId)
@@ -300,11 +308,11 @@ public class JsoupFunPayParser implements FunPayParser {
                     .attachmentLinks(attachmentLinks)
                     .parameters(parameters)
                     .seller(PreviewSeller.builder()
-                            .userId(sellerUserId)
-                            .username(sellerUsername)
-                            .avatarPhotoLink(sellerAvatarPhotoLink)
-                            .reviewCount(sellerReviewCount)
-                            .isOnline(isSellerOnline)
+                            .userId(previewSellerUserId)
+                            .username(previewSellerUsername)
+                            .avatarPhotoLink(previewSellerAvatarPhotoLink)
+                            .reviewCount(previewSellerReviewCount)
+                            .isOnline(isPreviewSellerOnline)
                             .build())
                     .build();
         } catch (IOException e) {
@@ -337,6 +345,10 @@ public class JsoupFunPayParser implements FunPayParser {
 
             String username = profileElement.getElementsByClass("mr4").text();
             String avatarPhotoLink = avatarPhotoElementStyle.substring(22, avatarPhotoElementStyle.length() - 2);
+
+            //if the user has a regular photo
+            if (avatarPhotoLink.equals("/img/layout/avatar.png")) avatarPhotoLink = null;
+
             boolean isOnline = profileElement.getElementsByClass("mb40 online").first() != null;
             List<String> badges = new ArrayList<>();
 
@@ -369,18 +381,18 @@ public class JsoupFunPayParser implements FunPayParser {
                     String previewOfferElementHrefAttributeValue = previewOfferElement.attr("href");
 
                     long offerId = Long.parseLong(previewOfferElementHrefAttributeValue.substring(33));
-                    String shortDescription = previewOfferElement.getElementsByClass("tc-desc-text").text();
-                    double price = Double.parseDouble(previewOfferPriceElement.attr("data-s"));
-                    boolean isAutoDelivery = previewOfferPriceElement.getElementsByClass("auto-dlv-icon").first() != null;
+                    String previewOfferShortDescription = previewOfferElement.getElementsByClass("tc-desc-text").text();
+                    double previewOfferPrice = Double.parseDouble(previewOfferPriceElement.attr("data-s"));
+                    boolean isHasPreviewOfferAutoDelivery = previewOfferPriceElement.getElementsByClass("auto-dlv-icon").first() != null;
                     //Since the promo value is not shown in the profile in offers
-                    boolean isPromo = false;
+                    boolean isHasPreviewOfferPromo = false;
 
                     previewOffers.add(PreviewOffer.builder()
                             .offerId(offerId)
-                            .shortDescription(shortDescription)
-                            .price(price)
-                            .isAutoDelivery(isAutoDelivery)
-                            .isPromo(isPromo)
+                            .shortDescription(previewOfferShortDescription)
+                            .price(previewOfferPrice)
+                            .isAutoDelivery(isHasPreviewOfferAutoDelivery)
+                            .isPromo(isHasPreviewOfferPromo)
                             .seller(PreviewSeller.builder()
                                     .userId(userId)
                                     .username(username)
@@ -402,22 +414,22 @@ public class JsoupFunPayParser implements FunPayParser {
                     String[] gameTitlePriceSplit = reviewCompiledReviewElement.getElementsByClass("review-item-detail").text()
                             .split(", ");
 
-                    String gameTitle = gameTitlePriceSplit[0];
+                    String lastReviewGameTitle = gameTitlePriceSplit[0];
                     //Select a floating point number from a string like "from 1111.32 ₽"
-                    double price = Double.parseDouble(gameTitlePriceSplit[1].replaceAll("[^0-9.]", "").split("\\s+")[0]);
-                    String text = reviewCompiledReviewElement.getElementsByClass("review-item-text").text();
-                    int stars = 0;
+                    double lastReviewPrice = Double.parseDouble(gameTitlePriceSplit[1].replaceAll("[^0-9.]", "").split("\\s+")[0]);
+                    String lastReviewText = reviewCompiledReviewElement.getElementsByClass("review-item-text").text();
+                    int lastReviewStars = 0;
 
                     //if the review has rating
                     if (starsElement != null) {
-                        stars = Integer.parseInt(starsElement.child(0).className().substring(6));
+                        lastReviewStars = Integer.parseInt(starsElement.child(0).className().substring(6));
                     }
 
                     lastReviews.add(SellerReview.builder()
-                            .gameTitle(gameTitle)
-                            .price(price)
-                            .text(text)
-                            .stars(stars)
+                            .gameTitle(lastReviewGameTitle)
+                            .price(lastReviewPrice)
+                            .text(lastReviewText)
+                            .stars(lastReviewStars)
                             .build());
                 }
 
