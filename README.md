@@ -90,7 +90,7 @@ User user = funPayExecutor.execute(GetUser.builder().userId(1).build());
 Seller seller = null;
         
 if (user instanceof Seller) {
-seller = (Seller) user;
+    seller = (Seller) user;
 }
 ```
 
