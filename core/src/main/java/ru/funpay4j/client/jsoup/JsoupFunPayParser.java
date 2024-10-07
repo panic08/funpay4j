@@ -276,7 +276,7 @@ public class JsoupFunPayParser implements FunPayParser {
                 Element parameterElement = paramItemElement.getElementsByClass("param-item").first();
 
                 String key = parameterElement.selectFirst("h5").text();
-                String value = parameterElement.selectFirst("div").text();
+                String value = parameterElement.getElementsByClass("text-bold").text();
 
                 parameters.put(key, value);
             }
