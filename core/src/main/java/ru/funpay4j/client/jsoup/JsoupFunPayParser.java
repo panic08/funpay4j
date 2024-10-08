@@ -32,8 +32,10 @@ import ru.funpay4j.core.objects.user.PreviewSeller;
 import ru.funpay4j.core.objects.user.Seller;
 import ru.funpay4j.core.objects.user.SellerReview;
 import ru.funpay4j.core.objects.user.User;
+import ru.funpay4j.util.FunPayUserUtil;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.*;
 
 /**
@@ -359,7 +361,17 @@ public class JsoupFunPayParser implements FunPayParser {
                 }
             }
 
-            String registeredAt = profileElement.getElementsByClass("text-nowrap").first().text();
+            String registeredAtStr = profileElement.getElementsByClass("text-nowrap").first().text();
+
+            Date registeredAt;
+
+            try {
+                registeredAt = FunPayUserUtil.convertRegisterDateStringToDate(registeredAtStr);
+            } catch (ParseException e) {
+                //might be the case if the account was created a few seconds/minutes/hours ago
+                //such cases are not taken into account yet, so the logical thing to do is to cast a new Date
+                registeredAt = new Date();
+            }
 
             Element sellerElement = funPayDocument.getElementsByClass("param-item mb10").first();
 

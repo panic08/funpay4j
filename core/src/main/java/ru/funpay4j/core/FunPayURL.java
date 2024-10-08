@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-package ru.funpay4j.client;
+package ru.funpay4j.core;
 
 /**
  * Base class for get FunPay base url

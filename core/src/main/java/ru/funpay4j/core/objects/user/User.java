@@ -43,6 +43,5 @@ public class User {
 
     private List<String> badges;
 
-    //TODO: It is worth changing this type to Date in the future
-    private String registeredAt;
+    private Date registeredAt;
 }
