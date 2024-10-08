@@ -17,7 +17,6 @@ package ru.funpay4j.core;
 import lombok.NonNull;
 import okhttp3.OkHttpClient;
 import ru.funpay4j.client.FunPayParser;
-import ru.funpay4j.client.FunPayURL;
 import ru.funpay4j.client.jsoup.JsoupFunPayParser;
 import ru.funpay4j.core.commands.offer.GetOffer;
 import ru.funpay4j.core.commands.game.GetPromoGames;

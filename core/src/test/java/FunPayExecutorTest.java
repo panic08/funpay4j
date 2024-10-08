@@ -26,6 +26,7 @@ import ru.funpay4j.core.objects.game.PromoGame;
 import ru.funpay4j.core.objects.lot.Lot;
 import ru.funpay4j.core.objects.offer.Offer;
 import ru.funpay4j.core.objects.user.Seller;
+import ru.funpay4j.util.FunPayUserUtil;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -125,6 +126,7 @@ class FunPayExecutorTest {
         Seller result = (Seller) funPayExecutor.execute(GetUser.builder().userId(2).build());
 
         assertNotNull(result);
+        assertNotNull(result.getRegisteredAt());
         assertFalse(result.isOnline());
         assertFalse(result.getBadges().isEmpty());
         assertFalse(result.getLastReviews().isEmpty());
