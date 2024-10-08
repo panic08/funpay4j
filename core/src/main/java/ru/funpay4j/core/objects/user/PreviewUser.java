@@ -15,10 +15,10 @@
 package ru.funpay4j.core.objects.user;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * This object represents the FunPay PreviewUser
@@ -35,6 +35,7 @@ public class PreviewUser {
 
     private String username;
 
+    @Nullable
     private String avatarPhotoLink;
 
     private boolean isOnline;
