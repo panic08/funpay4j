@@ -28,7 +28,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.github.panic08:funpay4j:1.0.0'
+    implementation 'com.github.panic08:funpay4j:1.0.1'
 }
 ```
 
