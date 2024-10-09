@@ -45,7 +45,7 @@ dependencies {
 <dependency>
     <groupId>com.github.panic08</groupId>
     <artifactId>funpay4j</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
 </dependency>
 </dependencies>
 ```
@@ -53,10 +53,10 @@ dependencies {
 ## Requirements
 This project depends on
 - Java 8+
-- jsoup
-- okhttpclient
-- gson
-- projectlombok
+- Jsoup
+- OkHttpClient
+- Gson
+- ProjectLombok
 
 # Overview
 This Java library allows you to interact with the FunPay. Most of the functionality that is present on the site is here
