@@ -21,11 +21,13 @@ import ru.funpay4j.core.FunPayExecutor;
 import ru.funpay4j.core.commands.offer.GetOffer;
 import ru.funpay4j.core.commands.game.GetPromoGames;
 import ru.funpay4j.core.commands.lot.GetLot;
+import ru.funpay4j.core.commands.user.GetSellerReviews;
 import ru.funpay4j.core.commands.user.GetUser;
 import ru.funpay4j.core.objects.game.PromoGame;
 import ru.funpay4j.core.objects.lot.Lot;
 import ru.funpay4j.core.objects.offer.Offer;
 import ru.funpay4j.core.objects.user.Seller;
+import ru.funpay4j.core.objects.user.SellerReview;
 import ru.funpay4j.util.FunPayUserUtil;
 
 import java.io.IOException;
@@ -46,6 +48,7 @@ class FunPayExecutorTest {
     private static final String GET_USER_HTML_RESPONSE_PATH = "src/test/resources/html/client/getUserResponse.html";
     private static final String GET_LOT_HTML_RESPONSE_PATH = "src/test/resources/html/client/getLotResponse.html";
     private static final String GET_OFFER_HTML_RESPONSE_PATH = "src/test/resources/html/client/getOfferResponse.html";
+    private static final String GET_SELLER_REVIEWS_HTML_RESPONSE_PATH = "src/test/resources/html/client/getSellerReviewsResponse.html";
     private static final String GET_PROMO_GAMES_JSON_RESPONSE_PATH = "src/test/resources/json/client/getPromoGamesResponse.json";
 
     @BeforeEach
@@ -55,12 +58,12 @@ class FunPayExecutorTest {
     }
 
     @AfterEach
-    void tearDown() throws IOException {
+    void tearDown() throws Exception {
         this.mockWebServer.shutdown();
     }
 
     @Test
-    void testGetLot() throws IOException {
+    void testGetLot() throws Exception {
         String htmlContent = new String(Files.readAllBytes(Paths.get(GET_LOT_HTML_RESPONSE_PATH)));
 
         this.mockWebServer.enqueue(
@@ -77,7 +80,7 @@ class FunPayExecutorTest {
     }
 
     @Test
-    void testGetPromoGames() throws IOException {
+    void testGetPromoGames() throws Exception {
         String jsonContent = new String(Files.readAllBytes(Paths.get(GET_PROMO_GAMES_JSON_RESPONSE_PATH)));
 
         this.mockWebServer.enqueue(
@@ -94,7 +97,7 @@ class FunPayExecutorTest {
     }
 
     @Test
-    void testGetOffer() throws IOException {
+    void testGetOffer() throws Exception {
         String htmlContent = new String(Files.readAllBytes(Paths.get(GET_OFFER_HTML_RESPONSE_PATH)));
 
         this.mockWebServer.enqueue(
@@ -114,7 +117,7 @@ class FunPayExecutorTest {
     }
 
     @Test
-    void testGetUser() throws IOException {
+    void testGetUser() throws Exception {
         String htmlContent = new String(Files.readAllBytes(Paths.get(GET_USER_HTML_RESPONSE_PATH)));
 
         this.mockWebServer.enqueue(
@@ -131,5 +134,20 @@ class FunPayExecutorTest {
         assertFalse(result.getBadges().isEmpty());
         assertFalse(result.getLastReviews().isEmpty());
         assertFalse(result.getPreviewOffers().isEmpty());
+    }
+
+    @Test
+    void testGetSellerReviews() throws Exception {
+        String htmlContent = new String(Files.readAllBytes(Paths.get(GET_SELLER_REVIEWS_HTML_RESPONSE_PATH)));
+
+        this.mockWebServer.enqueue(
+                new MockResponse()
+                        .setBody(htmlContent)
+                        .setResponseCode(200)
+        );
+
+        List<SellerReview> result = funPayExecutor.execute(GetSellerReviews.builder().pages(1).userId(2).build());
+
+        assertFalse(result.isEmpty());
     }
 }

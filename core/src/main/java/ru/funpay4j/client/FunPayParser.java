@@ -17,6 +17,7 @@ package ru.funpay4j.client;
 import ru.funpay4j.core.objects.game.PromoGame;
 import ru.funpay4j.core.objects.lot.Lot;
 import ru.funpay4j.core.objects.offer.Offer;
+import ru.funpay4j.core.objects.user.SellerReview;
 import ru.funpay4j.core.objects.user.User;
 
 import java.util.List;
@@ -32,23 +33,23 @@ public interface FunPayParser {
     /**
      * Parse lot by lot id
      *
-     * @param lotId lotId by which Lot will be parsed
+     * @param lotId lotId by which lot will be parsed
      * @return lot
      */
     Lot parseLot(long lotId);
 
     /**
-     * Parse promoGames by query
+     * Parse promo games by query
      *
-     * @param query query by which PromoGames will be parsed
-     * @return promoGames
+     * @param query query by which promoGames will be parsed
+     * @return promo games
      */
     List<PromoGame> parsePromoGames(String query);
 
     /**
      * Parse offer by offer id
      *
-     * @param offerId offerId by which Offer will be parsed
+     * @param offerId offerId by which offer will be parsed
      * @return offer
      */
     Offer parseOffer(long offerId);
@@ -56,8 +57,18 @@ public interface FunPayParser {
     /**
      * Parse user by user id
      *
-     * @param userId userId by which User will be parsed
+     * @param userId userId by which user will be parsed
      * @return user
      */
     User parseUser(long userId);
+
+    /**
+     * Parse seller reviews by userId, pages and starsFilter
+     *
+     * @param userId userId by which seller reviews pages will be parsed
+     * @param pages number of pages indicating how many seller reviews will be parsed
+     * @param starsFilter number of stars by which the reviews will be sorted
+     * @return seller reviews
+     */
+    List<SellerReview> parseSellerReviews(long userId, int pages, Integer starsFilter);
 }

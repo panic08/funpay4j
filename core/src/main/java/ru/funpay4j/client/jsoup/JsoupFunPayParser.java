@@ -17,10 +17,12 @@ package ru.funpay4j.client.jsoup;
 import com.google.gson.JsonParser;
 import lombok.NonNull;
 import okhttp3.*;
+import org.jetbrains.annotations.Nullable;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import ru.funpay4j.client.FunPayParser;
+import ru.funpay4j.core.commands.user.GetSellerReviews;
 import ru.funpay4j.core.exceptions.FunPayApiException;
 import ru.funpay4j.core.objects.game.PromoGame;
 import ru.funpay4j.core.objects.game.PromoGameCounter;
@@ -160,7 +162,7 @@ public class JsoupFunPayParser implements FunPayParser {
                     .previewOffers(previewOffers)
                     .build();
         } catch (IOException e) {
-            throw new FunPayApiException(e.getMessage());
+            throw new FunPayApiException(e.getLocalizedMessage());
         }
     }
 
@@ -218,7 +220,7 @@ public class JsoupFunPayParser implements FunPayParser {
 
             return currentPromoGames;
         } catch (IOException e) {
-            throw new FunPayApiException(e.getMessage());
+            throw new FunPayApiException(e.getLocalizedMessage());
         }
     }
 
@@ -319,7 +321,7 @@ public class JsoupFunPayParser implements FunPayParser {
                             .build())
                     .build();
         } catch (IOException e) {
-            throw new FunPayApiException(e.getMessage());
+            throw new FunPayApiException(e.getLocalizedMessage());
         }
     }
 
@@ -418,33 +420,7 @@ public class JsoupFunPayParser implements FunPayParser {
 
                 List<SellerReview> lastReviews = new ArrayList<>();
 
-                List<Element> lastReviewElements = funPayDocument.getElementsByClass("review-container");
-
-                for (Element lastReviewElement : lastReviewElements) {
-                    Element reviewCompiledReviewElement = lastReviewElement.getElementsByClass("review-compiled-review").first();
-                    Element starsElement = reviewCompiledReviewElement.getElementsByClass("rating").first();
-
-                    String[] gameTitlePriceSplit = reviewCompiledReviewElement.getElementsByClass("review-item-detail").text()
-                            .split(", ");
-
-                    String lastReviewGameTitle = gameTitlePriceSplit[0];
-                    //Select a floating point number from a string like "from 1111.32 ₽"
-                    double lastReviewPrice = Double.parseDouble(gameTitlePriceSplit[1].replaceAll("[^0-9.]", "").split("\\s+")[0]);
-                    String lastReviewText = reviewCompiledReviewElement.getElementsByClass("review-item-text").text();
-                    int lastReviewStars = 0;
-
-                    //if the review has rating
-                    if (starsElement != null) {
-                        lastReviewStars = Integer.parseInt(starsElement.child(0).className().substring(6));
-                    }
-
-                    lastReviews.add(SellerReview.builder()
-                            .gameTitle(lastReviewGameTitle)
-                            .price(lastReviewPrice)
-                            .text(lastReviewText)
-                            .stars(lastReviewStars)
-                            .build());
-                }
+                extractReviewsFromReviewsHtml(funPayDocument, lastReviews);
 
                 return Seller.builder()
                         .id(userId)
@@ -470,7 +446,84 @@ public class JsoupFunPayParser implements FunPayParser {
             }
 
         } catch (IOException e) {
-            throw new FunPayApiException(e.getMessage());
+            throw new FunPayApiException(e.getLocalizedMessage());
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<SellerReview> parseSellerReviews(long userId, int pages, @Nullable Integer starsFilter) {
+        List<SellerReview> currentSellerReviews = new ArrayList<>();
+
+        String userIdFormData = String.valueOf(userId);
+        String starsFilterFormData = starsFilter == null ? "" : String.valueOf(starsFilter);
+        String continueArg = null;
+
+        for (int currentPageCount = 0; currentPageCount < pages; currentPageCount++) {
+            RequestBody requestBody = new MultipartBody.Builder()
+                    .setType(MultipartBody.FORM)
+                    .addFormDataPart("user_id", userIdFormData)
+                    .addFormDataPart("filter", starsFilterFormData)
+                    .addFormDataPart("continue", continueArg == null ? "" : continueArg)
+                    .build();
+
+            try (Response response = httpClient.newCall(new Request.Builder().post(requestBody).url(baseURL + "/users/reviews")
+                    .addHeader("x-requested-with", "XMLHttpRequest").build()).execute()) {
+                if (response.code() == 404) throw new FunPayApiException("User with userId " + userId + " does not exist");
+
+                Document reviewsHtml = Jsoup.parse(response.body().string());
+
+                extractReviewsFromReviewsHtml(reviewsHtml, currentSellerReviews);
+
+                Element dynTableFormElement = reviewsHtml.getElementsByClass("dyn-table-form")
+                        .first();
+
+                if (dynTableFormElement == null) break;
+
+                List<Element> inputElements = dynTableFormElement.select("input");
+
+                Element continueElement = inputElements.isEmpty() ? null : inputElements.get(1);
+
+                if (continueElement == null || continueElement.attr("value").isEmpty()) break;
+
+                continueArg = continueElement.attr("value");
+            } catch (IOException e) {
+                throw new FunPayApiException(e.getLocalizedMessage());
+            }
+        }
+
+        return currentSellerReviews;
+    }
+
+    private void extractReviewsFromReviewsHtml(Document reviewsHtml, List<SellerReview> currentSellerReviews) {
+        List<Element> reviewContainerElements = reviewsHtml.getElementsByClass("review-container");
+
+        for (Element lastReviewElement : reviewContainerElements) {
+            Element reviewCompiledReviewElement = lastReviewElement.getElementsByClass("review-compiled-review").first();
+            Element starsElement = reviewCompiledReviewElement.getElementsByClass("rating").first();
+
+            String[] gameTitlePriceSplit = reviewCompiledReviewElement.getElementsByClass("review-item-detail").text()
+                    .split(", ");
+
+            String lastReviewGameTitle = gameTitlePriceSplit[0];
+            //Select a floating point number from a string like "from 1111.32 ₽"
+            double lastReviewPrice = Double.parseDouble(gameTitlePriceSplit[1].replaceAll("[^0-9.]", "").split("\\s+")[0]);
+            String lastReviewText = reviewCompiledReviewElement.getElementsByClass("review-item-text").text();
+            int lastReviewStars = 0;
+
+            //if the review has rating
+            if (starsElement != null) {
+                lastReviewStars = Integer.parseInt(starsElement.child(0).className().substring(6));
+            }
+
+            currentSellerReviews.add(SellerReview.builder()
+                    .gameTitle(lastReviewGameTitle)
+                    .price(lastReviewPrice)
+                    .text(lastReviewText)
+                    .stars(lastReviewStars)
+                    .build());
         }
     }
 
