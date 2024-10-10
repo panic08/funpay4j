@@ -21,11 +21,13 @@ import ru.funpay4j.client.jsoup.JsoupFunPayParser;
 import ru.funpay4j.core.commands.offer.GetOffer;
 import ru.funpay4j.core.commands.game.GetPromoGames;
 import ru.funpay4j.core.commands.lot.GetLot;
+import ru.funpay4j.core.commands.user.GetSellerReviews;
 import ru.funpay4j.core.exceptions.FunPayApiException;
 import ru.funpay4j.core.commands.user.GetUser;
 import ru.funpay4j.core.objects.game.PromoGame;
 import ru.funpay4j.core.objects.lot.Lot;
 import ru.funpay4j.core.objects.offer.Offer;
+import ru.funpay4j.core.objects.user.SellerReview;
 import ru.funpay4j.core.objects.user.User;
 
 import java.net.Proxy;
@@ -111,5 +113,16 @@ public class FunPayExecutor {
      */
     public User execute(GetUser command) throws FunPayApiException {
         return funPayParser.parseUser(command.getUserId());
+    }
+
+    /**
+     * Execute to get seller reviews
+     *
+     * @param command command that will be executed
+     * @return seller reviews
+     * @throws FunPayApiException if the user with id does not exist/seller or other api-related exception
+     */
+    public List<SellerReview> execute(GetSellerReviews command) throws FunPayApiException {
+        return funPayParser.parseSellerReviews(command.getUserId(), command.getPages(), command.getStarsFilter());
     }
 }

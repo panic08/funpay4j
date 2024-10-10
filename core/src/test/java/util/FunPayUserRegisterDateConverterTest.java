@@ -39,9 +39,13 @@ import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+/**
+ * @author panic08
+ * @since 1.0.1
+ */
 class FunPayUserRegisterDateConverterTest {
     @Test
-    void testConvertRegisterDateStringToDateToday() throws ParseException {
+    void testConvertRegisterDateStringToDateToday() throws Exception {
         String input = "сегодня, 12:30";
         Date result = FunPayUserUtil.convertRegisterDateStringToDate(input);
 
@@ -57,7 +61,7 @@ class FunPayUserRegisterDateConverterTest {
     }
 
     @Test
-    void testConvertRegisterDateStringToDateYesterday() throws ParseException {
+    void testConvertRegisterDateStringToDateYesterday() throws Exception {
         String input = "вчера, 23:15";
         Date result = FunPayUserUtil.convertRegisterDateStringToDate(input);
 
@@ -74,7 +78,7 @@ class FunPayUserRegisterDateConverterTest {
     }
 
     @Test
-    void testConvertRegisterDateStringToDateWithoutYear() throws ParseException {
+    void testConvertRegisterDateStringToDateWithoutYear() throws Exception {
         String input = "5 октября, 19:45";
         Date result = FunPayUserUtil.convertRegisterDateStringToDate(input);
 
@@ -92,7 +96,7 @@ class FunPayUserRegisterDateConverterTest {
     }
 
     @Test
-    void testConvertRegisterDateStringToDateWithYear() throws ParseException {
+    void testConvertRegisterDateStringToDateWithYear() throws Exception {
         String input = "11 июля 2019, 15:52";
         Date result = FunPayUserUtil.convertRegisterDateStringToDate(input);
 

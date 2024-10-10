@@ -1,0 +1,151 @@
+<!--
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<div class="param-item mb10 mt35">
+    <h5 class="mb10">Рейтинг продавца</h5>
+    <div class="row row-20 row-inline">
+        <div class="col-lg-8 mb10">
+            <div class="rating-value text-nowrap inline-block-vat mr10"><span class="big">?</span>
+                <span class="inline-block-vat">из 5</span></div>
+            <div class="rating-full inline-block-vat">
+                <div class="rating-full-item5">
+                    <div class="rating-mini"></div>
+                    <div class="rating-progress">
+                        <div style="width: 100%;"></div>
+                    </div>
+                </div>
+                <div class="rating-full-item4">
+                    <div class="rating-mini"></div>
+                    <div class="rating-progress">
+                        <div style="width: 0%;"></div>
+                    </div>
+                </div>
+                <div class="rating-full-item3">
+                    <div class="rating-mini"></div>
+                    <div class="rating-progress">
+                        <div style="width: 0%;"></div>
+                    </div>
+                </div>
+                <div class="rating-full-item2">
+                    <div class="rating-mini"></div>
+                    <div class="rating-progress">
+                        <div style="width: 0%;"></div>
+                    </div>
+                </div>
+                <div class="rating-full-item1">
+                    <div class="rating-mini"></div>
+                    <div class="rating-progress">
+                        <div style="width: 0%;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-xs-12 mb10">
+            <div class="text-mini text-light mb5">2 отзыва за 5 лет</div>
+            <div class="dyn-table-filter reviews-filter">
+                <a class="btn btn-default btn-block dropdown-toggle" data-toggle="dropdown" role="button"
+                   aria-haspopup="true" aria-expanded="false"><span class="filter-text">Все отзывы</span>
+                    <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                    <li><a href="javascript:void(0)" data-value="">Все отзывы</a></li>
+                    <li><a href="javascript:void(0)"
+                           data-value="1"><span class="review-rating"><div class="rating"><div class="rating1"></div></div></span></a>
+                    </li>
+                    <li><a href="javascript:void(0)"
+                           data-value="2"><span class="review-rating"><div class="rating"><div class="rating2"></div></div></span></a>
+                    </li>
+                    <li><a href="javascript:void(0)"
+                           data-value="3"><span class="review-rating"><div class="rating"><div class="rating3"></div></div></span></a>
+                    </li>
+                    <li><a href="javascript:void(0)"
+                           data-value="4"><span class="review-rating"><div class="rating"><div class="rating4"></div></div></span></a>
+                    </li>
+                    <li><a href="javascript:void(0)"
+                           data-value="5"><span class="review-rating"><div class="rating"><div class="rating5"></div></div></span></a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="dyn-table">
+    <div class="dyn-table-body">
+        <div class="review-container">
+            <div class="review-item">
+                <div class="review-item-row">
+                    <div class="review-compiled-review">
+                        <div class="review-item-user">
+                            <div class="review-item-photo">
+                                <img src="/img/layout/avatar.png" alt="" />                                                            </div>
+                            <div class="review-item-rating pull-right hidden-xs">
+                                <div class="rating">
+                                    <div class="rating5"></div>
+                                </div>
+                            </div>
+                            <div class="review-item-date">Год назад</div>
+                            <div class="review-item-detail">Dota 2, 100 ₽</div>
+                            <div class="review-item-rating visible-xs">
+                                <div class="rating">
+                                    <div class="rating5"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="review-item-text">
+                            Быстро и без траблов. 🍉 </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="review-container">
+            <div class="review-item">
+                <div class="review-item-row">
+                    <div class="review-compiled-review">
+                        <div class="review-item-user">
+                            <div class="review-item-photo">
+                                <img src="/img/layout/avatar.png" alt="" />                                                            </div>
+                            <div class="review-item-rating pull-right hidden-xs">
+                                <div class="rating">
+                                    <div class="rating5"></div>
+                                </div>
+                            </div>
+                            <div class="review-item-date">2 года назад</div>
+                            <div class="review-item-detail">Dota 2, 300 ₽</div>
+                            <div class="review-item-rating visible-xs">
+                                <div class="rating">
+                                    <div class="rating5"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="review-item-text">
+                            Все хорошо </div>
+                    </div>
+                </div>
+                <div class="review-item-row">
+                    <div class="h5 mb5">Ответ продавца</div>
+                    <div class="review-item-answer review-compiled-reply">
+                        <div>Спасибо</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<form method="post" class="dyn-table-form" action="https://funpay.com/users/reviews">
+    <input type="hidden" name="user_id" value="1940073">
+    <input type="hidden" name="continue" value="">
+    <input type="hidden" name="filter" value="">
+</form>
+
+<button type="button" class="btn btn-default btn-block margin-top dyn-table-continue hidden">Показать ещё отзывы</button>
