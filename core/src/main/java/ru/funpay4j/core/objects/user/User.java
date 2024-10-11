@@ -45,5 +45,8 @@ public class User {
 
     private List<String> badges;
 
+    @Nullable
+    private Date lastSeenAt;
+
     private Date registeredAt;
 }
