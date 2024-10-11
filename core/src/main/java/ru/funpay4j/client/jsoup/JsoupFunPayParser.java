@@ -252,8 +252,9 @@ public class JsoupFunPayParser implements FunPayParser {
             String shortDescription = null;
             String detailedDescription = null;
 
-            //if there is no shortDescription
             if (paramItemElements.size() == 1) {
+                //if there is no shortDescription
+
                 detailedDescription = paramItemElements.get(0).selectFirst("div").text();
             } else if (paramItemElements.size() >= 2) {
                 shortDescription = paramItemElements.get(0).selectFirst("div").text();
@@ -265,8 +266,9 @@ public class JsoupFunPayParser implements FunPayParser {
             double price = Double.parseDouble(totalPriceValue.replaceAll("[^0-9.]", "").split("\\s+")[0]);
             List<String> attachmentLinks = new ArrayList<>();
 
-            //if the offer has attachments
             if (paramItemElements.size() > 2) {
+                //if the offer has attachments
+
                 for (Element attachmentElement : paramItemElements.get(2).getElementsByClass("attachments-item")) {
                     String attachmentLink = attachmentElement.selectFirst("a").attr("href");
 
@@ -343,6 +345,7 @@ public class JsoupFunPayParser implements FunPayParser {
 
             Element profileElement = funPayDocument.getElementsByClass("profile").first();
 
+            Element mediaUserStatusElement = profileElement.getElementsByClass("media-user-status").first();
             Element avatarPhotoElement = containerProfileHeader.getElementsByClass("avatar-photo").first();
             Element userBadgesElement = profileElement.getElementsByClass("user-badges").first();
 
@@ -374,12 +377,17 @@ public class JsoupFunPayParser implements FunPayParser {
                 registeredAt = new Date();
             }
 
-            String lastSeenAtStr = profileElement.getElementsByClass("media-user-status").first().text();
+            String lastSeenAtStr = mediaUserStatusElement == null ? "" : mediaUserStatusElement.text();
             Date lastSeenAt;
 
-            //if the user has not accessed the site after authorization
             if (lastSeenAtStr.contains("После регистрации на сайт не заходил")) {
+                //if the user has not accessed the site after authorization
+
                 lastSeenAt = new Date(registeredAt.getTime());
+            } else if (lastSeenAtStr.contains("Онлайн")) {
+                //if the user is online then the last time of login will be the current time
+
+                lastSeenAt = new Date();
             } else {
                 try {
                     lastSeenAt = FunPayUserUtil.convertLastSeenAtStringToDate(lastSeenAtStr);
@@ -390,8 +398,9 @@ public class JsoupFunPayParser implements FunPayParser {
 
             Element sellerElement = funPayDocument.getElementsByClass("param-item mb10").first();
 
-            //if user is seller too
             if (sellerElement != null) {
+                //if user is seller too
+
                 String ratingStr = sellerElement.getElementsByClass("big").first().text();
 
                 double rating = ratingStr.equals("?") ? 0 : Double.parseDouble(ratingStr);
@@ -528,8 +537,9 @@ public class JsoupFunPayParser implements FunPayParser {
             String lastReviewText = reviewCompiledReviewElement.getElementsByClass("review-item-text").text();
             int lastReviewStars = 0;
 
-            //if the review has rating
             if (starsElement != null) {
+                //if the review has rating
+
                 lastReviewStars = Integer.parseInt(starsElement.child(0).className().substring(6));
             }
 

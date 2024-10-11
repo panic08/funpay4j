@@ -86,8 +86,9 @@ public class FunPayUserUtil {
             if (registerDate.contains(",")) {
                 Calendar calendar = Calendar.getInstance();
 
-                //if the row contains a year
                 if (registerDate.split(", ")[0].matches(".*\\d{4}.*")) {
+                    //if the row contains a year
+
                     SimpleDateFormat dateFormatWithYear = new SimpleDateFormat("d MMMM yyyy, HH:mm", Locale.forLanguageTag("ru"));
 
                     Date parsedDate = dateFormatWithYear.parse(registerDate);
@@ -155,8 +156,9 @@ public class FunPayUserUtil {
         } else if (lastSeenAt.matches(".*\\d{1,2} .* в .*")) {
             Calendar calendar = Calendar.getInstance();
 
-            //if the row contains a year
             if (lastSeenAt.matches(".*\\d{4}.*")) {
+                //if the row contains a year
+
                 SimpleDateFormat dateFormatWithYear = new SimpleDateFormat("Был d MMMM yyyy 'в' HH:mm", Locale.forLanguageTag("ru"));
 
                 Date parsedDate = dateFormatWithYear.parse(lastSeenAt);
