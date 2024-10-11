@@ -67,7 +67,7 @@ public interface FunPayParser {
      *
      * @param userId userId by which seller reviews pages will be parsed
      * @param pages number of pages indicating how many seller reviews will be parsed
-     * @param starsFilter number of stars by which the reviews will be sorted
+     * @param starsFilter number of stars by which the reviews will be parsed
      * @return seller reviews
      */
     List<SellerReview> parseSellerReviews(long userId, int pages, Integer starsFilter);

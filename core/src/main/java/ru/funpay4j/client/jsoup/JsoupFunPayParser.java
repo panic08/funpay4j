@@ -364,7 +364,6 @@ public class JsoupFunPayParser implements FunPayParser {
             }
 
             String registeredAtStr = profileElement.getElementsByClass("text-nowrap").first().text();
-
             Date registeredAt;
 
             try {
@@ -373,6 +372,20 @@ public class JsoupFunPayParser implements FunPayParser {
                 //might be the case if the account was created a few seconds/minutes/hours ago
                 //such cases are not taken into account yet, so the logical thing to do is to cast a new Date
                 registeredAt = new Date();
+            }
+
+            String lastSeenAtStr = profileElement.getElementsByClass("media-user-status").first().text();
+            Date lastSeenAt;
+
+            //if the user has not accessed the site after authorization
+            if (lastSeenAtStr.contains("После регистрации на сайт не заходил")) {
+                lastSeenAt = new Date(registeredAt.getTime());
+            } else {
+                try {
+                    lastSeenAt = FunPayUserUtil.convertLastSeenAtStringToDate(lastSeenAtStr);
+                } catch (ParseException e) {
+                    lastSeenAt = null;
+                }
             }
 
             Element sellerElement = funPayDocument.getElementsByClass("param-item mb10").first();
@@ -428,6 +441,7 @@ public class JsoupFunPayParser implements FunPayParser {
                         .avatarPhotoLink(avatarPhotoLink)
                         .isOnline(isOnline)
                         .badges(badges)
+                        .lastSeenAt(lastSeenAt)
                         .registeredAt(registeredAt)
                         .rating(rating)
                         .reviewCount(reviewCount)
@@ -441,6 +455,7 @@ public class JsoupFunPayParser implements FunPayParser {
                         .avatarPhotoLink(avatarPhotoLink)
                         .isOnline(isOnline)
                         .badges(badges)
+                        .lastSeenAt(lastSeenAt)
                         .registeredAt(registeredAt)
                         .build();
             }
