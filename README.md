@@ -28,7 +28,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.github.panic08:funpay4j:1.0.1'
+    implementation 'com.github.panic08:funpay4j:1.0.2'
 }
 ```
 
@@ -45,7 +45,7 @@ dependencies {
 <dependency>
     <groupId>com.github.panic08</groupId>
     <artifactId>funpay4j</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
 </dependency>
 </dependencies>
 ```
@@ -85,10 +85,16 @@ Basic seller's receipt
 ```java
 FunPayExecutor funPayExecutor = ...
 
-User user = funPayExecutor.execute(GetUser.builder().userId(1).build());
+User user = null;
+
+try {
+    user = funPayExecutor.execute(GetUser.builder().userId(1).build());
+} catch (FunPayApiException e) {
+    throw new RuntimeException(e);
+}
 
 Seller seller = null;
-        
+
 if (user instanceof Seller) {
     seller = (Seller) user;
 }

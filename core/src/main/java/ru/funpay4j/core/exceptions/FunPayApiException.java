@@ -20,7 +20,7 @@ package ru.funpay4j.core.exceptions;
  * @author panic08
  * @since 1.0.0
  */
-public class FunPayApiException extends RuntimeException {
+public class FunPayApiException extends Exception {
     public FunPayApiException(String message) {
         super(message);
     }

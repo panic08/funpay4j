@@ -22,7 +22,6 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import ru.funpay4j.client.FunPayParser;
-import ru.funpay4j.core.commands.user.GetSellerReviews;
 import ru.funpay4j.core.exceptions.FunPayApiException;
 import ru.funpay4j.core.objects.game.PromoGame;
 import ru.funpay4j.core.objects.game.PromoGameCounter;
@@ -62,7 +61,7 @@ public class JsoupFunPayParser implements FunPayParser {
      * {@inheritDoc}
      */
     @Override
-    public Lot parseLot(long lotId) {
+    public Lot parseLot(long lotId) throws FunPayApiException {
         try (Response funPayHtmlPage = httpClient.newCall(new Request.Builder().get().url(baseURL + "/lots/" + lotId + "/").build()).execute()) {
             String funPayHtmlPageBody = funPayHtmlPage.body().string();
 
@@ -170,7 +169,7 @@ public class JsoupFunPayParser implements FunPayParser {
      * {@inheritDoc}
      */
     @Override
-    public List<PromoGame> parsePromoGames(@NonNull String query) {
+    public List<PromoGame> parsePromoGames(@NonNull String query) throws FunPayApiException {
         List<PromoGame> currentPromoGames = new ArrayList<>();
 
         RequestBody requestBody = new MultipartBody.Builder()
@@ -228,7 +227,7 @@ public class JsoupFunPayParser implements FunPayParser {
      * {@inheritDoc}
      */
     @Override
-    public Offer parseOffer(long offerId) {
+    public Offer parseOffer(long offerId) throws FunPayApiException {
         try (Response funPayHtmlPage = httpClient.newCall(new Request.Builder().get().url(baseURL + "/lots/offer?id=" + offerId).build()).execute()) {
             String funPayHtmlPageBody = funPayHtmlPage.body().string();
 
@@ -331,7 +330,7 @@ public class JsoupFunPayParser implements FunPayParser {
      * {@inheritDoc}
      */
     @Override
-    public User parseUser(long userId) {
+    public User parseUser(long userId) throws FunPayApiException {
         try (Response funPayHtmlPage = httpClient.newCall(new Request.Builder().get().url(baseURL + "/users/" + userId + "/").build()).execute()) {
             String funPayHtmlPageBody = funPayHtmlPage.body().string();
 
@@ -478,7 +477,7 @@ public class JsoupFunPayParser implements FunPayParser {
      * {@inheritDoc}
      */
     @Override
-    public List<SellerReview> parseSellerReviews(long userId, int pages, @Nullable Integer starsFilter) {
+    public List<SellerReview> parseSellerReviews(long userId, int pages, @Nullable Integer starsFilter) throws FunPayApiException {
         List<SellerReview> currentSellerReviews = new ArrayList<>();
 
         String userIdFormData = String.valueOf(userId);

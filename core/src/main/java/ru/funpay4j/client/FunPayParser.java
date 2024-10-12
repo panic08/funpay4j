@@ -14,6 +14,7 @@
 
 package ru.funpay4j.client;
 
+import ru.funpay4j.core.exceptions.FunPayApiException;
 import ru.funpay4j.core.objects.game.PromoGame;
 import ru.funpay4j.core.objects.lot.Lot;
 import ru.funpay4j.core.objects.offer.Offer;
@@ -36,7 +37,7 @@ public interface FunPayParser {
      * @param lotId lotId by which lot will be parsed
      * @return lot
      */
-    Lot parseLot(long lotId);
+    Lot parseLot(long lotId) throws FunPayApiException;
 
     /**
      * Parse promo games by query
@@ -44,7 +45,7 @@ public interface FunPayParser {
      * @param query query by which promoGames will be parsed
      * @return promo games
      */
-    List<PromoGame> parsePromoGames(String query);
+    List<PromoGame> parsePromoGames(String query) throws FunPayApiException;
 
     /**
      * Parse offer by offer id
@@ -52,7 +53,7 @@ public interface FunPayParser {
      * @param offerId offerId by which offer will be parsed
      * @return offer
      */
-    Offer parseOffer(long offerId);
+    Offer parseOffer(long offerId) throws FunPayApiException;
 
     /**
      * Parse user by user id
@@ -60,7 +61,7 @@ public interface FunPayParser {
      * @param userId userId by which user will be parsed
      * @return user
      */
-    User parseUser(long userId);
+    User parseUser(long userId) throws FunPayApiException;
 
     /**
      * Parse seller reviews by userId, pages and starsFilter
@@ -70,5 +71,5 @@ public interface FunPayParser {
      * @param starsFilter number of stars by which the reviews will be parsed
      * @return seller reviews
      */
-    List<SellerReview> parseSellerReviews(long userId, int pages, Integer starsFilter);
+    List<SellerReview> parseSellerReviews(long userId, int pages, Integer starsFilter) throws FunPayApiException;
 }
