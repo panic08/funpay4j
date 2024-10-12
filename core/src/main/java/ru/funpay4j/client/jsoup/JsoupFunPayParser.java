@@ -495,7 +495,7 @@ public class JsoupFunPayParser implements FunPayParser {
 
             try (Response response = httpClient.newCall(new Request.Builder().post(requestBody).url(baseURL + "/users/reviews")
                     .addHeader("x-requested-with", "XMLHttpRequest").build()).execute()) {
-                if (response.code() == 404) throw new FunPayApiException("User with userId " + userId + " does not exist");
+                if (response.code() == 404) throw new FunPayApiException("User with userId " + userId + " does not exist/seller");
 
                 Document reviewsHtml = Jsoup.parse(response.body().string());
 
@@ -533,7 +533,7 @@ public class JsoupFunPayParser implements FunPayParser {
 
             String lastReviewGameTitle = gameTitlePriceSplit[0];
             //Select a floating point number from a string like "from 1111.32 ₽"
-            double lastReviewPrice = Double.parseDouble(gameTitlePriceSplit[1].replaceAll("[^0-9.]", "").split("\\s+")[0]);
+            double lastReviewPrice = Double.parseDouble(gameTitlePriceSplit[gameTitlePriceSplit.length - 1].replaceAll("[^0-9.]", "").split("\\s+")[0]);
             String lastReviewText = reviewCompiledReviewElement.getElementsByClass("review-item-text").text();
             int lastReviewStars = 0;
 
