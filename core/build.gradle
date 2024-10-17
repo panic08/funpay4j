@@ -2,13 +2,6 @@ plugins {
     id 'java'
 }
 
-group = 'ru.funpay4j'
-version = '1.0.0'
-
-repositories {
-    mavenCentral()
-}
-
 dependencies {
     implementation "com.squareup.okhttp3:okhttp:${rootProject.ext.okhttpVersion}"
     testImplementation "com.squareup.okhttp3:mockwebserver:${rootProject.ext.okhttpVersion}"
@@ -18,14 +11,6 @@ dependencies {
     annotationProcessor "org.projectlombok:lombok:${rootProject.ext.lombokVersion}"
     testImplementation platform('org.junit:junit-bom:5.9.1')
     testImplementation 'org.junit.jupiter:junit-jupiter'
-}
-
-tasks.withType(Test).configureEach {
-    systemProperty 'file.encoding', 'UTF-8'
-}
-
-tasks.withType(JavaCompile).configureEach {
-    options.encoding = 'UTF-8'
 }
 
 test {
