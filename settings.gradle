@@ -3,7 +3,7 @@ import org.gradle.util.GradleVersion
 // Minimum Gradle version for build
 def minGradleVersion = GradleVersion.version("2.0")
 
-rootProject.name = 'funpay4j'
+rootProject.name = 'funpay4j-parent'
 
 if (GradleVersion.current() < minGradleVersion) {
     throw new GradleScriptException("funpay4j build requires Gradle ${minGradleVersion.version} or later", null)
