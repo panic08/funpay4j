@@ -23,6 +23,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import ru.funpay4j.client.FunPayParser;
 import ru.funpay4j.core.exceptions.FunPayApiException;
+import ru.funpay4j.core.objects.CsrfTokenAndPHPSESSID;
 import ru.funpay4j.core.objects.game.PromoGame;
 import ru.funpay4j.core.objects.game.PromoGameCounter;
 import ru.funpay4j.core.objects.lot.Lot;
@@ -62,8 +63,8 @@ public class JsoupFunPayParser implements FunPayParser {
      */
     @Override
     public Lot parseLot(long lotId) throws FunPayApiException {
-        try (Response funPayHtmlPage = httpClient.newCall(new Request.Builder().get().url(baseURL + "/lots/" + lotId + "/").build()).execute()) {
-            String funPayHtmlPageBody = funPayHtmlPage.body().string();
+        try (Response funPayHtmlResponse = httpClient.newCall(new Request.Builder().get().url(baseURL + "/lots/" + lotId + "/").build()).execute()) {
+            String funPayHtmlPageBody = funPayHtmlResponse.body().string();
 
             Document funPayDocument = Jsoup.parse(funPayHtmlPageBody);
 
@@ -228,8 +229,8 @@ public class JsoupFunPayParser implements FunPayParser {
      */
     @Override
     public Offer parseOffer(long offerId) throws FunPayApiException {
-        try (Response funPayHtmlPage = httpClient.newCall(new Request.Builder().get().url(baseURL + "/lots/offer?id=" + offerId).build()).execute()) {
-            String funPayHtmlPageBody = funPayHtmlPage.body().string();
+        try (Response funPayHtmlResponse = httpClient.newCall(new Request.Builder().get().url(baseURL + "/lots/offer?id=" + offerId).build()).execute()) {
+            String funPayHtmlPageBody = funPayHtmlResponse.body().string();
 
             Document funPayDocument = Jsoup.parse(funPayHtmlPageBody);
 
@@ -331,8 +332,8 @@ public class JsoupFunPayParser implements FunPayParser {
      */
     @Override
     public User parseUser(long userId) throws FunPayApiException {
-        try (Response funPayHtmlPage = httpClient.newCall(new Request.Builder().get().url(baseURL + "/users/" + userId + "/").build()).execute()) {
-            String funPayHtmlPageBody = funPayHtmlPage.body().string();
+        try (Response funPayHtmlResponse = httpClient.newCall(new Request.Builder().get().url(baseURL + "/users/" + userId + "/").build()).execute()) {
+            String funPayHtmlPageBody = funPayHtmlResponse.body().string();
 
             Document funPayDocument = Jsoup.parse(funPayHtmlPageBody);
 
@@ -492,11 +493,11 @@ public class JsoupFunPayParser implements FunPayParser {
                     .addFormDataPart("continue", continueArg == null ? "" : continueArg)
                     .build();
 
-            try (Response response = httpClient.newCall(new Request.Builder().post(requestBody).url(baseURL + "/users/reviews")
+            try (Response funPayHtmlResponse = httpClient.newCall(new Request.Builder().post(requestBody).url(baseURL + "/users/reviews")
                     .addHeader("x-requested-with", "XMLHttpRequest").build()).execute()) {
-                if (response.code() == 404) throw new FunPayApiException("User with userId " + userId + " does not exist/seller");
+                if (funPayHtmlResponse.code() == 404) throw new FunPayApiException("User with userId " + userId + " does not exist/seller");
 
-                Document reviewsHtml = Jsoup.parse(response.body().string());
+                Document reviewsHtml = Jsoup.parse(funPayHtmlResponse.body().string());
 
                 extractReviewsFromReviewsHtml(reviewsHtml, currentSellerReviews);
 
@@ -518,6 +519,34 @@ public class JsoupFunPayParser implements FunPayParser {
         }
 
         return currentSellerReviews;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public CsrfTokenAndPHPSESSID parseCsrfTokenAndPHPSESSID(@NonNull String goldenKey) throws FunPayApiException {
+        //We send a request to /unknown URL that doesn't exist to get a page where it will be reported that the page doesn't exist.
+        // This is necessary because such a page is the smallest size
+        try (Response funPayHtmlResponse = httpClient.newCall(new Request.Builder().get().url(baseURL + "/unknown/")
+                .addHeader("Cookie", "golden_key=" + goldenKey).build()).execute()) {
+            String funPayHtmlPageBody = funPayHtmlResponse.body().string();
+
+            Document funPayDocument = Jsoup.parse(funPayHtmlPageBody);
+
+            String dataAppData = funPayDocument.getElementsByTag("body").attr("data-app-data");
+
+            String csrfToken = JsonParser.parseString(dataAppData).getAsJsonObject().get("csrf-token").getAsString();
+            //Use this regex to get the value of the PHPSESSID key from the Set-Cookie header
+            String PHPSESSID = funPayHtmlResponse.header("Set-Cookie").replaceAll(".*PHPSESSID=([^;]*).*", "$1");
+
+            return CsrfTokenAndPHPSESSID.builder()
+                    .csrfToken(csrfToken)
+                    .PHPSESSID(PHPSESSID)
+                    .build();
+        } catch (IOException e) {
+            throw new FunPayApiException(e.getLocalizedMessage());
+        }
     }
 
     private void extractReviewsFromReviewsHtml(Document reviewsHtml, List<SellerReview> currentSellerReviews) {
@@ -551,8 +580,8 @@ public class JsoupFunPayParser implements FunPayParser {
         }
     }
 
-    private boolean isNonExistentFunPayPage(Document funPayHtmlPageBody) {
-        Element pageContentFullElement = funPayHtmlPageBody.getElementsByClass("page-content-full").first();
+    private boolean isNonExistentFunPayPage(Document funPayDocument) {
+        Element pageContentFullElement = funPayDocument.getElementsByClass("page-content-full").first();
 
         if (pageContentFullElement == null) {
             return false;

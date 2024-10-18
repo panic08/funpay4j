@@ -12,14 +12,15 @@
  * limitations under the License.
  */
 
-package ru.funpay4j.core;
+package ru.funpay4j.core.objects;
 
-/**
- * Base class for get FunPay base url
- *
- * @author panic08
- * @since 1.0.0
- */
-public final class FunPayURL {
-    public static final String BASE_URL = "https://funpay.com";
+import lombok.Builder;
+import lombok.Data;
+
+@Data
+@Builder
+public class CsrfTokenAndPHPSESSID {
+    private String csrfToken;
+
+    private String PHPSESSID;
 }
