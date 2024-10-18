@@ -87,7 +87,7 @@ public class FunPayExecutor {
      *
      * @param command command that will be executed
      * @return promoGames
-     * @throws FunPayApiException if api-related exception
+     * @throws FunPayApiException if other api-related exception
      */
     public List<PromoGame> execute(GetPromoGames command) throws FunPayApiException {
         return funPayParser.parsePromoGames(command.getQuery());
@@ -116,10 +116,10 @@ public class FunPayExecutor {
     }
 
     /**
-     * Execute to get seller reviews
+     * Execute to get sellerReviews
      *
      * @param command command that will be executed
-     * @return seller reviews
+     * @return sellerReviews
      * @throws FunPayApiException if the user with id does not exist/seller or other api-related exception
      */
     public List<SellerReview> execute(GetSellerReviews command) throws FunPayApiException {

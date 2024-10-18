@@ -28,9 +28,7 @@ import ru.funpay4j.core.objects.lot.Lot;
 import ru.funpay4j.core.objects.offer.Offer;
 import ru.funpay4j.core.objects.user.Seller;
 import ru.funpay4j.core.objects.user.SellerReview;
-import ru.funpay4j.util.FunPayUserUtil;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
@@ -43,6 +41,7 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class FunPayExecutorTest {
     private FunPayExecutor funPayExecutor;
+
     private MockWebServer mockWebServer;
 
     private static final String GET_USER_HTML_RESPONSE_PATH = "src/test/resources/html/client/getUserResponse.html";
@@ -59,14 +58,14 @@ class FunPayExecutorTest {
 
     @AfterEach
     void tearDown() throws Exception {
-        this.mockWebServer.shutdown();
+        mockWebServer.shutdown();
     }
 
     @Test
     void testGetLot() throws Exception {
         String htmlContent = new String(Files.readAllBytes(Paths.get(GET_LOT_HTML_RESPONSE_PATH)));
 
-        this.mockWebServer.enqueue(
+        mockWebServer.enqueue(
                 new MockResponse()
                         .setBody(htmlContent)
                         .setResponseCode(200)
@@ -83,7 +82,7 @@ class FunPayExecutorTest {
     void testGetPromoGames() throws Exception {
         String jsonContent = new String(Files.readAllBytes(Paths.get(GET_PROMO_GAMES_JSON_RESPONSE_PATH)));
 
-        this.mockWebServer.enqueue(
+        mockWebServer.enqueue(
                 new MockResponse()
                         .setBody(jsonContent)
                         .setResponseCode(200)
@@ -100,7 +99,7 @@ class FunPayExecutorTest {
     void testGetOffer() throws Exception {
         String htmlContent = new String(Files.readAllBytes(Paths.get(GET_OFFER_HTML_RESPONSE_PATH)));
 
-        this.mockWebServer.enqueue(
+        mockWebServer.enqueue(
                 new MockResponse()
                         .setBody(htmlContent)
                         .setResponseCode(200)
@@ -120,7 +119,7 @@ class FunPayExecutorTest {
     void testGetUser() throws Exception {
         String htmlContent = new String(Files.readAllBytes(Paths.get(GET_USER_HTML_RESPONSE_PATH)));
 
-        this.mockWebServer.enqueue(
+        mockWebServer.enqueue(
                 new MockResponse()
                         .setBody(htmlContent)
                         .setResponseCode(200)
@@ -140,7 +139,7 @@ class FunPayExecutorTest {
     void testGetSellerReviews() throws Exception {
         String htmlContent = new String(Files.readAllBytes(Paths.get(GET_SELLER_REVIEWS_HTML_RESPONSE_PATH)));
 
-        this.mockWebServer.enqueue(
+        mockWebServer.enqueue(
                 new MockResponse()
                         .setBody(htmlContent)
                         .setResponseCode(200)
