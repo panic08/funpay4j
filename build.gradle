@@ -10,5 +10,14 @@ allprojects {
         mavenCentral()
     }
 
+    tasks.withType(Test).configureEach {
+        systemProperty 'file.encoding', 'UTF-8'
+    }
+
+    tasks.withType(JavaCompile).configureEach {
+        options.encoding = 'UTF-8'
+    }
+
     group = 'ru.funpay4j'
+    version = '1.0.3'
 }
