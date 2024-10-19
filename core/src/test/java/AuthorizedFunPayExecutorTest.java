@@ -18,6 +18,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.funpay4j.core.AuthorizedFunPayExecutor;
+import ru.funpay4j.core.commands.user.UpdateAvatar;
+import ru.funpay4j.core.exceptions.FunPayApiException;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -34,6 +36,7 @@ class AuthorizedFunPayExecutorTest {
     private MockWebServer mockWebServer;
 
     private static final String GET_CSRF_TOKEN_AND_PHPSESSID_HTML_RESPONSE_PATH = "src/test/resources/html/client/getCsrfTokenAndPHPSESSIDResponse.html";
+    private static final String UPDATE_AVATAR_IMG_PATH = "src/test/resources/img/client/updateAvatar.jpeg";
 
     @BeforeEach
     void setUp() throws Exception {
@@ -45,13 +48,12 @@ class AuthorizedFunPayExecutorTest {
         mockWebServer.enqueue(
                 new MockResponse()
                         .setBody(htmlContent)
+                        .setHeader("Set-Cookie", "PHPSESSID=old;")
                         .setResponseCode(200)
         );
 
-        this.funPayExecutor = new AuthorizedFunPayExecutor(this.mockWebServer.url("/").toString());
-
+        this.funPayExecutor = new AuthorizedFunPayExecutor("example", this.mockWebServer.url("/").toString());
         this.funPayExecutor.setCsrfToken("old");
-        this.funPayExecutor.setPHPSESSID("old");
     }
 
     @AfterEach
@@ -64,6 +66,15 @@ class AuthorizedFunPayExecutorTest {
         String oldCsrfToken = funPayExecutor.getCsrfToken();
         String oldPHPSESSID = funPayExecutor.getPHPSESSID();
 
+        String htmlContent = new String(Files.readAllBytes(Paths.get(GET_CSRF_TOKEN_AND_PHPSESSID_HTML_RESPONSE_PATH)));
+
+        mockWebServer.enqueue(
+                new MockResponse()
+                        .setBody(htmlContent)
+                        .setHeader("Set-Cookie", "PHPSESSID=new;")
+                        .setResponseCode(200)
+        );
+
         funPayExecutor.updateCsrfTokenAndPHPSESSID();
 
         assertNotNull(funPayExecutor.getCsrfToken());
@@ -71,5 +82,18 @@ class AuthorizedFunPayExecutorTest {
 
         assertNotEquals(oldCsrfToken, funPayExecutor.getCsrfToken());
         assertNotEquals(oldPHPSESSID, funPayExecutor.getPHPSESSID());
+    }
+
+    @Test
+    void testUpdateAvatarIncorrectGoldenKeyException() throws Exception {
+        mockWebServer.enqueue(
+                new MockResponse()
+                        .setResponseCode(403)
+        );
+
+        assertThrows(FunPayApiException.class, () -> {
+            funPayExecutor.execute(UpdateAvatar.builder().newAvatar(Files.readAllBytes(Paths.get(UPDATE_AVATAR_IMG_PATH))).build());
+        });
+
     }
 }

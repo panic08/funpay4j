@@ -17,6 +17,7 @@ package ru.funpay4j.core;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
+import ru.funpay4j.core.commands.user.UpdateAvatar;
 import ru.funpay4j.core.exceptions.FunPayApiException;
 import ru.funpay4j.core.objects.CsrfTokenAndPHPSESSID;
 
@@ -79,6 +80,16 @@ public class AuthorizedFunPayExecutor extends FunPayExecutor {
         } catch (FunPayApiException e) {
             throw new RuntimeException(e.getCause());
         }
+    }
+
+    /**
+     * Execute to update avatar
+     *
+     * @param command command that will be executed
+     * @throws FunPayApiException if the goldenKey is incorrect or other api-related exception
+     */
+    public void execute(UpdateAvatar command) throws FunPayApiException {
+        funPayClient.updateAvatar(goldenKey, command.getNewAvatar());
     }
 
     public void updateCsrfTokenAndPHPSESSID() throws FunPayApiException {

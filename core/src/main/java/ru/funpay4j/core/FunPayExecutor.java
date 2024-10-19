@@ -16,8 +16,10 @@ package ru.funpay4j.core;
 
 import lombok.NonNull;
 import okhttp3.OkHttpClient;
+import ru.funpay4j.client.FunPayClient;
 import ru.funpay4j.client.FunPayParser;
 import ru.funpay4j.client.jsoup.JsoupFunPayParser;
+import ru.funpay4j.client.okhttp.OkHttpFunPayClient;
 import ru.funpay4j.core.commands.offer.GetOffer;
 import ru.funpay4j.core.commands.game.GetPromoGames;
 import ru.funpay4j.core.commands.lot.GetLot;
@@ -43,10 +45,14 @@ public class FunPayExecutor {
     @NonNull
     protected final FunPayParser funPayParser;
 
+    @NonNull
+    protected final FunPayClient funPayClient;
+
     public FunPayExecutor() {
         OkHttpClient httpClient = new OkHttpClient();
 
         this.funPayParser = new JsoupFunPayParser(httpClient, FunPayURL.BASE_URL);
+        this.funPayClient = new OkHttpFunPayClient(httpClient, FunPayURL.BASE_URL);
     }
 
     public FunPayExecutor(@NonNull String baseURL, @NonNull Proxy proxy) {
@@ -55,12 +61,14 @@ public class FunPayExecutor {
                 .build();
 
         this.funPayParser = new JsoupFunPayParser(httpClient, baseURL);
+        this.funPayClient = new OkHttpFunPayClient(httpClient, baseURL);
     }
 
     public FunPayExecutor(@NonNull String baseURL) {
         OkHttpClient httpClient = new OkHttpClient();
 
         this.funPayParser = new JsoupFunPayParser(httpClient, baseURL);
+        this.funPayClient = new OkHttpFunPayClient(httpClient, baseURL);
     }
 
     public FunPayExecutor(@NonNull Proxy proxy) {
@@ -69,6 +77,7 @@ public class FunPayExecutor {
                 .build();
 
         this.funPayParser = new JsoupFunPayParser(httpClient, FunPayURL.BASE_URL);
+        this.funPayClient = new OkHttpFunPayClient(httpClient, FunPayURL.BASE_URL);
     }
 
     /**
