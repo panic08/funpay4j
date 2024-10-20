@@ -26,10 +26,9 @@
  * limitations under the License.
  */
 
-package util;
+package ru.funpay4j.util;
 
 import org.junit.jupiter.api.Test;
-import ru.funpay4j.util.FunPayUserUtil;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -40,13 +39,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author panic08
- * @since 1.0.2
+ * @since 1.0.1
  */
-class FunPayUserUtilLastSeenAtConverterTest {
+class FunPayUserUtilRegisterDateConverterTest {
     @Test
-    void testConvertLastSeenAtStringToDateToday() throws Exception {
-        String input = "Был сегодня в 12:30 (2 часа назад)";
-        Date result = FunPayUserUtil.convertLastSeenAtStringToDate(input);
+    void testConvertRegisterDateStringToDateToday() throws Exception {
+        String input = "сегодня, 12:30";
+        Date result = FunPayUserUtil.convertRegisterDateStringToDate(input);
 
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.HOUR_OF_DAY, 12);
@@ -60,9 +59,9 @@ class FunPayUserUtilLastSeenAtConverterTest {
     }
 
     @Test
-    void testConvertLastSeenAtStringToDateYesterday() throws Exception {
-        String input = "Был вчера в 23:15 (1 день назад)";
-        Date result = FunPayUserUtil.convertLastSeenAtStringToDate(input);
+    void testConvertRegisterDateStringToDateYesterday() throws Exception {
+        String input = "вчера, 23:15";
+        Date result = FunPayUserUtil.convertRegisterDateStringToDate(input);
 
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DAY_OF_MONTH, -1);
@@ -77,12 +76,11 @@ class FunPayUserUtilLastSeenAtConverterTest {
     }
 
     @Test
-    void testConvertLastSeenAtStringToDateWithoutYear() throws Exception {
-        String input = "Был 5 октября в 19:45 (1 неделя назад)";
-        Date result = FunPayUserUtil.convertLastSeenAtStringToDate(input);
+    void testConvertRegisterDateStringToDateWithoutYear() throws Exception {
+        String input = "5 октября, 19:45";
+        Date result = FunPayUserUtil.convertRegisterDateStringToDate(input);
 
         Calendar calendar = Calendar.getInstance();
-
         calendar.set(Calendar.MONTH, Calendar.OCTOBER);
         calendar.set(Calendar.DAY_OF_MONTH, 5);
         calendar.set(Calendar.HOUR_OF_DAY, 19);
@@ -96,12 +94,12 @@ class FunPayUserUtilLastSeenAtConverterTest {
     }
 
     @Test
-    void testConvertLastSeenAtStringToDateWithYear() throws Exception {
-        String input = "Был 11 июля 2019 в 15:52 (5 лет назад)";
-        Date result = FunPayUserUtil.convertLastSeenAtStringToDate(input);
+    void testConvertRegisterDateStringToDateWithYear() throws Exception {
+        String input = "11 июля 2019, 15:52";
+        Date result = FunPayUserUtil.convertRegisterDateStringToDate(input);
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat("d MMMM yyyy 'в' HH:mm", Locale.forLanguageTag("ru"));
-        Date expectedDate = dateFormat.parse("11 июля 2019 в 15:52");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("d MMMM yyyy, HH:mm", Locale.forLanguageTag("ru"));
+        Date expectedDate = dateFormat.parse("11 июля 2019, 15:52");
 
         assertEquals(expectedDate, result);
     }
