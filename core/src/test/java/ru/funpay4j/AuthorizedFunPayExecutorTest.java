@@ -12,6 +12,8 @@
  * limitations under the License.
  */
 
+package ru.funpay4j;
+
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.junit.jupiter.api.AfterEach;
