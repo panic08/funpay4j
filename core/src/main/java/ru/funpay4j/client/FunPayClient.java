@@ -25,11 +25,21 @@ import ru.funpay4j.core.exceptions.FunPayApiException;
  */
 public interface FunPayClient {
     /**
-     * Send a request to update avatar with goldenKey and avatar
+     * Send a request to update avatar
      *
      * @param goldenKey goldenKey which will be used to authorize the user
      * @param newAvatar avatar to be updated
      * @throws FunPayApiException if the goldenKey is incorrect or other api-related exception
      */
     void updateAvatar(String goldenKey, byte[] newAvatar) throws FunPayApiException;
+
+    /**
+     * Send a request to raise all offers
+     *
+     * @param goldenKey goldenKey which will be used to authorize the user
+     * @param gameId gameId for which offers will be raised
+     * @param lotId lotId for which offers will be raised
+     * @throws FunPayApiException if the goldenKey is incorrect or other api-related exception
+     */
+    void raiseAllOffers(String goldenKey, long gameId, long lotId) throws FunPayApiException;
 }
