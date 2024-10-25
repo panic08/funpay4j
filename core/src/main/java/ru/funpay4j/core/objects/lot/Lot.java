@@ -32,6 +32,8 @@ import java.util.List;
 public class Lot {
     private long id;
 
+    private long gameId;
+
     private String title;
 
     private String description;
