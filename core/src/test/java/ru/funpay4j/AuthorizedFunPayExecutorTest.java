@@ -20,6 +20,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.funpay4j.core.AuthorizedFunPayExecutor;
+import ru.funpay4j.core.commands.offer.RaiseAllOffers;
 import ru.funpay4j.core.commands.user.UpdateAvatar;
 import ru.funpay4j.core.exceptions.FunPayApiException;
 
@@ -96,6 +97,17 @@ class AuthorizedFunPayExecutorTest {
         assertThrows(FunPayApiException.class, () -> {
             funPayExecutor.execute(UpdateAvatar.builder().newAvatar(Files.readAllBytes(Paths.get(UPDATE_AVATAR_IMG_PATH))).build());
         });
+    }
 
+    @Test
+    void testRaiseAllOffersIncorrectGoldenKeyException() throws Exception {
+        mockWebServer.enqueue(
+                new MockResponse()
+                        .setResponseCode(403)
+        );
+
+        assertThrows(FunPayApiException.class, () -> {
+            funPayExecutor.execute(RaiseAllOffers.builder().lotId(1).gameId(1).build());
+        });
     }
 }

@@ -33,7 +33,7 @@ import java.util.List;
  */
 public interface FunPayParser {
     /**
-     * Parse lot by lotId
+     * Parse lot
      *
      * @param lotId lotId by which lot will be parsed
      * @return lot
@@ -42,7 +42,7 @@ public interface FunPayParser {
     Lot parseLot(long lotId) throws FunPayApiException;
 
     /**
-     * Parse promoGames by query
+     * Parse promoGames
      *
      * @param query query by which promoGames will be parsed
      * @return promoGames
@@ -51,7 +51,7 @@ public interface FunPayParser {
     List<PromoGame> parsePromoGames(String query) throws FunPayApiException;
 
     /**
-     * Parse offer by offerId
+     * Parse offer
      *
      * @param offerId offerId by which offer will be parsed
      * @return offer
@@ -60,7 +60,7 @@ public interface FunPayParser {
     Offer parseOffer(long offerId) throws FunPayApiException;
 
     /**
-     * Parse user by userId
+     * Parse user
      *
      * @param userId userId by which user will be parsed
      * @return user
@@ -69,7 +69,7 @@ public interface FunPayParser {
     User parseUser(long userId) throws FunPayApiException;
 
     /**
-     * Parse seller reviews by userId, pages and starsFilter
+     * Parse seller reviews
      *
      * @param userId userId by which seller reviews pages will be parsed
      * @param pages number of pages indicating how many seller reviews will be parsed
@@ -80,7 +80,7 @@ public interface FunPayParser {
     List<SellerReview> parseSellerReviews(long userId, int pages, Integer starsFilter) throws FunPayApiException;
 
     /**
-     * Parse csrf and PHPSESSID by goldenKey
+     * Parse csrf and PHPSESSID
      *
      * @param goldenKey goldenKey which will be used to authorize the user
      * @return csrfToken and PHPSESSID
