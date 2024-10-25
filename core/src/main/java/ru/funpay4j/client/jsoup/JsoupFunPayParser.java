@@ -72,10 +72,16 @@ public class JsoupFunPayParser implements FunPayParser {
                 throw new FunPayApiException("Lot with lotId " + lotId + " does not exist");
             }
 
+            //take the second element, since we don't need a container from the element with the page-content-full class
+            //is named contentBodyContainer because it is the container on top of the content-body
+            Element funPayContentBodyContainerElement = funPayDocument.getElementById("content-body")
+                    .getElementsByClass("container")
+                    .get(1);
             Element funPayContentWithCdElement = funPayDocument.getElementsByClass("content-with-cd").first();
 
             String title = funPayContentWithCdElement.selectFirst("h1").text();
             String description = funPayContentWithCdElement.selectFirst("p").text();
+            long gameId = Long.parseLong(funPayContentBodyContainerElement.getElementsByClass("content-with-cd-wide showcase").attr("data-game"));
             List<LotCounter> lotCounters = new ArrayList<>();
             List<PreviewOffer> previewOffers = new ArrayList<>();
 
@@ -86,7 +92,7 @@ public class JsoupFunPayParser implements FunPayParser {
             for (Element counterItem : funPayCountersElements) {
                 String counterHrefAttributeValue = counterItem.attr("href");
 
-                //Skip chips, as they are not supported yet
+                //skip chips, as they are not supported yet
                 if (counterHrefAttributeValue.contains("chips")) continue;
 
                 long counterLotId = Integer.parseInt(counterHrefAttributeValue.substring(24, counterHrefAttributeValue.length() - 1));
@@ -107,7 +113,7 @@ public class JsoupFunPayParser implements FunPayParser {
                 );
             }
 
-            List<Element> funPayPreviewOffersElements = funPayDocument.getElementsByClass("tc")
+            List<Element> funPayPreviewOffersElements = funPayContentBodyContainerElement.getElementsByClass("tc")
                     .first()
                     .select("a");
 
@@ -158,6 +164,7 @@ public class JsoupFunPayParser implements FunPayParser {
                     .id(lotId)
                     .title(title)
                     .description(description)
+                    .gameId(gameId)
                     .lotCounters(lotCounters)
                     .previewOffers(previewOffers)
                     .build();

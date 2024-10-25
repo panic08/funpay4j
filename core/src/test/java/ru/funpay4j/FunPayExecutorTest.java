@@ -78,6 +78,7 @@ class FunPayExecutorTest {
         assertNotNull(result);
         assertFalse(result.getPreviewOffers().isEmpty());
         assertFalse(result.getLotCounters().isEmpty());
+        assertEquals(result.getGameId(), 41);
     }
 
     @Test
