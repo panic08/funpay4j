@@ -12,16 +12,16 @@
  * limitations under the License.
  */
 
-package ru.funpay4j.core.exceptions;
+package ru.funpay4j.core.exceptions.offer;
 
 /**
- * Base class for exceptions related to FunPay
+ * Base class for exception related to the fact that the offer already raised
  *
  * @author panic08
- * @since 1.0.0
+ * @since 1.0.3
  */
-public class FunPayApiException extends Exception {
-    public FunPayApiException(String message) {
+public class OfferAlreadyRaisedException extends RuntimeException {
+    public OfferAlreadyRaisedException(String message) {
         super(message);
     }
 }

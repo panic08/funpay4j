@@ -12,16 +12,16 @@
  * limitations under the License.
  */
 
-package ru.funpay4j.core.exceptions;
+package ru.funpay4j.core.exceptions.offer;
 
 /**
- * Base class for exceptions related to FunPay
+ * Base class for exception related to the fact that the offer is not found
  *
  * @author panic08
- * @since 1.0.0
+ * @since 1.0.3
  */
-public class FunPayApiException extends Exception {
-    public FunPayApiException(String message) {
+public class OfferNotFoundException extends RuntimeException {
+    public OfferNotFoundException(String message) {
         super(message);
     }
 }

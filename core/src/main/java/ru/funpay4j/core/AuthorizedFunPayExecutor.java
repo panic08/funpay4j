@@ -20,6 +20,8 @@ import lombok.Setter;
 import ru.funpay4j.core.commands.offer.RaiseAllOffers;
 import ru.funpay4j.core.commands.user.UpdateAvatar;
 import ru.funpay4j.core.exceptions.FunPayApiException;
+import ru.funpay4j.core.exceptions.InvalidGoldenKeyException;
+import ru.funpay4j.core.exceptions.offer.OfferAlreadyRaisedException;
 import ru.funpay4j.core.objects.CsrfTokenAndPHPSESSID;
 
 import java.net.Proxy;
@@ -87,9 +89,10 @@ public class AuthorizedFunPayExecutor extends FunPayExecutor {
      * Execute to update avatar
      *
      * @param command command that will be executed
-     * @throws FunPayApiException if the goldenKey is incorrect or other api-related exception
+     * @throws FunPayApiException if the other api-related exception
+     * @throws InvalidGoldenKeyException if the goldenKey is incorrect
      */
-    public void execute(UpdateAvatar command) throws FunPayApiException {
+    public void execute(UpdateAvatar command) throws FunPayApiException, InvalidGoldenKeyException {
         funPayClient.updateAvatar(goldenKey, command.getNewAvatar());
     }
 
@@ -97,9 +100,11 @@ public class AuthorizedFunPayExecutor extends FunPayExecutor {
      * Execute to raise all offers
      *
      * @param command command that will be executed
-     * @throws FunPayApiException if the goldenKey is incorrect or other api-related exception
+     * @throws FunPayApiException if the other api-related exception
+     * @throws InvalidGoldenKeyException if the goldenKey is incorrect
+     * @throws OfferAlreadyRaisedException if the offer already raised
      */
-    public void execute(RaiseAllOffers command) throws FunPayApiException {
+    public void execute(RaiseAllOffers command) throws FunPayApiException, InvalidGoldenKeyException, OfferAlreadyRaisedException {
         funPayClient.raiseAllOffers(goldenKey, command.getGameId(), command.getLotId());
     }
 

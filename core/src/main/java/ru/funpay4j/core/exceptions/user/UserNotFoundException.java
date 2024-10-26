@@ -12,16 +12,16 @@
  * limitations under the License.
  */
 
-package ru.funpay4j.core.exceptions;
+package ru.funpay4j.core.exceptions.user;
 
 /**
- * Base class for exceptions related to FunPay
+ * Base class for exception related to the fact that the user is not found
  *
  * @author panic08
- * @since 1.0.0
+ * @since 1.0.3
  */
-public class FunPayApiException extends Exception {
-    public FunPayApiException(String message) {
+public class UserNotFoundException extends RuntimeException {
+    public UserNotFoundException(String message) {
         super(message);
     }
 }

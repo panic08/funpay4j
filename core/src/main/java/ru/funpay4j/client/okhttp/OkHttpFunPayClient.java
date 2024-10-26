@@ -14,10 +14,13 @@
 
 package ru.funpay4j.client.okhttp;
 
+import com.google.gson.JsonParser;
 import lombok.NonNull;
 import okhttp3.*;
 import ru.funpay4j.client.FunPayClient;
 import ru.funpay4j.core.exceptions.FunPayApiException;
+import ru.funpay4j.core.exceptions.InvalidGoldenKeyException;
+import ru.funpay4j.core.exceptions.offer.OfferAlreadyRaisedException;
 
 import java.io.IOException;
 
@@ -43,7 +46,7 @@ public class OkHttpFunPayClient implements FunPayClient {
      * {@inheritDoc}
      */
     @Override
-    public void updateAvatar(@NonNull String goldenKey, byte @NonNull [] newAvatar) throws FunPayApiException {
+    public void updateAvatar(@NonNull String goldenKey, byte @NonNull [] newAvatar) throws FunPayApiException, InvalidGoldenKeyException {
         RequestBody requestBody = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart("file", "image.jpg", RequestBody.create(newAvatar))
@@ -54,7 +57,7 @@ public class OkHttpFunPayClient implements FunPayClient {
                 .addHeader("x-requested-with", "XMLHttpRequest")
                 .build()).execute()) {
             if (response.code() == 403) {
-                throw new FunPayApiException("goldenKey is incorrect");
+                throw new InvalidGoldenKeyException("goldenKey is invalid");
             }
         } catch (IOException e) {
             throw new FunPayApiException(e.getLocalizedMessage());
@@ -65,7 +68,7 @@ public class OkHttpFunPayClient implements FunPayClient {
      * {@inheritDoc}
      */
     @Override
-    public void raiseAllOffers(String goldenKey, long gameId, long lotId) throws FunPayApiException {
+    public void raiseAllOffers(String goldenKey, long gameId, long lotId) throws FunPayApiException, InvalidGoldenKeyException, OfferAlreadyRaisedException {
         RequestBody requestBody = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart("game_id", String.valueOf(gameId))
@@ -76,10 +79,14 @@ public class OkHttpFunPayClient implements FunPayClient {
                 .addHeader("Cookie", "golden_key=" + goldenKey)
                 .addHeader("x-requested-with", "XMLHttpRequest")
                 .build()).execute()) {
-            //TODO: Throw an exception if FunPay error comes out when raising all the offers,
-            // that you have already raised the offers and you need to wait for it
             if (response.code() == 403) {
-                throw new FunPayApiException("goldenKey is incorrect");
+                throw new InvalidGoldenKeyException("goldenKey is invalid");
+            }
+
+            if (JsonParser.parseString(response.body().string())
+                    .getAsJsonObject().get("msg")
+                    .getAsString().startsWith("Подождите")) {
+                throw new OfferAlreadyRaisedException("Offer already raised");
             }
         } catch (IOException e) {
             throw new FunPayApiException(e.getLocalizedMessage());

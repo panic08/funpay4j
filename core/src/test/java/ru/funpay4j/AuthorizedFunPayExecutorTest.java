@@ -22,7 +22,8 @@ import org.junit.jupiter.api.Test;
 import ru.funpay4j.core.AuthorizedFunPayExecutor;
 import ru.funpay4j.core.commands.offer.RaiseAllOffers;
 import ru.funpay4j.core.commands.user.UpdateAvatar;
-import ru.funpay4j.core.exceptions.FunPayApiException;
+import ru.funpay4j.core.exceptions.InvalidGoldenKeyException;
+import ru.funpay4j.core.exceptions.offer.OfferAlreadyRaisedException;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -88,25 +89,38 @@ class AuthorizedFunPayExecutorTest {
     }
 
     @Test
-    void testUpdateAvatarIncorrectGoldenKeyException() throws Exception {
+    void testUpdateAvatarInvalidGoldenKeyException() throws Exception {
         mockWebServer.enqueue(
                 new MockResponse()
                         .setResponseCode(403)
         );
 
-        assertThrows(FunPayApiException.class, () -> {
+        assertThrows(InvalidGoldenKeyException.class, () -> {
             funPayExecutor.execute(UpdateAvatar.builder().newAvatar(Files.readAllBytes(Paths.get(UPDATE_AVATAR_IMG_PATH))).build());
         });
     }
 
     @Test
-    void testRaiseAllOffersIncorrectGoldenKeyException() throws Exception {
+    void testRaiseAllOffersInvalidGoldenKeyException() throws Exception {
         mockWebServer.enqueue(
                 new MockResponse()
                         .setResponseCode(403)
         );
 
-        assertThrows(FunPayApiException.class, () -> {
+        assertThrows(InvalidGoldenKeyException.class, () -> {
+            funPayExecutor.execute(RaiseAllOffers.builder().lotId(1).gameId(1).build());
+        });
+    }
+
+    @Test
+    void testRaiseAllOffersOfferAlreadyRaisedException() throws Exception {
+        mockWebServer.enqueue(
+                new MockResponse()
+                        .setResponseCode(200)
+                        .setBody("{\"msg\":\"Подождите 4 часа.\", \"error\": 1}")
+        );
+
+        assertThrows(OfferAlreadyRaisedException.class, () -> {
             funPayExecutor.execute(RaiseAllOffers.builder().lotId(1).gameId(1).build());
         });
     }

@@ -15,13 +15,13 @@
 package ru.funpay4j.core.exceptions;
 
 /**
- * Base class for exceptions related to FunPay
+ * Base class for exception related to the fact that the goldenKey is invalid
  *
  * @author panic08
- * @since 1.0.0
+ * @since 1.0.3
  */
-public class FunPayApiException extends Exception {
-    public FunPayApiException(String message) {
+public class InvalidGoldenKeyException extends RuntimeException {
+    public InvalidGoldenKeyException(String message) {
         super(message);
     }
 }

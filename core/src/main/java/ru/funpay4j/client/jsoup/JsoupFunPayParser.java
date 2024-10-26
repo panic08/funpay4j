@@ -23,6 +23,9 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import ru.funpay4j.client.FunPayParser;
 import ru.funpay4j.core.exceptions.FunPayApiException;
+import ru.funpay4j.core.exceptions.offer.OfferNotFoundException;
+import ru.funpay4j.core.exceptions.lot.LotNotFoundException;
+import ru.funpay4j.core.exceptions.user.UserNotFoundException;
 import ru.funpay4j.core.objects.CsrfTokenAndPHPSESSID;
 import ru.funpay4j.core.objects.game.PromoGame;
 import ru.funpay4j.core.objects.game.PromoGameCounter;
@@ -62,14 +65,14 @@ public class JsoupFunPayParser implements FunPayParser {
      * {@inheritDoc}
      */
     @Override
-    public Lot parseLot(long lotId) throws FunPayApiException {
+    public Lot parseLot(long lotId) throws FunPayApiException, LotNotFoundException {
         try (Response funPayHtmlResponse = httpClient.newCall(new Request.Builder().get().url(baseURL + "/lots/" + lotId + "/").build()).execute()) {
             String funPayHtmlPageBody = funPayHtmlResponse.body().string();
 
             Document funPayDocument = Jsoup.parse(funPayHtmlPageBody);
 
             if (isNonExistentFunPayPage(funPayDocument)) {
-                throw new FunPayApiException("Lot with lotId " + lotId + " does not exist");
+                throw new LotNotFoundException("Lot with lotId " + lotId + " does not found");
             }
 
             //take the second element, since we don't need a container from the element with the page-content-full class
@@ -235,14 +238,14 @@ public class JsoupFunPayParser implements FunPayParser {
      * {@inheritDoc}
      */
     @Override
-    public Offer parseOffer(long offerId) throws FunPayApiException {
+    public Offer parseOffer(long offerId) throws FunPayApiException, OfferNotFoundException {
         try (Response funPayHtmlResponse = httpClient.newCall(new Request.Builder().get().url(baseURL + "/lots/offer?id=" + offerId).build()).execute()) {
             String funPayHtmlPageBody = funPayHtmlResponse.body().string();
 
             Document funPayDocument = Jsoup.parse(funPayHtmlPageBody);
 
             if (isNonExistentFunPayPage(funPayDocument)) {
-                throw new FunPayApiException("Offer with offerId " + offerId + " does not exist");
+                throw new OfferNotFoundException("Offer with offerId " + offerId + " does not found");
             }
 
             Element paramListElement = funPayDocument.getElementsByClass("param-list").first();
@@ -338,14 +341,14 @@ public class JsoupFunPayParser implements FunPayParser {
      * {@inheritDoc}
      */
     @Override
-    public User parseUser(long userId) throws FunPayApiException {
+    public User parseUser(long userId) throws FunPayApiException, UserNotFoundException {
         try (Response funPayHtmlResponse = httpClient.newCall(new Request.Builder().get().url(baseURL + "/users/" + userId + "/").build()).execute()) {
             String funPayHtmlPageBody = funPayHtmlResponse.body().string();
 
             Document funPayDocument = Jsoup.parse(funPayHtmlPageBody);
 
             if (isNonExistentFunPayPage(funPayDocument)) {
-                throw new FunPayApiException("User with userId " + userId + " does not exist");
+                throw new UserNotFoundException("User with userId " + userId + " does not found");
             }
 
             Element containerProfileHeader = funPayDocument.getElementsByClass("container profile-header").first();
@@ -485,7 +488,7 @@ public class JsoupFunPayParser implements FunPayParser {
      * {@inheritDoc}
      */
     @Override
-    public List<SellerReview> parseSellerReviews(long userId, int pages, @Nullable Integer starsFilter) throws FunPayApiException {
+    public List<SellerReview> parseSellerReviews(long userId, int pages, @Nullable Integer starsFilter) throws FunPayApiException, UserNotFoundException {
         List<SellerReview> currentSellerReviews = new ArrayList<>();
 
         String userIdFormData = String.valueOf(userId);
@@ -502,7 +505,9 @@ public class JsoupFunPayParser implements FunPayParser {
 
             try (Response funPayHtmlResponse = httpClient.newCall(new Request.Builder().post(requestBody).url(baseURL + "/users/reviews")
                     .addHeader("x-requested-with", "XMLHttpRequest").build()).execute()) {
-                if (funPayHtmlResponse.code() == 404) throw new FunPayApiException("User with userId " + userId + " does not exist/seller");
+                //TODO: Figure out what is worth throwing out here, since a user can also be a non-existent but also a non-seller,
+                // and we can't distinguish between the two just like that
+                if (funPayHtmlResponse.code() == 404) throw new UserNotFoundException("User with userId " + userId + " does not found/seller");
 
                 Document reviewsHtml = Jsoup.parse(funPayHtmlResponse.body().string());
 
