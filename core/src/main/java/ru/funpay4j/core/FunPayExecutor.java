@@ -26,6 +26,9 @@ import ru.funpay4j.core.commands.lot.GetLot;
 import ru.funpay4j.core.commands.user.GetSellerReviews;
 import ru.funpay4j.core.exceptions.FunPayApiException;
 import ru.funpay4j.core.commands.user.GetUser;
+import ru.funpay4j.core.exceptions.lot.LotNotFoundException;
+import ru.funpay4j.core.exceptions.offer.OfferNotFoundException;
+import ru.funpay4j.core.exceptions.user.UserNotFoundException;
 import ru.funpay4j.core.objects.game.PromoGame;
 import ru.funpay4j.core.objects.lot.Lot;
 import ru.funpay4j.core.objects.offer.Offer;
@@ -85,9 +88,10 @@ public class FunPayExecutor {
      *
      * @param command command that will be executed
      * @return lot
-     * @throws FunPayApiException if the lot with id does not exist or other api-related exception
+     * @throws FunPayApiException if the other api-related exception
+     * @throws LotNotFoundException if the lot with id does not found
      */
-    public Lot execute(GetLot command) throws FunPayApiException {
+    public Lot execute(GetLot command) throws FunPayApiException, LotNotFoundException {
         return funPayParser.parseLot(command.getLotId());
     }
 
@@ -96,7 +100,7 @@ public class FunPayExecutor {
      *
      * @param command command that will be executed
      * @return promoGames
-     * @throws FunPayApiException if other api-related exception
+     * @throws FunPayApiException if the other api-related exception
      */
     public List<PromoGame> execute(GetPromoGames command) throws FunPayApiException {
         return funPayParser.parsePromoGames(command.getQuery());
@@ -107,9 +111,10 @@ public class FunPayExecutor {
      *
      * @param command command that will be executed
      * @return offer
-     * @throws FunPayApiException if the offer with id does not exist or other api-related exception
+     * @throws FunPayApiException if the other api-related exception
+     * @throws OfferNotFoundException if the offer with id does not found
      */
-    public Offer execute(GetOffer command) throws FunPayApiException {
+    public Offer execute(GetOffer command) throws FunPayApiException, OfferNotFoundException {
         return funPayParser.parseOffer(command.getOfferId());
     }
 
@@ -118,9 +123,10 @@ public class FunPayExecutor {
      *
      * @param command command that will be executed
      * @return user
-     * @throws FunPayApiException if the user with id does not exist or other api-related exception
+     * @throws FunPayApiException if the other api-related exception
+     * @throws UserNotFoundException if the user with id does not found
      */
-    public User execute(GetUser command) throws FunPayApiException {
+    public User execute(GetUser command) throws FunPayApiException, UserNotFoundException {
         return funPayParser.parseUser(command.getUserId());
     }
 
@@ -129,9 +135,10 @@ public class FunPayExecutor {
      *
      * @param command command that will be executed
      * @return sellerReviews
-     * @throws FunPayApiException if the user with id does not exist/seller or other api-related exception
+     * @throws FunPayApiException if the other api-related exception
+     * @throws UserNotFoundException if the user with id does not found/seller
      */
-    public List<SellerReview> execute(GetSellerReviews command) throws FunPayApiException {
+    public List<SellerReview> execute(GetSellerReviews command) throws FunPayApiException, UserNotFoundException {
         return funPayParser.parseSellerReviews(command.getUserId(), command.getPages(), command.getStarsFilter());
     }
 }

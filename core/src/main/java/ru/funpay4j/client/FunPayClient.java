@@ -15,10 +15,11 @@
 package ru.funpay4j.client;
 
 import ru.funpay4j.core.exceptions.FunPayApiException;
+import ru.funpay4j.core.exceptions.InvalidGoldenKeyException;
+import ru.funpay4j.core.exceptions.offer.OfferAlreadyRaisedException;
 
 /**
  * Interface for sending thematic requests to FunPay
- * Defines the methods that any FunPay client implementation must provide
  *
  * @author panic08
  * @since 1.0.3
@@ -29,9 +30,10 @@ public interface FunPayClient {
      *
      * @param goldenKey goldenKey which will be used to authorize the user
      * @param newAvatar avatar to be updated
-     * @throws FunPayApiException if the goldenKey is incorrect or other api-related exception
+     * @throws FunPayApiException if the other api-related exception
+     * @throws InvalidGoldenKeyException if the goldenKey is invalid
      */
-    void updateAvatar(String goldenKey, byte[] newAvatar) throws FunPayApiException;
+    void updateAvatar(String goldenKey, byte[] newAvatar) throws FunPayApiException, InvalidGoldenKeyException;
 
     /**
      * Send a request to raise all offers
@@ -39,7 +41,9 @@ public interface FunPayClient {
      * @param goldenKey goldenKey which will be used to authorize the user
      * @param gameId gameId for which offers will be raised
      * @param lotId lotId for which offers will be raised
-     * @throws FunPayApiException if the goldenKey is incorrect or other api-related exception
+     * @throws FunPayApiException if the other api-related exception
+     * @throws InvalidGoldenKeyException if the goldenKey is invalid
+     * @throws OfferAlreadyRaisedException if the offer already raised
      */
-    void raiseAllOffers(String goldenKey, long gameId, long lotId) throws FunPayApiException;
+    void raiseAllOffers(String goldenKey, long gameId, long lotId) throws FunPayApiException, InvalidGoldenKeyException, OfferAlreadyRaisedException;
 }
