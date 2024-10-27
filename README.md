@@ -15,6 +15,8 @@ The funpay4j library is a Java wrapper for FunPay private api
     - [Quick Usage](#quick-usage)
         - [Create FunPayExecutor](#create-funpayexecutor)
         - [Get seller](#get-seller)
+        - [Create AuthorizedFunPayExecutor](#create-authorizedfunpayexecutor)
+        - [Raise all offers](#raise-all-offers)
 - [Contributing](#contributing)
 
 # Install
@@ -97,6 +99,28 @@ Seller seller = null;
 
 if (user instanceof Seller) {
     seller = (Seller) user;
+}
+```
+
+### Create AuthorizedFunPayExecutor
+Basic creation of AuthorizedFunPayExecutor
+#### *Example:*
+```java
+AuthorizedFunPayExecutor funPayExecutor = new AuthorizedFunPayExecutor("test-golden-key");
+```
+
+### Raise all offers
+Basic raising of all offers
+#### *Example:*
+```java
+AuthorizedFunPayExecutor funPayExecutor = ...
+
+try {
+    funPayExecutor.execute(RaiseAllOffers.builder().gameId(41).lotId(211).build());
+} catch (FunPayApiException e) {
+    throw new RuntimeException(e);
+} catch (OfferAlreadyRaisedException e) {
+    System.out.println("The offer has already been raised!!!");
 }
 ```
 
