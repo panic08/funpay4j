@@ -28,7 +28,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.github.panic08:funpay4j:1.0.2'
+    implementation 'com.github.panic08:funpay4j:1.0.3'
 }
 ```
 
@@ -45,7 +45,7 @@ dependencies {
 <dependency>
     <groupId>com.github.panic08</groupId>
     <artifactId>funpay4j</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3</version>
 </dependency>
 </dependencies>
 ```
