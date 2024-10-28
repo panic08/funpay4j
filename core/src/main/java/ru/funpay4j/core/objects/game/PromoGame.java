@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 /**
- * This object represents the FunPay PromoGame
+ * This object represents the FunPay promo game
  *
  * @author panic08
  * @since 1.0.0

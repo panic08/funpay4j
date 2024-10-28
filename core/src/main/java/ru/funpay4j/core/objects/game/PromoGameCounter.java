@@ -20,7 +20,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * This object represents the FunPay PromoGameCounter
+ * This object represents the FunPay promo game counter
  *
  * @author panic08
  * @since 1.0.0

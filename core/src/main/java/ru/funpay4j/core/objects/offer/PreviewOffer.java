@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
 import ru.funpay4j.core.objects.user.PreviewSeller;
 
 /**
- * This object represents the FunPay PreviewOffer
+ * This object represents the FunPay preview offer
  *
  * @author panic08
  * @since 1.0.0

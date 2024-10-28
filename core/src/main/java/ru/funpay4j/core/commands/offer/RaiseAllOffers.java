@@ -17,7 +17,7 @@ package ru.funpay4j.core.commands.offer;
 import lombok.*;
 
 /**
- * Use this command to raise all Offers
+ * Use this command to raise all offers
  *
  * @author panic08
  * @since 1.0.0

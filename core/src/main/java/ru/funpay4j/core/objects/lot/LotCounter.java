@@ -20,7 +20,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * This object represents the FunPay LotCounter
+ * This object represents the FunPay lot counter
  *
  * @author panic08
  * @since 1.0.0

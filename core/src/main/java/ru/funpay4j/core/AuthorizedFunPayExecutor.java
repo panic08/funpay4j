@@ -86,11 +86,11 @@ public class AuthorizedFunPayExecutor extends FunPayExecutor {
     }
 
     /**
-     * Execute to update avatar
+     * Execute to update user avatar
      *
      * @param command command that will be executed
      * @throws FunPayApiException if the other api-related exception
-     * @throws InvalidGoldenKeyException if the goldenKey is incorrect
+     * @throws InvalidGoldenKeyException if the golden key is incorrect
      */
     public void execute(UpdateAvatar command) throws FunPayApiException, InvalidGoldenKeyException {
         funPayClient.updateAvatar(goldenKey, command.getNewAvatar());
@@ -101,7 +101,7 @@ public class AuthorizedFunPayExecutor extends FunPayExecutor {
      *
      * @param command command that will be executed
      * @throws FunPayApiException if the other api-related exception
-     * @throws InvalidGoldenKeyException if the goldenKey is incorrect
+     * @throws InvalidGoldenKeyException if the golden key is incorrect
      * @throws OfferAlreadyRaisedException if the offer already raised
      */
     public void execute(RaiseAllOffers command) throws FunPayApiException, InvalidGoldenKeyException, OfferAlreadyRaisedException {

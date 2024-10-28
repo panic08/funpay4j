@@ -20,7 +20,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * This object represents the FunPay Seller Review
+ * This object represents the FunPay seller review
  *
  * @author panic08
  * @since 1.0.0

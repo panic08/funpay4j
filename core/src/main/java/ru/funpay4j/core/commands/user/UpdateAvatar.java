@@ -17,7 +17,7 @@ package ru.funpay4j.core.commands.user;
 import lombok.*;
 
 /**
- * Use this command to update avatar
+ * Use this command to update user avatar
  *
  * @author panic08
  * @since 1.0.3

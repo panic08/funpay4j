@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * This object represents the FunPay Offer
+ * This object represents the FunPay offer
  *
  * @author panic08
  * @since 1.0.0

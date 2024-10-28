@@ -24,7 +24,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * This object represents the FunPay User
+ * This object represents the FunPay user
  *
  * @author panic08
  * @since 1.0.0

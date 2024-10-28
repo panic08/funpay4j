@@ -18,7 +18,7 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 /**
- * This object represents the FunPay PreviewSeller
+ * This object represents the FunPay preview seller
  *
  * @author panic08
  * @since 1.0.0
