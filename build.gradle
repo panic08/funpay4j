@@ -19,5 +19,5 @@ allprojects {
     }
 
     group = 'ru.funpay4j'
-    version = '1.0.3'
+    version = '1.0.4'
 }
