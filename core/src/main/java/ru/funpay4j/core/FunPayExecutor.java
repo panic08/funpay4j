@@ -96,10 +96,10 @@ public class FunPayExecutor {
     }
 
     /**
-     * Execute to get promoGames
+     * Execute to get promo games
      *
      * @param command command that will be executed
-     * @return promoGames
+     * @return promo games
      * @throws FunPayApiException if the other api-related exception
      */
     public List<PromoGame> execute(GetPromoGames command) throws FunPayApiException {
@@ -131,10 +131,10 @@ public class FunPayExecutor {
     }
 
     /**
-     * Execute to get sellerReviews
+     * Execute to get seller reviews
      *
      * @param command command that will be executed
-     * @return sellerReviews
+     * @return seller reviews
      * @throws FunPayApiException if the other api-related exception
      * @throws UserNotFoundException if the user with id does not found/seller
      */

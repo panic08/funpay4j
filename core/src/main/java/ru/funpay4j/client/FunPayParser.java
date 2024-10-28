@@ -37,7 +37,7 @@ public interface FunPayParser {
     /**
      * Parse lot
      *
-     * @param lotId lotId by which lot will be parsed
+     * @param lotId lot id by which lot will be parsed
      * @return lot
      * @throws FunPayApiException if the other api-related exception
      * @throws LotNotFoundException if the lot with id does not found
@@ -45,10 +45,10 @@ public interface FunPayParser {
     Lot parseLot(long lotId) throws FunPayApiException, LotNotFoundException;
 
     /**
-     * Parse promoGames
+     * Parse promo games
      *
-     * @param query query by which promoGames will be parsed
-     * @return promoGames
+     * @param query query by which promo games will be parsed
+     * @return promo games
      * @throws FunPayApiException if the other api-related exception
      */
     List<PromoGame> parsePromoGames(String query) throws FunPayApiException;
@@ -56,7 +56,7 @@ public interface FunPayParser {
     /**
      * Parse offer
      *
-     * @param offerId offerId by which offer will be parsed
+     * @param offerId offer id by which offer will be parsed
      * @return offer
      * @throws FunPayApiException if the other api-related exception
      * @throws OfferNotFoundException if the offer with id does not found
@@ -66,7 +66,7 @@ public interface FunPayParser {
     /**
      * Parse user
      *
-     * @param userId userId by which user will be parsed
+     * @param userId user id by which user will be parsed
      * @return user
      * @throws FunPayApiException if the other api-related exception
      * @throws UserNotFoundException if the user with id does not found
@@ -76,7 +76,7 @@ public interface FunPayParser {
     /**
      * Parse seller reviews
      *
-     * @param userId userId by which seller reviews pages will be parsed
+     * @param userId user id by which seller reviews pages will be parsed
      * @param pages number of pages indicating how many seller reviews will be parsed
      * @param starsFilter number of stars by which the reviews will be parsed
      * @return sellerReviews
@@ -86,10 +86,10 @@ public interface FunPayParser {
     List<SellerReview> parseSellerReviews(long userId, int pages, Integer starsFilter) throws FunPayApiException, UserNotFoundException;
 
     /**
-     * Parse csrf and PHPSESSID
+     * Parse csrf-token and PHPSESSID
      *
-     * @param goldenKey goldenKey which will be used to authorize the user
-     * @return csrfToken and PHPSESSID
+     * @param goldenKey golden key which will be used to authorize the user
+     * @return csrf-token and PHPSESSID
      * @throws FunPayApiException if the other api-related exception
      */
     CsrfTokenAndPHPSESSID parseCsrfTokenAndPHPSESSID(String goldenKey) throws FunPayApiException;

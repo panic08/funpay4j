@@ -28,21 +28,21 @@ public interface FunPayClient {
     /**
      * Send a request to update avatar
      *
-     * @param goldenKey goldenKey which will be used to authorize the user
+     * @param goldenKey golden key which will be used to authorize the user
      * @param newAvatar avatar to be updated
      * @throws FunPayApiException if the other api-related exception
-     * @throws InvalidGoldenKeyException if the goldenKey is invalid
+     * @throws InvalidGoldenKeyException if the golden key is invalid
      */
     void updateAvatar(String goldenKey, byte[] newAvatar) throws FunPayApiException, InvalidGoldenKeyException;
 
     /**
      * Send a request to raise all offers
      *
-     * @param goldenKey goldenKey which will be used to authorize the user
-     * @param gameId gameId for which offers will be raised
-     * @param lotId lotId for which offers will be raised
+     * @param goldenKey golden key which will be used to authorize the user
+     * @param gameId game id for which offers will be raised
+     * @param lotId lot id for which offers will be raised
      * @throws FunPayApiException if the other api-related exception
-     * @throws InvalidGoldenKeyException if the goldenKey is invalid
+     * @throws InvalidGoldenKeyException if the golden key is invalid
      * @throws OfferAlreadyRaisedException if the offer already raised
      */
     void raiseAllOffers(String goldenKey, long gameId, long lotId) throws FunPayApiException, InvalidGoldenKeyException, OfferAlreadyRaisedException;

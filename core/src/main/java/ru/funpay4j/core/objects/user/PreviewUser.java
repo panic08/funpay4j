@@ -21,7 +21,7 @@ import lombok.experimental.SuperBuilder;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * This object represents the FunPay PreviewUser
+ * This object represents the FunPay preview user
  *
  * @author panic08
  * @since 1.0.0

@@ -17,7 +17,7 @@ package ru.funpay4j.core.commands.game;
 import lombok.*;
 
 /**
- * Use this command to get PromoGames
+ * Use this command to get promo games
  *
  * @author panic08
  * @since 1.0.0

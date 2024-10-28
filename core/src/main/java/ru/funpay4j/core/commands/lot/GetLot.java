@@ -17,7 +17,7 @@ package ru.funpay4j.core.commands.lot;
 import lombok.*;
 
 /**
- * Use this command to get Lot
+ * Use this command to get lot
  *
  * @author panic08
  * @since 1.0.0
