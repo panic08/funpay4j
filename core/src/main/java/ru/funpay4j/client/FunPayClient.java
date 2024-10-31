@@ -14,7 +14,9 @@
 
 package ru.funpay4j.client;
 
+import ru.funpay4j.client.request.SaveOfferRequest;
 import ru.funpay4j.core.exceptions.FunPayApiException;
+import ru.funpay4j.core.exceptions.InvalidCsrfTokenOrPHPSESSIDException;
 import ru.funpay4j.core.exceptions.InvalidGoldenKeyException;
 import ru.funpay4j.core.exceptions.offer.OfferAlreadyRaisedException;
 
@@ -46,4 +48,16 @@ public interface FunPayClient {
      * @throws OfferAlreadyRaisedException if the offer already raised
      */
     void raiseAllOffers(String goldenKey, long gameId, long lotId) throws FunPayApiException, InvalidGoldenKeyException, OfferAlreadyRaisedException;
+
+    /**
+     * Send a request to save offer
+     *
+     * @param goldenKey golden key which will be used to authorize the user
+     * @param request request storing all necessary data for creating offer
+     * @throws FunPayApiException if the other api-related exception
+     * @throws InvalidGoldenKeyException if the golden key is invalid
+     * @throws InvalidCsrfTokenOrPHPSESSIDException if the csrf token or PHPSESSID is invalid
+     */
+    void saveOffer(String goldenKey, String csrfToken, String PHPSESSID, SaveOfferRequest request) throws FunPayApiException,
+            InvalidGoldenKeyException, InvalidCsrfTokenOrPHPSESSIDException;
 }
