@@ -131,16 +131,22 @@ public class OkHttpFunPayClient implements FunPayClient {
                 .addHeader("Cookie", "golden_key=" + goldenKey + "; PHPSESSID=" + PHPSESSID)
                 .addHeader("x-requested-with", "XMLHttpRequest")
                 .build()).execute()) {
-            JsonObject responseJsonObject = JsonParser.parseString(response.body().string()).getAsJsonObject();
+            String responseBodyString = response.body().string();
+
+            JsonObject responseJsonObject = null;
+
+            if (!responseBodyString.isEmpty()) {
+                responseJsonObject = JsonParser.parseString(responseBodyString).getAsJsonObject();
+            }
 
             if (response.code() == 403) {
                 throw new InvalidGoldenKeyException("goldenKey is invalid");
-            } else if (response.code() == 400 && responseJsonObject.get("msg") != null
+            } else if (response.code() == 400 && responseJsonObject != null && responseJsonObject.get("msg") != null
                     && responseJsonObject.get("msg").getAsString().equals("Обновите страницу и повторите попытку.")) {
                 throw new InvalidCsrfTokenOrPHPSESSIDException("csrf token or PHPSESSID is invalid");
             }
 
-            if (!responseJsonObject.get("done").getAsBoolean()) {
+            if (responseJsonObject != null) {
                 //TODO: Throw something more contextual than RuntimeException
                 throw new RuntimeException(responseJsonObject.get("error") + " " + responseJsonObject.get("errors").toString());
             }

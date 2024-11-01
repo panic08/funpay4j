@@ -20,6 +20,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.funpay4j.core.AuthorizedFunPayExecutor;
+import ru.funpay4j.core.commands.offer.CreateOffer;
 import ru.funpay4j.core.commands.offer.RaiseAllOffers;
 import ru.funpay4j.core.commands.user.UpdateAvatar;
 import ru.funpay4j.core.exceptions.InvalidGoldenKeyException;
@@ -27,6 +28,7 @@ import ru.funpay4j.core.exceptions.offer.OfferAlreadyRaisedException;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.HashMap;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -123,5 +125,38 @@ class AuthorizedFunPayExecutorTest {
         assertThrows(OfferAlreadyRaisedException.class, () -> {
             funPayExecutor.execute(RaiseAllOffers.builder().lotId(1).gameId(1).build());
         });
+    }
+
+    @Test
+    void testCreateOfferInvalidCsrfTokenOrPHPSESSIDException() throws Exception {
+        mockWebServer.enqueue(
+                new MockResponse()
+                        .setResponseCode(400)
+                        .setBody("{\"msg\": \"Обновите страницу и повторите попытку.\", \"error\": 1}")
+        );
+
+        String htmlContent = new String(Files.readAllBytes(Paths.get(GET_CSRF_TOKEN_AND_PHPSESSID_HTML_RESPONSE_PATH)));
+
+        mockWebServer.enqueue(
+                new MockResponse()
+                        .setBody(htmlContent)
+                        .setHeader("Set-Cookie", "PHPSESSID=new;")
+                        .setResponseCode(200)
+        );
+
+        mockWebServer.enqueue(
+                new MockResponse()
+                        .setResponseCode(200)
+        );
+
+        String currentCsrfToken = funPayExecutor.getCsrfToken();
+        String currentPHPSESSID = funPayExecutor.getPHPSESSID();
+
+        funPayExecutor.execute(CreateOffer.builder().shortDescriptionEn("test").fields(new HashMap<>()).build());
+
+        assertNotNull(funPayExecutor.getCsrfToken());
+        assertNotNull(funPayExecutor.getPHPSESSID());
+        assertNotEquals(currentCsrfToken, funPayExecutor.getCsrfToken());
+        assertNotEquals(currentPHPSESSID, funPayExecutor.getPHPSESSID());
     }
 }
