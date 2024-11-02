@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Use this command to create offer
+ * Use this command to edit offer
  *
  * @author panic08
  * @since 1.0.4
@@ -30,9 +30,12 @@ import java.util.Map;
 @Setter
 @Builder
 @AllArgsConstructor
-public class CreateOffer {
+public class EditOffer {
     @NonNull
     private Long lotId;
+
+    @NonNull
+    private Long offerId;
 
     @Nullable
     private String shortDescriptionRu;

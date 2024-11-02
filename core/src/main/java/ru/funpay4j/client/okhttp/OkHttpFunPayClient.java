@@ -26,8 +26,6 @@ import ru.funpay4j.core.exceptions.InvalidGoldenKeyException;
 import ru.funpay4j.core.exceptions.offer.OfferAlreadyRaisedException;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -146,7 +144,7 @@ public class OkHttpFunPayClient implements FunPayClient {
                 throw new InvalidCsrfTokenOrPHPSESSIDException("csrf token or PHPSESSID is invalid");
             }
 
-            if (responseJsonObject != null) {
+            if (responseJsonObject != null && !responseJsonObject.get("done").getAsBoolean()) {
                 //TODO: Throw something more contextual than RuntimeException
                 throw new RuntimeException(responseJsonObject.get("error") + " " + responseJsonObject.get("errors").toString());
             }
