@@ -73,7 +73,7 @@ class FunPayExecutorTest {
                         .setResponseCode(200)
         );
 
-        Lot result = funPayExecutor.execute(GetLot.builder().lotId(149).build());
+        Lot result = funPayExecutor.execute(GetLot.builder().lotId(149L).build());
 
         assertNotNull(result);
         assertFalse(result.getPreviewOffers().isEmpty());
@@ -108,7 +108,7 @@ class FunPayExecutorTest {
                         .setResponseCode(200)
         );
 
-        Offer result = funPayExecutor.execute(GetOffer.builder().offerId(33502824).build());
+        Offer result = funPayExecutor.execute(GetOffer.builder().offerId(33502824L).build());
 
         assertNotNull(result);
         assertTrue(result.isAutoDelivery());
@@ -128,7 +128,7 @@ class FunPayExecutorTest {
                         .setResponseCode(200)
         );
 
-        Seller result = (Seller) funPayExecutor.execute(GetUser.builder().userId(2).build());
+        Seller result = (Seller) funPayExecutor.execute(GetUser.builder().userId(2L).build());
 
         assertNotNull(result);
         assertNotNull(result.getRegisteredAt());
@@ -148,7 +148,7 @@ class FunPayExecutorTest {
                         .setResponseCode(200)
         );
 
-        List<SellerReview> result = funPayExecutor.execute(GetSellerReviews.builder().pages(1).userId(2).build());
+        List<SellerReview> result = funPayExecutor.execute(GetSellerReviews.builder().pages(1).userId(2L).build());
 
         assertFalse(result.isEmpty());
     }

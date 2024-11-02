@@ -26,7 +26,6 @@ import lombok.*;
 @Setter
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor
 public class GetPromoGames {
     @NonNull
     private String query;

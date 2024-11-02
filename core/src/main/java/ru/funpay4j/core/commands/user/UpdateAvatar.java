@@ -26,7 +26,6 @@ import lombok.*;
 @Setter
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor
 public class UpdateAvatar {
     private byte @NonNull [] newAvatar;
 }

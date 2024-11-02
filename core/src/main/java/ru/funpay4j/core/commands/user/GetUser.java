@@ -26,7 +26,7 @@ import lombok.*;
 @Setter
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor
 public class GetUser {
-    private long userId;
+    @NonNull
+    private Long userId;
 }

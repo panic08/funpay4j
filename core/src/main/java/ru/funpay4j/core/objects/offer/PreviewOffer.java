@@ -17,7 +17,6 @@ package ru.funpay4j.core.objects.offer;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import ru.funpay4j.core.objects.user.PreviewSeller;
 
 /**
@@ -28,7 +27,6 @@ import ru.funpay4j.core.objects.user.PreviewSeller;
  */
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
 @Builder
 public class PreviewOffer {
     private long offerId;

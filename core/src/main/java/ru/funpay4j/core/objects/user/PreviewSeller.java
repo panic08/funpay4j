@@ -27,7 +27,6 @@ import lombok.experimental.SuperBuilder;
 @Setter
 @EqualsAndHashCode(callSuper = true)
 @AllArgsConstructor
-@NoArgsConstructor
 @ToString(callSuper = true)
 @SuperBuilder
 public class PreviewSeller extends PreviewUser {

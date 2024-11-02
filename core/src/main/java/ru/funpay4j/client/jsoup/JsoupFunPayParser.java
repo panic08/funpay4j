@@ -488,7 +488,7 @@ public class JsoupFunPayParser implements FunPayParser {
      * {@inheritDoc}
      */
     @Override
-    public List<SellerReview> parseSellerReviews(long userId, int pages, @Nullable Integer starsFilter) throws FunPayApiException, UserNotFoundException {
+    public List<SellerReview> parseSellerReviews(long userId, int pages, Integer starsFilter) throws FunPayApiException, UserNotFoundException {
         List<SellerReview> currentSellerReviews = new ArrayList<>();
 
         String userIdFormData = String.valueOf(userId);

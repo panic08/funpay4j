@@ -41,7 +41,7 @@ public class GetSellerReviews {
         try {
             sellerReviews = executor.execute(ru.funpay4j.core.commands.user.GetSellerReviews.builder()
                     .pages(2)
-                    .userId(1940073)
+                    .userId(1940073L)
                     .starsFilter(null)
                     .build());
 

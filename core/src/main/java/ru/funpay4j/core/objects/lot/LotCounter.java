@@ -17,7 +17,6 @@ package ru.funpay4j.core.objects.lot;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 /**
  * This object represents the FunPay lot counter
@@ -27,7 +26,6 @@ import lombok.NoArgsConstructor;
  */
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
 @Builder
 public class LotCounter {
     private long lotId;

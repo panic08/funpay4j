@@ -26,9 +26,10 @@ import lombok.*;
 @Setter
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor
 public class RaiseAllOffers {
-    private long gameId;
+    @NonNull
+    private Long gameId;
 
-    private long lotId;
+    @NonNull
+    private Long lotId;
 }
