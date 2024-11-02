@@ -26,7 +26,7 @@ import lombok.*;
 @Setter
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor
 public class GetLot {
-    private long lotId;
+    @NonNull
+    private Long lotId;
 }

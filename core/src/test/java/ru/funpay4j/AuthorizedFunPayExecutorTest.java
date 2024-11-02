@@ -111,7 +111,7 @@ class AuthorizedFunPayExecutorTest {
         );
 
         assertThrows(InvalidGoldenKeyException.class, () -> {
-            funPayExecutor.execute(RaiseAllOffers.builder().lotId(1).gameId(1).build());
+            funPayExecutor.execute(RaiseAllOffers.builder().lotId(1L).gameId(1L).build());
         });
     }
 
@@ -124,7 +124,7 @@ class AuthorizedFunPayExecutorTest {
         );
 
         assertThrows(OfferAlreadyRaisedException.class, () -> {
-            funPayExecutor.execute(RaiseAllOffers.builder().lotId(1).gameId(1).build());
+            funPayExecutor.execute(RaiseAllOffers.builder().lotId(1L).gameId(1L).build());
         });
     }
 

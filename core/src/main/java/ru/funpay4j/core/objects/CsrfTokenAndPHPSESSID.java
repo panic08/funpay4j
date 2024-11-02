@@ -14,10 +14,12 @@
 
 package ru.funpay4j.core.objects;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
 @Data
+@AllArgsConstructor
 @Builder
 public class CsrfTokenAndPHPSESSID {
     private String csrfToken;

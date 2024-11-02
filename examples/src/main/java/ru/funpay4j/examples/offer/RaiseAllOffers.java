@@ -36,8 +36,8 @@ public class RaiseAllOffers {
 
         try {
             authorizedExecutor.execute(ru.funpay4j.core.commands.offer.RaiseAllOffers.builder()
-                    .lotId(123)
-                    .gameId(123)
+                    .lotId(123L)
+                    .gameId(123L)
                     .build());
         } catch (FunPayApiException e) {
             throw new RuntimeException(e);

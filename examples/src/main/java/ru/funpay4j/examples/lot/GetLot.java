@@ -38,7 +38,7 @@ public class GetLot {
 
         try {
             lot = executor.execute(ru.funpay4j.core.commands.lot.GetLot.builder()
-                    .lotId(81)
+                    .lotId(81L)
                     .build());
 
             System.out.println(lot);

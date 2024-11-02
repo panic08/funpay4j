@@ -30,7 +30,6 @@ import java.util.List;
 @Setter
 @EqualsAndHashCode(callSuper = true)
 @AllArgsConstructor
-@NoArgsConstructor
 @ToString(callSuper = true)
 @SuperBuilder
 public class Seller extends User {

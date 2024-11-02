@@ -17,7 +17,6 @@ package ru.funpay4j.core.objects.offer;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import ru.funpay4j.core.objects.user.PreviewSeller;
 
 import java.util.List;
@@ -31,7 +30,6 @@ import java.util.Map;
  */
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
 @Builder
 public class Offer {
     private long id;

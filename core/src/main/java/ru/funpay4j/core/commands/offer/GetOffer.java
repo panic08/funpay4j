@@ -26,7 +26,7 @@ import lombok.*;
 @Setter
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor
 public class GetOffer {
-    private long offerId;
+    @NonNull
+    private Long offerId;
 }

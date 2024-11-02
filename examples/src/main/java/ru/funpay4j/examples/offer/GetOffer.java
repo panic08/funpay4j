@@ -38,7 +38,7 @@ public class GetOffer {
 
         try {
             offer = executor.execute(ru.funpay4j.core.commands.offer.GetOffer.builder()
-                    .offerId(26021761)
+                    .offerId(26021761L)
                     .build());
 
             System.out.println(offer);

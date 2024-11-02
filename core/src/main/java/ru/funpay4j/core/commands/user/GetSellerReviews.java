@@ -27,11 +27,12 @@ import org.jetbrains.annotations.Nullable;
 @Setter
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor
 public class GetSellerReviews {
-    private long userId;
+    @NonNull
+    private Long userId;
 
-    private int pages;
+    @NonNull
+    private Integer pages;
 
     @Nullable
     private Integer starsFilter;

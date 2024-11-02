@@ -39,7 +39,7 @@ public class GetUser {
 
         try {
             user = executor.execute(ru.funpay4j.core.commands.user.GetUser.builder()
-                    .userId(1940073)
+                    .userId(1940073L)
                     .build());
 
             System.out.println(user);
