@@ -21,6 +21,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.funpay4j.core.AuthorizedFunPayExecutor;
 import ru.funpay4j.core.commands.offer.CreateOffer;
+import ru.funpay4j.core.commands.offer.EditOffer;
 import ru.funpay4j.core.commands.offer.RaiseAllOffers;
 import ru.funpay4j.core.commands.user.UpdateAvatar;
 import ru.funpay4j.core.exceptions.InvalidGoldenKeyException;
@@ -147,12 +148,46 @@ class AuthorizedFunPayExecutorTest {
         mockWebServer.enqueue(
                 new MockResponse()
                         .setResponseCode(200)
+                        .setBody("{\"done\":true,\"error\":false,\"errors\":[],\"url\":\"https://funpay.com/lots/210/trade\"}")
         );
 
         String currentCsrfToken = funPayExecutor.getCsrfToken();
         String currentPHPSESSID = funPayExecutor.getPHPSESSID();
 
-        funPayExecutor.execute(CreateOffer.builder().shortDescriptionEn("test").fields(new HashMap<>()).build());
+        funPayExecutor.execute(CreateOffer.builder().lotId(210L).price(5.0).amount(5).shortDescriptionEn("test").fields(new HashMap<>()).build());
+
+        assertNotNull(funPayExecutor.getCsrfToken());
+        assertNotNull(funPayExecutor.getPHPSESSID());
+        assertNotEquals(currentCsrfToken, funPayExecutor.getCsrfToken());
+        assertNotEquals(currentPHPSESSID, funPayExecutor.getPHPSESSID());
+    }
+
+    @Test
+    void testEditOfferInvalidCsrfTokenOrPHPSESSIDException() throws Exception {
+        mockWebServer.enqueue(
+                new MockResponse()
+                        .setResponseCode(400)
+                        .setBody("{\"msg\": \"Обновите страницу и повторите попытку.\", \"error\": 1}")
+        );
+
+        String htmlContent = new String(Files.readAllBytes(Paths.get(GET_CSRF_TOKEN_AND_PHPSESSID_HTML_RESPONSE_PATH)));
+
+        mockWebServer.enqueue(
+                new MockResponse()
+                        .setBody(htmlContent)
+                        .setHeader("Set-Cookie", "PHPSESSID=new;")
+                        .setResponseCode(200)
+        );
+
+        mockWebServer.enqueue(
+                new MockResponse()
+                        .setResponseCode(200)
+        );
+
+        String currentCsrfToken = funPayExecutor.getCsrfToken();
+        String currentPHPSESSID = funPayExecutor.getPHPSESSID();
+
+        funPayExecutor.execute(EditOffer.builder().lotId(210L).offerId(210L).price(5.0).amount(5).shortDescriptionEn("test").fields(new HashMap<>()).build());
 
         assertNotNull(funPayExecutor.getCsrfToken());
         assertNotNull(funPayExecutor.getPHPSESSID());

@@ -20,7 +20,7 @@ import lombok.*;
  * Use this command to raise all offers
  *
  * @author panic08
- * @since 1.0.0
+ * @since 1.0.3
  */
 @Getter
 @Setter

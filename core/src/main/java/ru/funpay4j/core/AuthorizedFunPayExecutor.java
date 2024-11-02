@@ -19,6 +19,7 @@ import lombok.NonNull;
 import lombok.Setter;
 import ru.funpay4j.client.request.SaveOfferRequest;
 import ru.funpay4j.core.commands.offer.CreateOffer;
+import ru.funpay4j.core.commands.offer.EditOffer;
 import ru.funpay4j.core.commands.offer.RaiseAllOffers;
 import ru.funpay4j.core.commands.user.UpdateAvatar;
 import ru.funpay4j.core.exceptions.FunPayApiException;
@@ -121,6 +122,46 @@ public class AuthorizedFunPayExecutor extends FunPayExecutor {
     public void execute(CreateOffer command) throws FunPayApiException, InvalidGoldenKeyException {
         SaveOfferRequest request = SaveOfferRequest.builder()
                 .nodeId(command.getLotId())
+                .summaryRu(command.getShortDescriptionRu())
+                .summaryEn(command.getShortDescriptionEn())
+                .descRu(command.getDescriptionRu())
+                .descEn(command.getDescriptionEn())
+                .paymentMessageRu(command.getPaymentMessageRu())
+                .paymentMessageEn(command.getPaymentMessageEn())
+                .fields(command.getFields())
+                .isAutoDelivery(command.isAutoDelivery())
+                .isActive(command.isActive())
+                .secrets(command.getSecrets())
+                .price(command.getPrice())
+                .amount(command.getAmount())
+                .build();
+
+        //attempt to regenerate csrfToken and PHPSESSID
+        try {
+            funPayClient.saveOffer(goldenKey, csrfToken, PHPSESSID, request);
+        } catch (InvalidCsrfTokenOrPHPSESSIDException e) {
+            updateCsrfTokenAndPHPSESSID();
+
+            try {
+                funPayClient.saveOffer(goldenKey, csrfToken, PHPSESSID, request);
+            } catch (InvalidCsrfTokenOrPHPSESSIDException e1) {
+                //TODO: Throw something more contextual than RuntimeException
+                throw new RuntimeException(e1.getLocalizedMessage());
+            }
+        }
+    }
+
+    /**
+     * Execute to edit offer
+     *
+     * @param command command that will be executed
+     * @throws FunPayApiException if the other api-related exception
+     * @throws InvalidGoldenKeyException if the golden key is incorrect
+     */
+    public void execute(EditOffer command) throws FunPayApiException, InvalidGoldenKeyException {
+        SaveOfferRequest request = SaveOfferRequest.builder()
+                .nodeId(command.getLotId())
+                .offerId(command.getOfferId())
                 .summaryRu(command.getShortDescriptionRu())
                 .summaryEn(command.getShortDescriptionEn())
                 .descRu(command.getDescriptionRu())
