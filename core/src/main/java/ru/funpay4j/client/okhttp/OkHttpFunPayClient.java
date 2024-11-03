@@ -106,23 +106,26 @@ public class OkHttpFunPayClient implements FunPayClient {
         MultipartBody.Builder multipartBody = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart("csrf_token", csrfToken)
-                .addFormDataPart("offer_id", String.valueOf(request.getOfferId()))
-                .addFormDataPart("node_id", String.valueOf(request.getNodeId()))
+                .addFormDataPart("offer_id", request.getOfferId() == null ? "" : String.valueOf(request.getOfferId()))
+                .addFormDataPart("node_id", request.getNodeId() == null ? "" : String.valueOf(request.getNodeId()))
+                .addFormDataPart("deleted", request.isDeleted() ? "1" : "")
                 .addFormDataPart("auto_delivery", request.isAutoDelivery() ? "on" : "")
-                .addFormDataPart("secrets", request.getSecrets() == null ? "" : String.join("\n", request.getSecrets()))
-                .addFormDataPart("price", String.valueOf(request.getPrice()))
-                .addFormDataPart("amount", String.valueOf(request.getAmount()))
                 .addFormDataPart("active", request.isActive() ? "on" : "")
+                .addFormDataPart("secrets", request.getSecrets() == null ? "" : String.join("\n", request.getSecrets()))
+                .addFormDataPart("price", request.getPrice() == null ? "" : String.valueOf(request.getPrice()))
+                .addFormDataPart("amount", request.getAmount() == null ? "" : String.valueOf(request.getAmount()))
                 .addFormDataPart("form_created_at", String.valueOf(System.currentTimeMillis()))
                 .addFormDataPart("fields[summary][ru]", request.getSummaryRu() == null ? "" : request.getSummaryRu())
-                .addFormDataPart("fields[summary][en]", request.getSummaryEn())
+                .addFormDataPart("fields[summary][en]", request.getSummaryEn() == null ? "" : request.getSummaryEn())
                 .addFormDataPart("fields[desc][ru]", request.getDescRu() == null ? "" : request.getDescRu())
                 .addFormDataPart("fields[desc][en]", request.getDescEn() == null ? "" : request.getDescEn())
                 .addFormDataPart("fields[payment_msg][ru]", request.getPaymentMessageRu() == null ? "" : request.getPaymentMessageRu())
                 .addFormDataPart("fields[payment_msg][en]", request.getPaymentMessageEn() == null ? "" : request.getPaymentMessageEn());
 
-        for (Map.Entry<String, String> field : request.getFields().entrySet()) {
-            multipartBody.addFormDataPart(field.getKey(), field.getValue());
+        if (request.getFields() != null) {
+            for (Map.Entry<String, String> field : request.getFields().entrySet()) {
+                multipartBody.addFormDataPart(field.getKey(), field.getValue());
+            }
         }
 
         try (Response response = httpClient.newCall(new Request.Builder().post(multipartBody.build()).url(baseURL + "/lots/offerSave")

@@ -17,7 +17,6 @@ package ru.funpay4j.client.request;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Map;
@@ -25,39 +24,33 @@ import java.util.Map;
 @Getter
 @Builder
 public class SaveOfferRequest {
-    private long offerId;
+    private Long offerId;
 
-    private long nodeId;
+    private Long nodeId;
 
-    @Nullable
     private String summaryRu;
 
-    @NonNull
     private String summaryEn;
 
-    @Nullable
     private String descRu;
 
-    @Nullable
     private String descEn;
 
-    @Nullable
     private String paymentMessageRu;
 
-    @Nullable
     private String paymentMessageEn;
 
-    @NonNull
     private Map<String, String> fields;
 
     private boolean isAutoDelivery;
 
     private boolean isActive;
 
-    @Nullable
+    private boolean isDeleted;
+
     private List<String> secrets;
 
-    private double price;
+    private Double price;
 
-    private int amount;
+    private Integer amount;
 }
