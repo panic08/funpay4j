@@ -19,6 +19,7 @@ import lombok.NonNull;
 import lombok.Setter;
 import ru.funpay4j.client.request.SaveOfferRequest;
 import ru.funpay4j.core.commands.offer.CreateOffer;
+import ru.funpay4j.core.commands.offer.DeleteOffer;
 import ru.funpay4j.core.commands.offer.EditOffer;
 import ru.funpay4j.core.commands.offer.RaiseAllOffers;
 import ru.funpay4j.core.commands.user.UpdateAvatar;
@@ -131,6 +132,7 @@ public class AuthorizedFunPayExecutor extends FunPayExecutor {
                 .fields(command.getFields())
                 .isAutoDelivery(command.isAutoDelivery())
                 .isActive(command.isActive())
+                .isDeleted(false)
                 .secrets(command.getSecrets())
                 .price(command.getPrice())
                 .amount(command.getAmount())
@@ -171,9 +173,39 @@ public class AuthorizedFunPayExecutor extends FunPayExecutor {
                 .fields(command.getFields())
                 .isAutoDelivery(command.isAutoDelivery())
                 .isActive(command.isActive())
+                .isDeleted(false)
                 .secrets(command.getSecrets())
                 .price(command.getPrice())
                 .amount(command.getAmount())
+                .build();
+
+        //attempt to regenerate csrfToken and PHPSESSID
+        try {
+            funPayClient.saveOffer(goldenKey, csrfToken, PHPSESSID, request);
+        } catch (InvalidCsrfTokenOrPHPSESSIDException e) {
+            updateCsrfTokenAndPHPSESSID();
+
+            try {
+                funPayClient.saveOffer(goldenKey, csrfToken, PHPSESSID, request);
+            } catch (InvalidCsrfTokenOrPHPSESSIDException e1) {
+                //TODO: Throw something more contextual than RuntimeException
+                throw new RuntimeException(e1.getLocalizedMessage());
+            }
+        }
+    }
+
+    /**
+     * Execute to delete offer
+     *
+     * @param command command that will be executed
+     * @throws FunPayApiException if the other api-related exception
+     * @throws InvalidGoldenKeyException if the golden key is incorrect
+     */
+    public void execute(DeleteOffer command) throws FunPayApiException, InvalidGoldenKeyException {
+        SaveOfferRequest request = SaveOfferRequest.builder()
+                .nodeId(command.getLotId())
+                .offerId(command.getOfferId())
+                .isDeleted(true)
                 .build();
 
         //attempt to regenerate csrfToken and PHPSESSID
