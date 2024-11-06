@@ -16,7 +16,6 @@ package ru.funpay4j.client.request;
 
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NonNull;
 
 import java.util.List;
 import java.util.Map;
