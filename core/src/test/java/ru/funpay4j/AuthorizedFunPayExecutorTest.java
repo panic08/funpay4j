@@ -20,10 +20,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.funpay4j.core.AuthorizedFunPayExecutor;
-import ru.funpay4j.core.commands.offer.CreateOffer;
-import ru.funpay4j.core.commands.offer.DeleteOffer;
-import ru.funpay4j.core.commands.offer.EditOffer;
-import ru.funpay4j.core.commands.offer.RaiseAllOffers;
+import ru.funpay4j.core.commands.offer.*;
 import ru.funpay4j.core.commands.user.UpdateAvatar;
 import ru.funpay4j.core.exceptions.InvalidGoldenKeyException;
 import ru.funpay4j.core.exceptions.offer.OfferAlreadyRaisedException;
@@ -228,5 +225,20 @@ class AuthorizedFunPayExecutorTest {
         assertNotNull(funPayExecutor.getPHPSESSID());
         assertNotEquals(currentCsrfToken, funPayExecutor.getCsrfToken());
         assertNotEquals(currentPHPSESSID, funPayExecutor.getPHPSESSID());
+    }
+
+    @Test
+    void testAddOfferImage() throws Exception {
+        Long expectedFileId = 114254551L;
+
+        mockWebServer.enqueue(
+                new MockResponse()
+                        .setBody("{\"fileId\": " + expectedFileId + "}")
+                        .setResponseCode(200)
+        );
+
+        Long actualFileId = funPayExecutor.execute(CreateOfferImage.builder().image(Files.readAllBytes(Paths.get(UPDATE_AVATAR_IMG_PATH))).build());
+
+        assertEquals(expectedFileId, actualFileId);
     }
 }

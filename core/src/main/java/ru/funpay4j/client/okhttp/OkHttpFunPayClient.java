@@ -155,4 +155,28 @@ public class OkHttpFunPayClient implements FunPayClient {
             throw new FunPayApiException(e.getLocalizedMessage());
         }
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Long addOfferImage(@NonNull String goldenKey, byte @NonNull [] image) throws FunPayApiException, InvalidGoldenKeyException {
+        RequestBody requestBody = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("file", "image.jpg", RequestBody.create(image))
+                .build();
+
+        try (Response response = httpClient.newCall(new Request.Builder().post(requestBody).url(baseURL + "/file/addOfferImage")
+                .addHeader("Cookie", "golden_key=" + goldenKey)
+                .addHeader("x-requested-with", "XMLHttpRequest")
+                .build()).execute()) {
+            if (response.code() == 403) {
+                throw new InvalidGoldenKeyException("goldenKey is invalid");
+            }
+
+            return JsonParser.parseString(response.body().string()).getAsJsonObject().get("fileId").getAsLong();
+        } catch (IOException e) {
+            throw new FunPayApiException(e.getLocalizedMessage());
+        }
+    }
 }

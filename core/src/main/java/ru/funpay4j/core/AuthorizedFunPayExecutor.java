@@ -18,10 +18,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import ru.funpay4j.client.request.SaveOfferRequest;
-import ru.funpay4j.core.commands.offer.CreateOffer;
-import ru.funpay4j.core.commands.offer.DeleteOffer;
-import ru.funpay4j.core.commands.offer.EditOffer;
-import ru.funpay4j.core.commands.offer.RaiseAllOffers;
+import ru.funpay4j.core.commands.offer.*;
 import ru.funpay4j.core.commands.user.UpdateAvatar;
 import ru.funpay4j.core.exceptions.FunPayApiException;
 import ru.funpay4j.core.exceptions.InvalidCsrfTokenOrPHPSESSIDException;
@@ -221,6 +218,18 @@ public class AuthorizedFunPayExecutor extends FunPayExecutor {
                 throw new RuntimeException(e1.getLocalizedMessage());
             }
         }
+    }
+
+    /**
+     * Execute to create offer image
+     *
+     * @param command command that will be executed
+     * @return fileId
+     * @throws FunPayApiException if the other api-related exception
+     * @throws InvalidGoldenKeyException if the golden key is incorrect
+     */
+    public Long execute(CreateOfferImage command) throws FunPayApiException, InvalidGoldenKeyException {
+        return funPayClient.addOfferImage(goldenKey, command.getImage());
     }
 
     public void updateCsrfTokenAndPHPSESSID() throws FunPayApiException {

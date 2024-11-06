@@ -60,4 +60,14 @@ public interface FunPayClient {
      */
     void saveOffer(String goldenKey, String csrfToken, String PHPSESSID, SaveOfferRequest request) throws FunPayApiException,
             InvalidGoldenKeyException, InvalidCsrfTokenOrPHPSESSIDException;
+
+    /**
+     * Send a request to add offer image
+     *
+     * @param goldenKey golden key which will be used to authorize the user
+     * @return fileId
+     * @throws FunPayApiException if the other api-related exception
+     * @throws InvalidGoldenKeyException if the golden key is invalid
+     */
+    Long addOfferImage(String goldenKey, byte[] image) throws FunPayApiException, InvalidGoldenKeyException;
 }
