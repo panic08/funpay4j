@@ -1,7 +1,9 @@
 ![FunPay4j Logo](./funpay4j.jpg)
 
+[![CI](https://github.com/panic08/funpay4j/actions/workflows/build.yml/badge.svg)](https://github.com/panic08/funpay4j/actions/workflows/build.yml)
+[![GitHub release](https://img.shields.io/github/v/release/panic08/funpay4j)](https://github.com/panic08/funpay4j/releases)
+[![JitPack](https://jitpack.io/v/panic08/funpay4j.svg)](https://jitpack.io/#panic08/funpay4j)
 [![Apache License](http://img.shields.io/badge/license-ASL-blue.svg)](https://github.com/panic08/funpay4j/blob/master/COPYING)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://legacy.reactjs.org/docs/how-to-contribute.html#your-first-pull-request)
 
 ---
 
