@@ -131,6 +131,7 @@ public class AuthorizedFunPayExecutor extends FunPayExecutor {
                 .isActive(command.isActive())
                 .isDeleted(false)
                 .secrets(command.getSecrets())
+                .images(command.getImageIds())
                 .price(command.getPrice())
                 .amount(command.getAmount())
                 .build();
@@ -172,6 +173,7 @@ public class AuthorizedFunPayExecutor extends FunPayExecutor {
                 .isActive(command.isActive())
                 .isDeleted(false)
                 .secrets(command.getSecrets())
+                .images(command.getImageIds())
                 .price(command.getPrice())
                 .amount(command.getAmount())
                 .build();
@@ -224,7 +226,7 @@ public class AuthorizedFunPayExecutor extends FunPayExecutor {
      * Execute to create offer image
      *
      * @param command command that will be executed
-     * @return fileId
+     * @return imageId
      * @throws FunPayApiException if the other api-related exception
      * @throws InvalidGoldenKeyException if the golden key is incorrect
      */

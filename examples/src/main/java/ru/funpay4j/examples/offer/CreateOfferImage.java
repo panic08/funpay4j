@@ -38,11 +38,11 @@ public class CreateOfferImage {
 
 
         try {
-            Long fileId = executor.execute(ru.funpay4j.core.commands.offer.CreateOfferImage.builder()
+            Long imageId = executor.execute(ru.funpay4j.core.commands.offer.CreateOfferImage.builder()
                     .image(Files.readAllBytes(Paths.get("PATH-TO-IMAGE")))
                     .build());
 
-            System.out.println(fileId);
+            System.out.println(imageId);
         } catch (FunPayApiException e) {
             throw new RuntimeException(e);
         } catch (InvalidGoldenKeyException e) {

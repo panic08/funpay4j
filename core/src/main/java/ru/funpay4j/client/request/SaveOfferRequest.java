@@ -49,6 +49,8 @@ public class SaveOfferRequest {
 
     private List<String> secrets;
 
+    private List<Long> images;
+
     private Double price;
 
     private Integer amount;

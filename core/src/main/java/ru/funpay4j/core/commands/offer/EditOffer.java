@@ -55,7 +55,7 @@ public class EditOffer {
     @Nullable
     private String paymentMessageEn;
 
-    @NonNull
+    @Nullable
     private Map<String, String> fields;
 
     private boolean isAutoDelivery;
@@ -64,6 +64,9 @@ public class EditOffer {
 
     @Nullable
     private List<String> secrets;
+
+    @Nullable
+    private List<Long> imageIds;
 
     @NonNull
     private Double price;

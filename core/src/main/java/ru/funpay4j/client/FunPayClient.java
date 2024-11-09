@@ -65,7 +65,7 @@ public interface FunPayClient {
      * Send a request to add offer image
      *
      * @param goldenKey golden key which will be used to authorize the user
-     * @return fileId
+     * @return imageId
      * @throws FunPayApiException if the other api-related exception
      * @throws InvalidGoldenKeyException if the golden key is invalid
      */

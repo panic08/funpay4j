@@ -27,6 +27,7 @@ import ru.funpay4j.core.exceptions.offer.OfferAlreadyRaisedException;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * This implementation of FunPayClient uses OkHttp to send request
@@ -112,6 +113,9 @@ public class OkHttpFunPayClient implements FunPayClient {
                 .addFormDataPart("auto_delivery", request.isAutoDelivery() ? "on" : "")
                 .addFormDataPart("active", request.isActive() ? "on" : "")
                 .addFormDataPart("secrets", request.getSecrets() == null ? "" : String.join("\n", request.getSecrets()))
+                //if not null convert List<Long> to a comma-separated string
+                .addFormDataPart("fields[images]", request.getImages() == null ? "" :
+                        request.getImages().stream().map(String::valueOf).collect(Collectors.joining(",")))
                 .addFormDataPart("price", request.getPrice() == null ? "" : String.valueOf(request.getPrice()))
                 .addFormDataPart("amount", request.getAmount() == null ? "" : String.valueOf(request.getAmount()))
                 .addFormDataPart("form_created_at", String.valueOf(System.currentTimeMillis()))
