@@ -52,7 +52,7 @@ public class CreateOffer {
     @Nullable
     private String paymentMessageEn;
 
-    @NonNull
+    @Nullable
     private Map<String, String> fields;
 
     private boolean isAutoDelivery;
@@ -61,6 +61,9 @@ public class CreateOffer {
 
     @Nullable
     private List<String> secrets;
+
+    @Nullable
+    private List<Long> imageIds;
 
     @NonNull
     private Double price;

@@ -18,9 +18,14 @@ import ru.funpay4j.core.AuthorizedFunPayExecutor;
 import ru.funpay4j.core.exceptions.FunPayApiException;
 import ru.funpay4j.core.exceptions.InvalidGoldenKeyException;
 
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * This is an example of how to create offer
@@ -28,14 +33,25 @@ import java.util.HashMap;
  * @author panic08
  */
 public class CreateOffer {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         //if we want to use a proxy
         Proxy proxy = new Proxy(Proxy.Type.SOCKS, new InetSocketAddress("127.0.0.1", 8000));
 
         AuthorizedFunPayExecutor executor = new AuthorizedFunPayExecutor("test-golden-key", proxy);
 
-
         try {
+            Long imageId1 = executor.execute(ru.funpay4j.core.commands.offer.CreateOfferImage.builder()
+                    .image(Files.readAllBytes(Paths.get("PATH-TO-IMAGE1")))
+                    .build());
+            Long imageId2 = executor.execute(ru.funpay4j.core.commands.offer.CreateOfferImage.builder()
+                    .image(Files.readAllBytes(Paths.get("PATH-TO-IMAGE2")))
+                    .build());
+
+            List<Long> imageIds = new ArrayList<>();
+
+            imageIds.add(imageId1);
+            imageIds.add(imageId2);
+
             executor.execute(ru.funpay4j.core.commands.offer.CreateOffer.builder()
                     .lotId(210L)
                     .price(200D)
@@ -48,6 +64,7 @@ public class CreateOffer {
                         put("fields[quality]", "Inscribed");
                         put("fields[method]", "Мгновенно");
                     }})
+                    .imageIds(imageIds)
                     .build());
         } catch (FunPayApiException e) {
             throw new RuntimeException(e);
