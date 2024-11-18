@@ -21,6 +21,11 @@ package ru.funpay4j.core.exceptions.offer;
  * @since 1.0.3
  */
 public class OfferNotFoundException extends RuntimeException {
+    /**
+     * Initializes a new OfferNotFoundException exception
+     *
+     * @param message exception message
+     */
     public OfferNotFoundException(String message) {
         super(message);
     }

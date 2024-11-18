@@ -51,6 +51,9 @@ public class FunPayExecutor {
     @NonNull
     protected final FunPayClient funPayClient;
 
+    /**
+     * Creates a new FunPayExecutor instance
+     */
     public FunPayExecutor() {
         OkHttpClient httpClient = new OkHttpClient();
 
@@ -58,6 +61,12 @@ public class FunPayExecutor {
         this.funPayClient = new OkHttpFunPayClient(httpClient, FunPayURL.BASE_URL);
     }
 
+    /**
+     * Creates a new FunPayExecutor instance
+     *
+     * @param baseURL base URL of the primary server
+     * @param proxy proxy for forwarding requests
+     */
     public FunPayExecutor(@NonNull String baseURL, @NonNull Proxy proxy) {
         OkHttpClient httpClient = new OkHttpClient.Builder()
                 .proxy(proxy)
@@ -67,6 +76,11 @@ public class FunPayExecutor {
         this.funPayClient = new OkHttpFunPayClient(httpClient, baseURL);
     }
 
+    /**
+     * Creates a new FunPayExecutor instance
+     *
+     * @param baseURL base URL of the primary server
+     */
     public FunPayExecutor(@NonNull String baseURL) {
         OkHttpClient httpClient = new OkHttpClient();
 
@@ -74,6 +88,11 @@ public class FunPayExecutor {
         this.funPayClient = new OkHttpFunPayClient(httpClient, baseURL);
     }
 
+    /**
+     * Creates a new FunPayExecutor instance
+     *
+     * @param proxy proxy for forwarding requests
+     */
     public FunPayExecutor(@NonNull Proxy proxy) {
         OkHttpClient httpClient = new OkHttpClient.Builder()
                 .proxy(proxy)

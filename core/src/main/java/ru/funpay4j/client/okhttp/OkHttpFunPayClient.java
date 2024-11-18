@@ -42,6 +42,12 @@ public class OkHttpFunPayClient implements FunPayClient {
     @NonNull
     private final String baseURL;
 
+    /**
+     * Creates a new OkHttpFunPayClient instance
+     *
+     * @param httpClient httpClient required to send http requests
+     * @param baseURL base URL of the primary server
+     */
     public OkHttpFunPayClient(@NonNull OkHttpClient httpClient, @NonNull String baseURL) {
         this.httpClient = httpClient;
         this.baseURL = baseURL;

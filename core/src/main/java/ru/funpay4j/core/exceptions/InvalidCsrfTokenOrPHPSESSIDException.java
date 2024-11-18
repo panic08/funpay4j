@@ -21,6 +21,11 @@ package ru.funpay4j.core.exceptions;
  * @since 1.0.3
  */
 public class InvalidCsrfTokenOrPHPSESSIDException extends RuntimeException {
+    /**
+     * Initializes a new InvalidCsrfTokenOrPHPSESSIDException exception
+     *
+     * @param message exception message
+     */
     public InvalidCsrfTokenOrPHPSESSIDException(String message) {
         super(message);
     }

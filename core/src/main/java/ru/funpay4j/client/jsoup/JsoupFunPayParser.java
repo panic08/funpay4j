@@ -56,6 +56,12 @@ public class JsoupFunPayParser implements FunPayParser {
     @NonNull
     private final String baseURL;
 
+    /**
+     * Creates a new JsoupFunPayParser instance
+     *
+     * @param httpClient httpClient required to send http requests
+     * @param baseURL base URL of the primary server
+     */
     public JsoupFunPayParser(@NonNull OkHttpClient httpClient, @NonNull String baseURL) {
         this.httpClient = httpClient;
         this.baseURL = baseURL;

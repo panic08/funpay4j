@@ -43,6 +43,11 @@ public class AuthorizedFunPayExecutor extends FunPayExecutor {
 
     private String csrfToken;
 
+    /**
+     * Creates a new AuthorizedFunPayExecutor instance
+     *
+     * @param goldenKey golden key which will be used to authorize the user
+     */
     public AuthorizedFunPayExecutor(@NonNull String goldenKey) {
         super();
 
@@ -54,6 +59,13 @@ public class AuthorizedFunPayExecutor extends FunPayExecutor {
         }
     }
 
+    /**
+     * Creates a new AuthorizedFunPayExecutor instance
+     *
+     * @param goldenKey golden key which will be used to authorize the user
+     * @param baseURL base URL of the primary server
+     * @param proxy proxy for forwarding requests
+     */
     public AuthorizedFunPayExecutor(@NonNull String goldenKey, @NonNull String baseURL, @NonNull Proxy proxy) {
         super(baseURL, proxy);
 
@@ -65,6 +77,12 @@ public class AuthorizedFunPayExecutor extends FunPayExecutor {
         }
     }
 
+    /**
+     * Creates a new AuthorizedFunPayExecutor instance
+     *
+     * @param goldenKey golden key which will be used to authorize the user
+     * @param baseURL base URL of the primary server
+     */
     public AuthorizedFunPayExecutor(@NonNull String goldenKey, @NonNull String baseURL) {
         super(baseURL);
 
@@ -76,6 +94,12 @@ public class AuthorizedFunPayExecutor extends FunPayExecutor {
         }
     }
 
+    /**
+     * Creates a new AuthorizedFunPayExecutor instance
+     *
+     * @param goldenKey golden key which will be used to authorize the user
+     * @param proxy proxy for forwarding requests
+     */
     public AuthorizedFunPayExecutor(@NonNull String goldenKey, @NonNull Proxy proxy) {
         super(proxy);
 
@@ -234,6 +258,11 @@ public class AuthorizedFunPayExecutor extends FunPayExecutor {
         return funPayClient.addOfferImage(goldenKey, command.getImage());
     }
 
+    /**
+     * Update csrfToken and PHPSESSID
+     *
+     * @throws FunPayApiException if the other api-related exception
+     */
     public void updateCsrfTokenAndPHPSESSID() throws FunPayApiException {
         //TODO: It might be worth reconsidering and finding another way to update csrf and PHPSESSID
         // that doesn't require making such relatively expensive queries

@@ -21,6 +21,11 @@ package ru.funpay4j.core.exceptions;
  * @since 1.0.3
  */
 public class InvalidGoldenKeyException extends RuntimeException {
+    /**
+     * Initializes a new InvalidGoldenKeyException exception
+     *
+     * @param message exception message
+     */
     public InvalidGoldenKeyException(String message) {
         super(message);
     }

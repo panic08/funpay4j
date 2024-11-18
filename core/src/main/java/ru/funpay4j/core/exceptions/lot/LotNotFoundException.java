@@ -21,6 +21,11 @@ package ru.funpay4j.core.exceptions.lot;
  * @since 1.0.3
  */
 public class LotNotFoundException extends RuntimeException {
+    /**
+     * Initializes a new LotNotFoundException exception
+     *
+     * @param message exception message
+     */
     public LotNotFoundException(String message) {
         super(message);
     }
