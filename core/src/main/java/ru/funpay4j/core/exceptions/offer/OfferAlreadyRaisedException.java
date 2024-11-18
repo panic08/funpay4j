@@ -21,6 +21,11 @@ package ru.funpay4j.core.exceptions.offer;
  * @since 1.0.3
  */
 public class OfferAlreadyRaisedException extends RuntimeException {
+    /**
+     * Initializes a new OfferAlreadyRaisedException exception
+     *
+     * @param message exception message
+     */
     public OfferAlreadyRaisedException(String message) {
         super(message);
     }

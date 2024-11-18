@@ -21,6 +21,11 @@ package ru.funpay4j.core.exceptions;
  * @since 1.0.0
  */
 public class FunPayApiException extends Exception {
+    /**
+     * Initializes a new FunPayApiException exception
+     *
+     * @param message exception message
+     */
     public FunPayApiException(String message) {
         super(message);
     }

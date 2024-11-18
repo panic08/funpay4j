@@ -53,7 +53,9 @@ public interface FunPayClient {
      * Send a request to save offer
      *
      * @param goldenKey golden key which will be used to authorize the user
-     * @param request request storing all necessary data for creating offer
+     * @param csrfToken csrf token which is required to interact with the user in this operation
+     * @param PHPSESSID user session without which the csrf token will be useless
+     * @param request request storing all necessary data for saving offer
      * @throws FunPayApiException if the other api-related exception
      * @throws InvalidGoldenKeyException if the golden key is invalid
      * @throws InvalidCsrfTokenOrPHPSESSIDException if the csrf token or PHPSESSID is invalid
@@ -65,6 +67,7 @@ public interface FunPayClient {
      * Send a request to add offer image
      *
      * @param goldenKey golden key which will be used to authorize the user
+     * @param image byte file representing the image
      * @return imageId
      * @throws FunPayApiException if the other api-related exception
      * @throws InvalidGoldenKeyException if the golden key is invalid

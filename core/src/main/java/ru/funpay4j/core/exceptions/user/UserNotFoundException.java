@@ -21,6 +21,11 @@ package ru.funpay4j.core.exceptions.user;
  * @since 1.0.3
  */
 public class UserNotFoundException extends RuntimeException {
+    /**
+     * Initializes a new UserNotFoundException exception
+     *
+     * @param message exception message
+     */
     public UserNotFoundException(String message) {
         super(message);
     }

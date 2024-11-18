@@ -20,6 +20,12 @@ import lombok.Getter;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * This object represents the shell for sending a request to save an offer
+ *
+ * @author panic08
+ * @since 1.0.4
+ */
 @Getter
 @Builder
 public class SaveOfferRequest {

@@ -18,6 +18,12 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
+/**
+ *  This object represents the storage of csrfToken and PHPSESSID
+ *
+ * @author panic08
+ * @since 1.0.4
+ */
 @Data
 @AllArgsConstructor
 @Builder

@@ -13,6 +13,22 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter'
 }
 
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(8)
+    }
+}
+
+tasks.withType(Javadoc).configureEach {
+    failOnError = true
+    options.addStringOption('Xdoclint:all', '-quiet')
+    options.addBooleanOption('Xwerror', true)
+}
+
+tasks.named("build") {
+    dependsOn(javadoc)
+}
+
 test {
     useJUnitPlatform()
 }

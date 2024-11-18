@@ -35,6 +35,7 @@ public class FunPayUserUtil {
      *
      * @param registerDate the date of registration as a string that needs to be converted
      * @return {@link Date} object representing the user's registration date
+     * @throws ParseException parsing exception
      */
     public static Date convertRegisterDateStringToDate(@NonNull String registerDate) throws ParseException {
         if (registerDate.startsWith("сегодня")) {
@@ -103,6 +104,7 @@ public class FunPayUserUtil {
      *
      * @param lastSeenAt the date of last seen as a string that needs to be converted
      * @return {@link Date} object representing the user's last seen date
+     * @throws ParseException parsing exception
      */
     public static Date convertLastSeenAtStringToDate(@NonNull String lastSeenAt) throws ParseException {
         //delete the “(X days/weeks/years ago)” part
