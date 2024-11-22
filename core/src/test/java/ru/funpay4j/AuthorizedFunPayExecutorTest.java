@@ -46,18 +46,8 @@ class AuthorizedFunPayExecutorTest {
     @BeforeEach
     void setUp() throws Exception {
         this.mockWebServer = new MockWebServer();
-
-        //we do this because when creating a new instance of AuthorizedFunPayExecutor in the constructor, csrfToken and PHPSESSID are obtained
-        String htmlContent = new String(Files.readAllBytes(Paths.get(GET_CSRF_TOKEN_AND_PHPSESSID_HTML_RESPONSE_PATH)));
-
-        mockWebServer.enqueue(
-                new MockResponse()
-                        .setBody(htmlContent)
-                        .setHeader("Set-Cookie", "PHPSESSID=old;")
-                        .setResponseCode(200)
-        );
-
         this.funPayExecutor = new AuthorizedFunPayExecutor("example", this.mockWebServer.url("/").toString());
+        this.funPayExecutor.setPHPSESSID("old");
         this.funPayExecutor.setCsrfToken("old");
     }
 
