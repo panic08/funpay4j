@@ -52,11 +52,6 @@ public class AuthorizedFunPayExecutor extends FunPayExecutor {
         super();
 
         this.goldenKey = goldenKey;
-        try {
-            updateCsrfTokenAndPHPSESSID();
-        } catch (FunPayApiException e) {
-            throw new RuntimeException(e.getCause());
-        }
     }
 
     /**
@@ -70,11 +65,6 @@ public class AuthorizedFunPayExecutor extends FunPayExecutor {
         super(baseURL, proxy);
 
         this.goldenKey = goldenKey;
-        try {
-            updateCsrfTokenAndPHPSESSID();
-        } catch (FunPayApiException e) {
-            throw new RuntimeException(e.getCause());
-        }
     }
 
     /**
@@ -87,11 +77,6 @@ public class AuthorizedFunPayExecutor extends FunPayExecutor {
         super(baseURL);
 
         this.goldenKey = goldenKey;
-        try {
-            updateCsrfTokenAndPHPSESSID();
-        } catch (FunPayApiException e) {
-            throw new RuntimeException(e.getCause());
-        }
     }
 
     /**
@@ -104,11 +89,6 @@ public class AuthorizedFunPayExecutor extends FunPayExecutor {
         super(proxy);
 
         this.goldenKey = goldenKey;
-        try {
-            updateCsrfTokenAndPHPSESSID();
-        } catch (FunPayApiException e) {
-            throw new RuntimeException(e.getCause());
-        }
     }
 
     /**
@@ -160,6 +140,14 @@ public class AuthorizedFunPayExecutor extends FunPayExecutor {
                 .amount(command.getAmount())
                 .build();
 
+        if (PHPSESSID == null || csrfToken == null) {
+            try {
+                updateCsrfTokenAndPHPSESSID();
+            } catch (FunPayApiException e) {
+                throw new RuntimeException(e.getCause());
+            }
+        }
+
         //attempt to regenerate csrfToken and PHPSESSID
         try {
             funPayClient.saveOffer(goldenKey, csrfToken, PHPSESSID, request);
@@ -202,6 +190,14 @@ public class AuthorizedFunPayExecutor extends FunPayExecutor {
                 .amount(command.getAmount())
                 .build();
 
+        if (PHPSESSID == null || csrfToken == null) {
+            try {
+                updateCsrfTokenAndPHPSESSID();
+            } catch (FunPayApiException e) {
+                throw new RuntimeException(e.getCause());
+            }
+        }
+
         //attempt to regenerate csrfToken and PHPSESSID
         try {
             funPayClient.saveOffer(goldenKey, csrfToken, PHPSESSID, request);
@@ -230,6 +226,14 @@ public class AuthorizedFunPayExecutor extends FunPayExecutor {
                 .offerId(command.getOfferId())
                 .isDeleted(true)
                 .build();
+
+        if (PHPSESSID == null || csrfToken == null) {
+            try {
+                updateCsrfTokenAndPHPSESSID();
+            } catch (FunPayApiException e) {
+                throw new RuntimeException(e.getCause());
+            }
+        }
 
         //attempt to regenerate csrfToken and PHPSESSID
         try {
