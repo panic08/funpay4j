@@ -41,7 +41,6 @@ class AuthorizedFunPayExecutorTest {
     private MockWebServer mockWebServer;
 
     private static final String GET_CSRF_TOKEN_AND_PHPSESSID_HTML_RESPONSE_PATH = "src/test/resources/html/client/getCsrfTokenAndPHPSESSIDResponse.html";
-    private static final String UPDATE_AVATAR_IMG_PATH = "src/test/resources/img/client/updateAvatar.jpeg";
 
     @BeforeEach
     void setUp() throws Exception {
@@ -87,7 +86,7 @@ class AuthorizedFunPayExecutorTest {
         );
 
         assertThrows(InvalidGoldenKeyException.class, () -> {
-            funPayExecutor.execute(UpdateAvatar.builder().newAvatar(Files.readAllBytes(Paths.get(UPDATE_AVATAR_IMG_PATH))).build());
+            funPayExecutor.execute(UpdateAvatar.builder().newAvatar(new byte[] {}).build());
         });
     }
 
@@ -227,7 +226,7 @@ class AuthorizedFunPayExecutorTest {
                         .setResponseCode(200)
         );
 
-        Long actualFileId = funPayExecutor.execute(CreateOfferImage.builder().image(Files.readAllBytes(Paths.get(UPDATE_AVATAR_IMG_PATH))).build());
+        Long actualFileId = funPayExecutor.execute(CreateOfferImage.builder().image(new byte[] {}).build());
 
         assertEquals(expectedFileId, actualFileId);
     }
