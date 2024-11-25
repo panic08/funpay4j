@@ -494,11 +494,61 @@ public class JsoupFunPayParser implements FunPayParser {
      * {@inheritDoc}
      */
     @Override
-    public List<SellerReview> parseSellerReviews(long userId, int pages, Integer starsFilter) throws FunPayApiException, UserNotFoundException {
+    public List<SellerReview> parseSellerReviews(long userId, int pages) throws FunPayApiException, UserNotFoundException {
+        return parseSellerReviewsInternal(userId, pages, null);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<SellerReview> parseSellerReviews(long userId, int pages, int starsFilter) throws FunPayApiException, UserNotFoundException {
+        return parseSellerReviewsInternal(userId, pages, String.valueOf(starsFilter));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public CsrfTokenAndPHPSESSID parseCsrfTokenAndPHPSESSID(@NonNull String goldenKey) throws FunPayApiException {
+        //We send a request to /unknown URL that doesn't exist to get a page where it will be reported that the page doesn't exist.
+        // This is necessary because such a page is the smallest size
+        try (Response funPayHtmlResponse = httpClient.newCall(new Request.Builder().get().url(baseURL + "/unknown/")
+                .addHeader("Cookie", "golden_key=" + goldenKey).build()).execute()) {
+            String funPayHtmlPageBody = funPayHtmlResponse.body().string();
+
+            Document funPayDocument = Jsoup.parse(funPayHtmlPageBody);
+
+            String dataAppData = funPayDocument.getElementsByTag("body").attr("data-app-data");
+
+            String csrfToken = JsonParser.parseString(dataAppData).getAsJsonObject().get("csrf-token").getAsString();
+            //Use this regex to get the value of the PHPSESSID key from the Set-Cookie header
+            String PHPSESSID = funPayHtmlResponse.header("Set-Cookie").replaceAll(".*PHPSESSID=([^;]*).*", "$1");
+
+            return CsrfTokenAndPHPSESSID.builder()
+                    .csrfToken(csrfToken)
+                    .PHPSESSID(PHPSESSID)
+                    .build();
+        } catch (IOException e) {
+            throw new FunPayApiException(e.getLocalizedMessage());
+        }
+    }
+
+    /**
+     * Common method to parse seller reviews
+     *
+     * @param userId user id by which seller reviews pages will be parsed
+     * @param pages number of pages indicating how many seller reviews will be parsed
+     * @param starsFilter number of stars filter, can be null
+     * @return sellerReviews
+     * @throws FunPayApiException if the other api-related exception
+     * @throws UserNotFoundException if the user with id does not found/seller
+     */
+    private List<SellerReview> parseSellerReviewsInternal(long userId, int pages, String starsFilter) throws FunPayApiException, UserNotFoundException {
         List<SellerReview> currentSellerReviews = new ArrayList<>();
 
         String userIdFormData = String.valueOf(userId);
-        String starsFilterFormData = starsFilter == null ? "" : String.valueOf(starsFilter);
+        String starsFilterFormData = starsFilter == null ? "" : starsFilter;
         String continueArg = null;
 
         for (int currentPageCount = 0; currentPageCount < pages; currentPageCount++) {
@@ -537,34 +587,6 @@ public class JsoupFunPayParser implements FunPayParser {
         }
 
         return currentSellerReviews;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public CsrfTokenAndPHPSESSID parseCsrfTokenAndPHPSESSID(@NonNull String goldenKey) throws FunPayApiException {
-        //We send a request to /unknown URL that doesn't exist to get a page where it will be reported that the page doesn't exist.
-        // This is necessary because such a page is the smallest size
-        try (Response funPayHtmlResponse = httpClient.newCall(new Request.Builder().get().url(baseURL + "/unknown/")
-                .addHeader("Cookie", "golden_key=" + goldenKey).build()).execute()) {
-            String funPayHtmlPageBody = funPayHtmlResponse.body().string();
-
-            Document funPayDocument = Jsoup.parse(funPayHtmlPageBody);
-
-            String dataAppData = funPayDocument.getElementsByTag("body").attr("data-app-data");
-
-            String csrfToken = JsonParser.parseString(dataAppData).getAsJsonObject().get("csrf-token").getAsString();
-            //Use this regex to get the value of the PHPSESSID key from the Set-Cookie header
-            String PHPSESSID = funPayHtmlResponse.header("Set-Cookie").replaceAll(".*PHPSESSID=([^;]*).*", "$1");
-
-            return CsrfTokenAndPHPSESSID.builder()
-                    .csrfToken(csrfToken)
-                    .PHPSESSID(PHPSESSID)
-                    .build();
-        } catch (IOException e) {
-            throw new FunPayApiException(e.getLocalizedMessage());
-        }
     }
 
     private void extractReviewsFromReviewsHtml(Document reviewsHtml, List<SellerReview> currentSellerReviews) {

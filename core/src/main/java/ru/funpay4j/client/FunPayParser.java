@@ -78,12 +78,23 @@ public interface FunPayParser {
      *
      * @param userId user id by which seller reviews pages will be parsed
      * @param pages number of pages indicating how many seller reviews will be parsed
+     * @return sellerReviews
+     * @throws FunPayApiException if the other api-related exception
+     * @throws UserNotFoundException if the user with id does not found/seller
+     */
+    List<SellerReview> parseSellerReviews(long userId, int pages) throws FunPayApiException, UserNotFoundException;
+
+    /**
+     * Parse seller reviews with stars filter
+     *
+     * @param userId user id by which seller reviews pages will be parsed
+     * @param pages number of pages indicating how many seller reviews will be parsed
      * @param starsFilter number of stars by which the reviews will be parsed
      * @return sellerReviews
      * @throws FunPayApiException if the other api-related exception
      * @throws UserNotFoundException if the user with id does not found/seller
      */
-    List<SellerReview> parseSellerReviews(long userId, int pages, Integer starsFilter) throws FunPayApiException, UserNotFoundException;
+    List<SellerReview> parseSellerReviews(long userId, int pages, int starsFilter) throws FunPayApiException, UserNotFoundException;
 
     /**
      * Parse csrf-token and PHPSESSID

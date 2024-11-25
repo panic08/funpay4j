@@ -158,6 +158,10 @@ public class FunPayExecutor {
      * @throws UserNotFoundException if the user with id does not found/seller
      */
     public List<SellerReview> execute(GetSellerReviews command) throws FunPayApiException, UserNotFoundException {
-        return funPayParser.parseSellerReviews(command.getUserId(), command.getPages(), command.getStarsFilter());
+        if (command.getStarsFilter() != null) {
+            return funPayParser.parseSellerReviews(command.getUserId(), command.getPages(), command.getStarsFilter());
+        } else {
+            return funPayParser.parseSellerReviews(command.getUserId(), command.getPages());
+        }
     }
 }
