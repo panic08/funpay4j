@@ -151,5 +151,13 @@ class FunPayExecutorTest {
         List<SellerReview> result = funPayExecutor.execute(GetSellerReviews.builder().pages(1).userId(2L).build());
 
         assertFalse(result.isEmpty());
+        assertEquals(2, result.size());
+
+        SellerReview firstSellerReview = result.get(0);
+        assertNull(firstSellerReview.getSellerReplyText());
+
+        SellerReview secondSellerReview = result.get(1);
+        assertTrue(secondSellerReview.getSellerReplyText() != null && !secondSellerReview.getSellerReplyText().isEmpty());
+
     }
 }

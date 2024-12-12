@@ -17,6 +17,7 @@ package ru.funpay4j.core.objects.user;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * This object represents the FunPay seller review
@@ -35,4 +36,7 @@ public class SellerReview {
     private String text;
 
     private int stars;
+
+    @Nullable
+    private String sellerReplyText;
 }
