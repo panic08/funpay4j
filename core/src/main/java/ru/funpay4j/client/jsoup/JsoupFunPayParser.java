@@ -603,6 +603,9 @@ public class JsoupFunPayParser implements FunPayParser {
             //Select a floating point number from a string like "from 1111.32 ₽"
             double lastReviewPrice = Double.parseDouble(gameTitlePriceSplit[gameTitlePriceSplit.length - 1].replaceAll("[^0-9.]", "").split("\\s+")[0]);
             String lastReviewText = reviewCompiledReviewElement.getElementsByClass("review-item-text").text();
+            String lastReviewAnswer = Optional.ofNullable(lastReviewElement.getElementsByClass("review-compiled-reply").first())
+                    .map(element -> element.children().text())
+                    .orElse(null);
             int lastReviewStars = 0;
 
             if (starsElement != null) {
@@ -616,6 +619,7 @@ public class JsoupFunPayParser implements FunPayParser {
                     .price(lastReviewPrice)
                     .text(lastReviewText)
                     .stars(lastReviewStars)
+                    .sellerReplyText(lastReviewAnswer)
                     .build());
         }
     }
