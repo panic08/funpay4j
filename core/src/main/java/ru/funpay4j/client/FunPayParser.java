@@ -74,6 +74,17 @@ public interface FunPayParser {
     User parseUser(long userId) throws FunPayApiException, UserNotFoundException;
 
     /**
+     * Parse user authorized
+     *
+     * @param goldenKey golden key which will be used to authorize the user
+     * @param userId user id by which user will be parsed
+     * @return user
+     * @throws FunPayApiException if the other api-related exception
+     * @throws UserNotFoundException if the user with id does not found
+     */
+    User parseUser(String goldenKey, long userId) throws FunPayApiException, UserNotFoundException;
+
+    /**
      * Parse seller reviews
      *
      * @param userId user id by which seller reviews pages will be parsed
@@ -83,6 +94,18 @@ public interface FunPayParser {
      * @throws UserNotFoundException if the user with id does not found/seller
      */
     List<SellerReview> parseSellerReviews(long userId, int pages) throws FunPayApiException, UserNotFoundException;
+
+    /**
+     * Parse seller reviews authorized
+     *
+     * @param goldenKey golden key which will be used to authorize the user
+     * @param userId user id by which seller reviews pages will be parsed
+     * @param pages number of pages indicating how many seller reviews will be parsed
+     * @return sellerReviews
+     * @throws FunPayApiException if the other api-related exception
+     * @throws UserNotFoundException if the user with id does not found/seller
+     */
+    List<SellerReview> parseSellerReviews(String goldenKey, long userId, int pages) throws FunPayApiException, UserNotFoundException;
 
     /**
      * Parse seller reviews with stars filter
@@ -95,6 +118,19 @@ public interface FunPayParser {
      * @throws UserNotFoundException if the user with id does not found/seller
      */
     List<SellerReview> parseSellerReviews(long userId, int pages, int starsFilter) throws FunPayApiException, UserNotFoundException;
+
+    /**
+     * Parse seller reviews with stars filter authorized
+     *
+     * @param goldenKey golden key which will be used to authorize the user
+     * @param userId user id by which seller reviews pages will be parsed
+     * @param pages number of pages indicating how many seller reviews will be parsed
+     * @param starsFilter number of stars by which the reviews will be parsed
+     * @return sellerReviews
+     * @throws FunPayApiException if the other api-related exception
+     * @throws UserNotFoundException if the user with id does not found/seller
+     */
+    List<SellerReview> parseSellerReviews(String goldenKey, long userId, int pages, int starsFilter) throws FunPayApiException, UserNotFoundException;
 
     /**
      * Parse csrf-token and PHPSESSID

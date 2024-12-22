@@ -19,14 +19,20 @@ import lombok.NonNull;
 import lombok.Setter;
 import ru.funpay4j.client.request.SaveOfferRequest;
 import ru.funpay4j.core.commands.offer.*;
+import ru.funpay4j.core.commands.user.GetSellerReviews;
+import ru.funpay4j.core.commands.user.GetUser;
 import ru.funpay4j.core.commands.user.UpdateAvatar;
 import ru.funpay4j.core.exceptions.FunPayApiException;
 import ru.funpay4j.core.exceptions.InvalidCsrfTokenOrPHPSESSIDException;
 import ru.funpay4j.core.exceptions.InvalidGoldenKeyException;
 import ru.funpay4j.core.exceptions.offer.OfferAlreadyRaisedException;
+import ru.funpay4j.core.exceptions.user.UserNotFoundException;
 import ru.funpay4j.core.objects.CsrfTokenAndPHPSESSID;
+import ru.funpay4j.core.objects.user.SellerReview;
+import ru.funpay4j.core.objects.user.User;
 
 import java.net.Proxy;
+import java.util.List;
 
 /**
  * This Authorized FunPay executor is used to execute authorized commands
@@ -260,6 +266,36 @@ public class AuthorizedFunPayExecutor extends FunPayExecutor {
      */
     public Long execute(CreateOfferImage command) throws FunPayApiException, InvalidGoldenKeyException {
         return funPayClient.addOfferImage(goldenKey, command.getImage());
+    }
+
+    /**
+     * Execute to get user authorized
+     *
+     * @param goldenKey golden key which will be used to authorize the user
+     * @param command command that will be executed
+     * @return user
+     * @throws FunPayApiException if the other api-related exception
+     * @throws UserNotFoundException if the user with id does not found
+     */
+    public User execute(String goldenKey, GetUser command) throws FunPayApiException, UserNotFoundException {
+        return funPayParser.parseUser(goldenKey, command.getUserId());
+    }
+
+    /**
+     * Execute to get seller reviews authorized
+     *
+     * @param goldenKey golden key which will be used to authorize the user
+     * @param command command that will be executed
+     * @return seller reviews
+     * @throws FunPayApiException if the other api-related exception
+     * @throws UserNotFoundException if the user with id does not found/seller
+     */
+    public List<SellerReview> execute(String goldenKey, GetSellerReviews command) throws FunPayApiException, UserNotFoundException {
+        if (command.getStarsFilter() != null) {
+            return funPayParser.parseSellerReviews(goldenKey, command.getUserId(), command.getPages(), command.getStarsFilter());
+        } else {
+            return funPayParser.parseSellerReviews(goldenKey, command.getUserId(), command.getPages());
+        }
     }
 
     /**

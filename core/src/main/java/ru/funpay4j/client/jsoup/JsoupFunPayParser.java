@@ -33,10 +33,7 @@ import ru.funpay4j.core.objects.lot.Lot;
 import ru.funpay4j.core.objects.lot.LotCounter;
 import ru.funpay4j.core.objects.offer.Offer;
 import ru.funpay4j.core.objects.offer.PreviewOffer;
-import ru.funpay4j.core.objects.user.PreviewSeller;
-import ru.funpay4j.core.objects.user.Seller;
-import ru.funpay4j.core.objects.user.SellerReview;
-import ru.funpay4j.core.objects.user.User;
+import ru.funpay4j.core.objects.user.*;
 import ru.funpay4j.util.FunPayUserUtil;
 
 import java.io.IOException;
@@ -348,7 +345,96 @@ public class JsoupFunPayParser implements FunPayParser {
      */
     @Override
     public User parseUser(long userId) throws FunPayApiException, UserNotFoundException {
-        try (Response funPayHtmlResponse = httpClient.newCall(new Request.Builder().get().url(baseURL + "/users/" + userId + "/").build()).execute()) {
+        return parseUserInternal(null, userId);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public User parseUser(String goldenKey, long userId) throws FunPayApiException, UserNotFoundException {
+        return parseUserInternal(goldenKey, userId);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<SellerReview> parseSellerReviews(long userId, int pages) throws FunPayApiException, UserNotFoundException {
+        return parseSellerReviewsInternal(null, userId, pages, null);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<SellerReview> parseSellerReviews(String goldenKey, long userId, int pages) throws FunPayApiException, UserNotFoundException {
+        return parseSellerReviewsInternal(goldenKey, userId, pages, null);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<SellerReview> parseSellerReviews(long userId, int pages, int starsFilter) throws FunPayApiException, UserNotFoundException {
+        return parseSellerReviewsInternal(null, userId, pages, String.valueOf(starsFilter));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<SellerReview> parseSellerReviews(String goldenKey, long userId, int pages, int starsFilter) throws FunPayApiException, UserNotFoundException {
+        return parseSellerReviewsInternal(goldenKey, userId, pages, String.valueOf(starsFilter));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public CsrfTokenAndPHPSESSID parseCsrfTokenAndPHPSESSID(@NonNull String goldenKey) throws FunPayApiException {
+        //We send a request to /unknown URL that doesn't exist to get a page where it will be reported that the page doesn't exist.
+        //This is necessary because such a page is the smallest size
+        try (Response funPayHtmlResponse = httpClient.newCall(new Request.Builder().get().url(baseURL + "/unknown/")
+                .addHeader("Cookie", "golden_key=" + goldenKey).build()).execute()) {
+            String funPayHtmlPageBody = funPayHtmlResponse.body().string();
+
+            Document funPayDocument = Jsoup.parse(funPayHtmlPageBody);
+
+            String dataAppData = funPayDocument.getElementsByTag("body").attr("data-app-data");
+
+            String csrfToken = JsonParser.parseString(dataAppData).getAsJsonObject().get("csrf-token").getAsString();
+            //Use this regex to get the value of the PHPSESSID key from the Set-Cookie header
+            String PHPSESSID = funPayHtmlResponse.header("Set-Cookie").replaceAll(".*PHPSESSID=([^;]*).*", "$1");
+
+            return CsrfTokenAndPHPSESSID.builder()
+                    .csrfToken(csrfToken)
+                    .PHPSESSID(PHPSESSID)
+                    .build();
+        } catch (IOException e) {
+            throw new FunPayApiException(e.getLocalizedMessage());
+        }
+    }
+
+    /**
+     * Common method to parse user
+     *
+     * @param goldenKey golden key which will be used to authorize the user
+     * @param userId user id by which user will be parsed
+     * @return user
+     * @throws FunPayApiException if the other api-related exception
+     * @throws UserNotFoundException if the user with id does not found
+     */
+    private User parseUserInternal(String goldenKey, long userId) throws FunPayApiException, UserNotFoundException {
+        Request.Builder newCallBuilder = new Request.Builder()
+                .get()
+                .url(baseURL + "/users/" + userId + "/");
+
+        if (goldenKey != null) {
+            newCallBuilder.addHeader("Cookie", "golden_key=" + goldenKey);
+        }
+
+        try (Response funPayHtmlResponse = httpClient.newCall(newCallBuilder.build()).execute()) {
             String funPayHtmlPageBody = funPayHtmlResponse.body().string();
 
             Document funPayDocument = Jsoup.parse(funPayHtmlPageBody);
@@ -491,52 +577,9 @@ public class JsoupFunPayParser implements FunPayParser {
     }
 
     /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<SellerReview> parseSellerReviews(long userId, int pages) throws FunPayApiException, UserNotFoundException {
-        return parseSellerReviewsInternal(userId, pages, null);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<SellerReview> parseSellerReviews(long userId, int pages, int starsFilter) throws FunPayApiException, UserNotFoundException {
-        return parseSellerReviewsInternal(userId, pages, String.valueOf(starsFilter));
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public CsrfTokenAndPHPSESSID parseCsrfTokenAndPHPSESSID(@NonNull String goldenKey) throws FunPayApiException {
-        //We send a request to /unknown URL that doesn't exist to get a page where it will be reported that the page doesn't exist.
-        // This is necessary because such a page is the smallest size
-        try (Response funPayHtmlResponse = httpClient.newCall(new Request.Builder().get().url(baseURL + "/unknown/")
-                .addHeader("Cookie", "golden_key=" + goldenKey).build()).execute()) {
-            String funPayHtmlPageBody = funPayHtmlResponse.body().string();
-
-            Document funPayDocument = Jsoup.parse(funPayHtmlPageBody);
-
-            String dataAppData = funPayDocument.getElementsByTag("body").attr("data-app-data");
-
-            String csrfToken = JsonParser.parseString(dataAppData).getAsJsonObject().get("csrf-token").getAsString();
-            //Use this regex to get the value of the PHPSESSID key from the Set-Cookie header
-            String PHPSESSID = funPayHtmlResponse.header("Set-Cookie").replaceAll(".*PHPSESSID=([^;]*).*", "$1");
-
-            return CsrfTokenAndPHPSESSID.builder()
-                    .csrfToken(csrfToken)
-                    .PHPSESSID(PHPSESSID)
-                    .build();
-        } catch (IOException e) {
-            throw new FunPayApiException(e.getLocalizedMessage());
-        }
-    }
-
-    /**
      * Common method to parse seller reviews
      *
+     * @param goldenKey golden key which will be used to authorize the user
      * @param userId user id by which seller reviews pages will be parsed
      * @param pages number of pages indicating how many seller reviews will be parsed
      * @param starsFilter number of stars filter, can be null
@@ -544,7 +587,7 @@ public class JsoupFunPayParser implements FunPayParser {
      * @throws FunPayApiException if the other api-related exception
      * @throws UserNotFoundException if the user with id does not found/seller
      */
-    private List<SellerReview> parseSellerReviewsInternal(long userId, int pages, String starsFilter) throws FunPayApiException, UserNotFoundException {
+    private List<SellerReview> parseSellerReviewsInternal(String goldenKey, long userId, int pages, String starsFilter) throws FunPayApiException, UserNotFoundException {
         List<SellerReview> currentSellerReviews = new ArrayList<>();
 
         String userIdFormData = String.valueOf(userId);
@@ -559,8 +602,16 @@ public class JsoupFunPayParser implements FunPayParser {
                     .addFormDataPart("continue", continueArg == null ? "" : continueArg)
                     .build();
 
-            try (Response funPayHtmlResponse = httpClient.newCall(new Request.Builder().post(requestBody).url(baseURL + "/users/reviews")
-                    .addHeader("x-requested-with", "XMLHttpRequest").build()).execute()) {
+            Request.Builder newCallBuilder = new Request.Builder()
+                    .post(requestBody)
+                    .url(baseURL + "/users/reviews")
+                    .addHeader("x-requested-with", "XMLHttpRequest");
+
+            if (goldenKey != null) {
+                newCallBuilder.addHeader("Cookie", "golden_key=" + goldenKey);
+            }
+
+            try (Response funPayHtmlResponse = httpClient.newCall(newCallBuilder.build()).execute()) {
                 //TODO: Figure out what is worth throwing out here, since a user can also be a non-existent but also a non-seller,
                 // and we can't distinguish between the two just like that
                 if (funPayHtmlResponse.code() == 404) throw new UserNotFoundException("User with userId " + userId + " does not found/seller");
@@ -614,13 +665,38 @@ public class JsoupFunPayParser implements FunPayParser {
                 lastReviewStars = Integer.parseInt(starsElement.child(0).className().substring(6));
             }
 
-            currentSellerReviews.add(SellerReview.builder()
-                    .gameTitle(lastReviewGameTitle)
-                    .price(lastReviewPrice)
-                    .text(lastReviewText)
-                    .stars(lastReviewStars)
-                    .sellerReplyText(lastReviewAnswer)
-                    .build());
+            Element mediaUsernameElement = reviewCompiledReviewElement.getElementsByClass("media-user-name").first();
+            Element reviewItemOrder = reviewCompiledReviewElement.getElementsByClass("review-item-order").first();
+            Element reviewItemPhoto = reviewCompiledReviewElement.getElementsByClass("review-item-photo").first();
+
+            if (mediaUsernameElement != null && reviewItemOrder != null && reviewItemPhoto.child(0).childrenSize() > 0) {
+                String mediaUsernameHrefAttributeValue = mediaUsernameElement.child(0).attr("href");
+                String reviewItemPhotoSrcAttributeValue = reviewItemPhoto.child(0).child(0).attr("src");
+
+                long lastReviewSenderUserId = Long.parseLong(mediaUsernameHrefAttributeValue.substring(25, mediaUsernameHrefAttributeValue.length() - 1));
+                String lastReviewSenderUsername = mediaUsernameElement.child(0).text();
+                String lastReviewSenderAvatarPhotoLink = reviewItemPhotoSrcAttributeValue.equals("/img/layout/avatar.png") ? null
+                        : reviewItemPhotoSrcAttributeValue;
+
+                currentSellerReviews.add(AdvancedSellerReview.builder()
+                        .gameTitle(lastReviewGameTitle)
+                        .price(lastReviewPrice)
+                        .text(lastReviewText)
+                        .stars(lastReviewStars)
+                        .sellerReplyText(lastReviewAnswer)
+                        .senderUserId(lastReviewSenderUserId)
+                        .senderUsername(lastReviewSenderUsername)
+                        .senderAvatarLink(lastReviewSenderAvatarPhotoLink)
+                        .build());
+            } else {
+                currentSellerReviews.add(SellerReview.builder()
+                        .gameTitle(lastReviewGameTitle)
+                        .price(lastReviewPrice)
+                        .text(lastReviewText)
+                        .stars(lastReviewStars)
+                        .sellerReplyText(lastReviewAnswer)
+                        .build());
+            }
         }
     }
 

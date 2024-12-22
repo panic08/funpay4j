@@ -157,7 +157,6 @@ class FunPayExecutorTest {
         assertNull(firstSellerReview.getSellerReplyText());
 
         SellerReview secondSellerReview = result.get(1);
-        assertTrue(secondSellerReview.getSellerReplyText() != null && !secondSellerReview.getSellerReplyText().isEmpty());
-
+        assertTrue(secondSellerReview.getSellerReplyText() != null && !secondSellerReview.getSellerReplyText().isEmpty());  
     }
 }
