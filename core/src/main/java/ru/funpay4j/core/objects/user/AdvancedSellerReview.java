@@ -14,31 +14,21 @@
 
 package ru.funpay4j.core.objects.user;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
-import org.jetbrains.annotations.Nullable;
 
-/**
- * This object represents the FunPay seller review
- *
- * @author panic08
- * @since 1.0.0
- */
-@Data
+@Getter
+@Setter
+@EqualsAndHashCode(callSuper = true)
 @AllArgsConstructor
-@NoArgsConstructor
+@ToString(callSuper = true)
 @SuperBuilder
-public class SellerReview {
-    private String gameTitle;
+public class AdvancedSellerReview extends SellerReview {
+    private long senderUserId;
 
-    private double price;
+    private String senderUsername;
 
-    private String text;
+    private String senderAvatarLink;
 
-    private int stars;
-
-    @Nullable
-    private String sellerReplyText;
+    private String orderId;
 }
