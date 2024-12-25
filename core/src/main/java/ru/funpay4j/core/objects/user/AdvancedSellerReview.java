@@ -17,6 +17,8 @@ package ru.funpay4j.core.objects.user;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
+import java.util.Date;
+
 @Getter
 @Setter
 @EqualsAndHashCode(callSuper = true)
@@ -31,4 +33,6 @@ public class AdvancedSellerReview extends SellerReview {
     private String senderAvatarLink;
 
     private String orderId;
+
+    private Date createdAt;
 }

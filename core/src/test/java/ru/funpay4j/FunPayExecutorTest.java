@@ -28,6 +28,7 @@ import ru.funpay4j.core.commands.user.GetUser;
 import ru.funpay4j.core.objects.game.PromoGame;
 import ru.funpay4j.core.objects.lot.Lot;
 import ru.funpay4j.core.objects.offer.Offer;
+import ru.funpay4j.core.objects.user.AdvancedSellerReview;
 import ru.funpay4j.core.objects.user.Seller;
 import ru.funpay4j.core.objects.user.SellerReview;
 
@@ -150,10 +151,16 @@ class FunPayExecutorTest {
 
         List<SellerReview> result = funPayExecutor.execute(GetSellerReviews.builder().pages(1).userId(2L).build());
 
-        assertFalse(result.isEmpty());
         assertEquals(2, result.size());
 
-        SellerReview firstSellerReview = result.get(0);
+        AdvancedSellerReview firstSellerReview = (AdvancedSellerReview) result.get(0);
+        assertNotNull(firstSellerReview.getSenderUsername());
+        assertNotNull(firstSellerReview.getOrderId());
+        assertNull(firstSellerReview.getSenderAvatarLink());
+        assertNotNull(firstSellerReview.getText());
+        assertNotNull(firstSellerReview.getGameTitle());
+        assertNotNull(firstSellerReview.getCreatedAt());
+
         assertNull(firstSellerReview.getSellerReplyText());
 
         SellerReview secondSellerReview = result.get(1);
