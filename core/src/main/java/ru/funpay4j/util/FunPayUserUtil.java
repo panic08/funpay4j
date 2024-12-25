@@ -167,6 +167,73 @@ public class FunPayUserUtil {
         return null;
     }
 
+    /**
+     * Converts a string representation of the advanced seller review created at date to a {@link Date} object
+     *
+     * @param createdAt the date of created at as a string that needs to be converted
+     * @return {@link Date} object representing the parsed date and time
+     * @throws ParseException parsing exception
+     */
+    public static Date convertAdvancedSellerReviewCreatedAtToDate(@NonNull String createdAt) throws ParseException {
+        if (createdAt.startsWith("сегодня")) {
+            Calendar calendar = Calendar.getInstance();
 
+            SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm", Locale.forLanguageTag("ru"));
+
+            String time = createdAt.split(", ")[1];
+            Date parsedDate = dateFormat.parse(time);
+
+            calendar.set(Calendar.HOUR_OF_DAY, parsedDate.getHours());
+            calendar.set(Calendar.MINUTE, parsedDate.getMinutes());
+            calendar.set(Calendar.SECOND, 0);
+            calendar.set(Calendar.MILLISECOND, 0);
+
+            return calendar.getTime();
+
+        } else if (createdAt.startsWith("вчера")) {
+            Calendar calendar = Calendar.getInstance();
+
+            SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm", Locale.forLanguageTag("ru"));
+
+            String time = createdAt.split(", ")[1];
+            Date parsedDate = dateFormat.parse(time);
+
+            calendar.add(Calendar.DAY_OF_MONTH, -1);
+            calendar.set(Calendar.HOUR_OF_DAY, parsedDate.getHours());
+            calendar.set(Calendar.MINUTE, parsedDate.getMinutes());
+            calendar.set(Calendar.SECOND, 0);
+            calendar.set(Calendar.MILLISECOND, 0);
+
+            return calendar.getTime();
+
+        } else {
+            if (createdAt.contains(",")) {
+                Calendar calendar = Calendar.getInstance();
+
+                if (createdAt.split(", ")[0].matches(".*\\d{4}.*")) {
+                    //if the row contains a year
+
+                    SimpleDateFormat dateFormatWithYear = new SimpleDateFormat("d MMMM yyyy в HH:mm", Locale.forLanguageTag("ru"));
+
+                    Date parsedDate = dateFormatWithYear.parse(createdAt);
+
+                    calendar.setTime(parsedDate);
+                } else {
+                    SimpleDateFormat dateFormatWithoutYear = new SimpleDateFormat("d MMMM в HH:mm", Locale.forLanguageTag("ru"));
+
+                    Date parsedDate = dateFormatWithoutYear.parse(createdAt);
+
+                    calendar.setTime(parsedDate);
+                    calendar.set(Calendar.YEAR, Calendar.getInstance().get(Calendar.YEAR));
+                    calendar.set(Calendar.SECOND, 0);
+                    calendar.set(Calendar.MILLISECOND, 0);
+                }
+
+                return calendar.getTime();
+            }
+
+            return null;
+        }
+    }
 
 }

@@ -666,27 +666,40 @@ public class JsoupFunPayParser implements FunPayParser {
             }
 
             Element mediaUsernameElement = reviewCompiledReviewElement.getElementsByClass("media-user-name").first();
-            Element reviewItemOrder = reviewCompiledReviewElement.getElementsByClass("review-item-order").first();
-            Element reviewItemPhoto = reviewCompiledReviewElement.getElementsByClass("review-item-photo").first();
+            Element reviewItemOrderElement = reviewCompiledReviewElement.getElementsByClass("review-item-order").first();
+            Element reviewItemPhotoElement = reviewCompiledReviewElement.getElementsByClass("review-item-photo").first();
+            Element reviewItemDateElement = reviewCompiledReviewElement.getElementsByClass("review-item-date").first();
 
-            if (mediaUsernameElement != null && reviewItemOrder != null && reviewItemPhoto.child(0).childrenSize() > 0) {
+            if (mediaUsernameElement != null && reviewItemOrderElement != null && reviewItemPhotoElement.child(0).childrenSize() > 0) {
                 String mediaUsernameHrefAttributeValue = mediaUsernameElement.child(0).attr("href");
-                String reviewItemPhotoSrcAttributeValue = reviewItemPhoto.child(0).child(0).attr("src");
+                String reviewItemPhotoSrcAttributeValue = reviewItemPhotoElement.child(0).child(0).attr("src");
+                String reviewItemOrderHrefAttributeValue = reviewItemOrderElement.child(0).attr("href");
 
                 long lastReviewSenderUserId = Long.parseLong(mediaUsernameHrefAttributeValue.substring(25, mediaUsernameHrefAttributeValue.length() - 1));
+                String lastReviewOrderId = reviewItemOrderHrefAttributeValue.substring(26, reviewItemOrderHrefAttributeValue.length() - 1);
                 String lastReviewSenderUsername = mediaUsernameElement.child(0).text();
                 String lastReviewSenderAvatarPhotoLink = reviewItemPhotoSrcAttributeValue.equals("/img/layout/avatar.png") ? null
                         : reviewItemPhotoSrcAttributeValue;
+                Date lastReviewCreatedAtDate = null;
+
+                try {
+                    lastReviewCreatedAtDate = FunPayUserUtil.convertAdvancedSellerReviewCreatedAtToDate(reviewItemDateElement.text());
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
 
                 currentSellerReviews.add(AdvancedSellerReview.builder()
                         .gameTitle(lastReviewGameTitle)
                         .price(lastReviewPrice)
                         .text(lastReviewText)
                         .stars(lastReviewStars)
+                        .orderId(lastReviewOrderId)
                         .sellerReplyText(lastReviewAnswer)
                         .senderUserId(lastReviewSenderUserId)
                         .senderUsername(lastReviewSenderUsername)
                         .senderAvatarLink(lastReviewSenderAvatarPhotoLink)
+                        .createdAt(lastReviewCreatedAtDate)
                         .build());
             } else {
                 currentSellerReviews.add(SellerReview.builder()
