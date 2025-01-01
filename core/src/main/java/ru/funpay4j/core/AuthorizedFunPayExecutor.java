@@ -271,26 +271,24 @@ public class AuthorizedFunPayExecutor extends FunPayExecutor {
     /**
      * Execute to get user authorized
      *
-     * @param goldenKey golden key which will be used to authorize the user
      * @param command command that will be executed
      * @return user
      * @throws FunPayApiException if the other api-related exception
      * @throws UserNotFoundException if the user with id does not found
      */
-    public User execute(String goldenKey, GetUser command) throws FunPayApiException, UserNotFoundException {
+    public User execute(GetUser command) throws FunPayApiException, UserNotFoundException {
         return funPayParser.parseUser(goldenKey, command.getUserId());
     }
 
     /**
      * Execute to get seller reviews authorized
      *
-     * @param goldenKey golden key which will be used to authorize the user
      * @param command command that will be executed
      * @return seller reviews
      * @throws FunPayApiException if the other api-related exception
      * @throws UserNotFoundException if the user with id does not found/seller
      */
-    public List<SellerReview> execute(String goldenKey, GetSellerReviews command) throws FunPayApiException, UserNotFoundException {
+    public List<SellerReview> execute(GetSellerReviews command) throws FunPayApiException, UserNotFoundException {
         if (command.getStarsFilter() != null) {
             return funPayParser.parseSellerReviews(goldenKey, command.getUserId(), command.getPages(), command.getStarsFilter());
         } else {
