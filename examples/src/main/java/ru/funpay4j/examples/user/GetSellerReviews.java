@@ -14,9 +14,11 @@
 
 package ru.funpay4j.examples.user;
 
+import ru.funpay4j.core.AuthorizedFunPayExecutor;
 import ru.funpay4j.core.FunPayExecutor;
 import ru.funpay4j.core.exceptions.FunPayApiException;
 import ru.funpay4j.core.exceptions.user.UserNotFoundException;
+import ru.funpay4j.core.objects.user.AdvancedSellerReview;
 import ru.funpay4j.core.objects.user.SellerReview;
 import ru.funpay4j.core.objects.user.User;
 
@@ -34,16 +36,23 @@ public class GetSellerReviews {
         //if we want to use a proxy
         Proxy proxy = new Proxy(Proxy.Type.SOCKS, new InetSocketAddress("127.0.0.1", 8000));
 
-        FunPayExecutor executor = new FunPayExecutor(proxy);
+        AuthorizedFunPayExecutor authorizedExecutor = new AuthorizedFunPayExecutor("test-golden-key", proxy);
 
         List<SellerReview> sellerReviews;
 
         try {
-            sellerReviews = executor.execute(ru.funpay4j.core.commands.user.GetSellerReviews.builder()
+            sellerReviews = authorizedExecutor.execute(ru.funpay4j.core.commands.user.GetSellerReviews.builder()
                     .pages(2)
                     .userId(1940073L)
                     .starsFilter(null)
                     .build());
+
+            for (SellerReview sellerReview : sellerReviews) {
+                //if userId matches the userId from where goldenKey is taken from
+                if (sellerReview instanceof AdvancedSellerReview advancedSellerReview) {
+                    System.out.println(advancedSellerReview);
+                }
+            }
 
             System.out.println(sellerReviews);
         } catch (FunPayApiException e) {
