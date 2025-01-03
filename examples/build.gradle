@@ -5,3 +5,9 @@ plugins {
 dependencies {
     implementation project(":funpay4j-core")
 }
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
