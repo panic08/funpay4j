@@ -20,10 +20,10 @@ import lombok.NonNull;
 import okhttp3.*;
 import ru.funpay4j.client.FunPayClient;
 import ru.funpay4j.client.request.SaveOfferRequest;
-import ru.funpay4j.core.exceptions.FunPayApiException;
-import ru.funpay4j.core.exceptions.InvalidCsrfTokenOrPHPSESSIDException;
-import ru.funpay4j.core.exceptions.InvalidGoldenKeyException;
-import ru.funpay4j.core.exceptions.offer.OfferAlreadyRaisedException;
+import ru.funpay4j.client.exceptions.FunPayApiException;
+import ru.funpay4j.client.exceptions.InvalidCsrfTokenOrPHPSESSIDException;
+import ru.funpay4j.client.exceptions.InvalidGoldenKeyException;
+import ru.funpay4j.client.exceptions.offer.OfferAlreadyRaisedException;
 
 import java.io.IOException;
 import java.util.Map;

@@ -12,21 +12,32 @@
  * limitations under the License.
  */
 
-package ru.funpay4j.core.exceptions.offer;
+package ru.funpay4j.client.objects.offer;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import ru.funpay4j.client.objects.user.ParsedPreviewSeller;
 
 /**
- * Base class for exception related to the fact that the offer already raised
+ * This object represents the parsed FunPay preview offer
  *
  * @author panic08
- * @since 1.0.3
+ * @since 1.0.6
  */
-public class OfferAlreadyRaisedException extends RuntimeException {
-    /**
-     * Initializes a new OfferAlreadyRaisedException exception
-     *
-     * @param message exception message
-     */
-    public OfferAlreadyRaisedException(String message) {
-        super(message);
-    }
+@Data
+@AllArgsConstructor
+@Builder
+public class ParsedPreviewOffer {
+    private long offerId;
+
+    private String shortDescription;
+
+    private double price;
+
+    private boolean isAutoDelivery;
+
+    private boolean isPromo;
+
+    private ParsedPreviewSeller seller;
 }

@@ -15,8 +15,8 @@
 package ru.funpay4j.examples.offer;
 
 import ru.funpay4j.core.FunPayExecutor;
-import ru.funpay4j.core.exceptions.FunPayApiException;
-import ru.funpay4j.core.exceptions.offer.OfferNotFoundException;
+import ru.funpay4j.client.exceptions.FunPayApiException;
+import ru.funpay4j.client.exceptions.offer.OfferNotFoundException;
 import ru.funpay4j.core.objects.offer.Offer;
 
 import java.net.InetSocketAddress;

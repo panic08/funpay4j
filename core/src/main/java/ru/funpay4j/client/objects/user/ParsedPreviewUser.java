@@ -12,21 +12,31 @@
  * limitations under the License.
  */
 
-package ru.funpay4j.core.exceptions.lot;
+package ru.funpay4j.client.objects.user;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
+import org.jetbrains.annotations.Nullable;
 
 /**
- * Base class for exception related to the fact that the lot is not found
+ * This object represents the parsed FunPay preview user
  *
  * @author panic08
- * @since 1.0.3
+ * @since 1.0.6
  */
-public class LotNotFoundException extends RuntimeException {
-    /**
-     * Initializes a new LotNotFoundException exception
-     *
-     * @param message exception message
-     */
-    public LotNotFoundException(String message) {
-        super(message);
-    }
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@SuperBuilder
+public class ParsedPreviewUser {
+    private long userId;
+
+    private String username;
+
+    @Nullable
+    private String avatarPhotoLink;
+
+    private boolean isOnline;
 }

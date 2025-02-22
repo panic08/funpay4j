@@ -15,7 +15,7 @@
 package ru.funpay4j.examples.game;
 
 import ru.funpay4j.core.FunPayExecutor;
-import ru.funpay4j.core.exceptions.FunPayApiException;
+import ru.funpay4j.client.exceptions.FunPayApiException;
 import ru.funpay4j.core.objects.game.PromoGame;
 
 import java.net.InetSocketAddress;

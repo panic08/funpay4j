@@ -12,21 +12,23 @@
  * limitations under the License.
  */
 
-package ru.funpay4j.core.exceptions.offer;
+package ru.funpay4j.client.objects.user;
+
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 /**
- * Base class for exception related to the fact that the offer is not found
+ * This object represents the parsed FunPay preview seller
  *
  * @author panic08
- * @since 1.0.3
+ * @since 1.0.6
  */
-public class OfferNotFoundException extends RuntimeException {
-    /**
-     * Initializes a new OfferNotFoundException exception
-     *
-     * @param message exception message
-     */
-    public OfferNotFoundException(String message) {
-        super(message);
-    }
+@Getter
+@Setter
+@EqualsAndHashCode(callSuper = true)
+@AllArgsConstructor
+@ToString(callSuper = true)
+@SuperBuilder
+public class ParsedPreviewSeller extends ParsedPreviewUser {
+    private int reviewCount;
 }

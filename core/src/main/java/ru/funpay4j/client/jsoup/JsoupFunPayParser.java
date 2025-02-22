@@ -17,24 +17,23 @@ package ru.funpay4j.client.jsoup;
 import com.google.gson.JsonParser;
 import lombok.NonNull;
 import okhttp3.*;
-import org.jetbrains.annotations.Nullable;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import ru.funpay4j.client.objects.game.ParsedPromoGame;
+import ru.funpay4j.client.objects.game.ParsedPromoGameCounter;
+import ru.funpay4j.client.objects.lot.ParsedLot;
+import ru.funpay4j.client.objects.lot.ParsedLotCounter;
+import ru.funpay4j.client.objects.offer.ParsedOffer;
+import ru.funpay4j.client.objects.offer.ParsedPreviewOffer;
+import ru.funpay4j.client.objects.user.*;
+import ru.funpay4j.utils.FunPayUserUtil;
 import ru.funpay4j.client.FunPayParser;
-import ru.funpay4j.core.exceptions.FunPayApiException;
-import ru.funpay4j.core.exceptions.offer.OfferNotFoundException;
-import ru.funpay4j.core.exceptions.lot.LotNotFoundException;
-import ru.funpay4j.core.exceptions.user.UserNotFoundException;
-import ru.funpay4j.core.objects.CsrfTokenAndPHPSESSID;
-import ru.funpay4j.core.objects.game.PromoGame;
-import ru.funpay4j.core.objects.game.PromoGameCounter;
-import ru.funpay4j.core.objects.lot.Lot;
-import ru.funpay4j.core.objects.lot.LotCounter;
-import ru.funpay4j.core.objects.offer.Offer;
-import ru.funpay4j.core.objects.offer.PreviewOffer;
-import ru.funpay4j.core.objects.user.*;
-import ru.funpay4j.util.FunPayUserUtil;
+import ru.funpay4j.client.exceptions.FunPayApiException;
+import ru.funpay4j.client.exceptions.offer.OfferNotFoundException;
+import ru.funpay4j.client.exceptions.lot.LotNotFoundException;
+import ru.funpay4j.client.exceptions.user.UserNotFoundException;
+import ru.funpay4j.client.objects.CsrfTokenAndPHPSESSID;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -68,7 +67,7 @@ public class JsoupFunPayParser implements FunPayParser {
      * {@inheritDoc}
      */
     @Override
-    public Lot parseLot(long lotId) throws FunPayApiException, LotNotFoundException {
+    public ParsedLot parseLot(long lotId) throws FunPayApiException, LotNotFoundException {
         try (Response funPayHtmlResponse = httpClient.newCall(new Request.Builder().get().url(baseURL + "/lots/" + lotId + "/").build()).execute()) {
             String funPayHtmlPageBody = funPayHtmlResponse.body().string();
 
@@ -88,8 +87,8 @@ public class JsoupFunPayParser implements FunPayParser {
             String title = funPayContentWithCdElement.selectFirst("h1").text();
             String description = funPayContentWithCdElement.selectFirst("p").text();
             long gameId = Long.parseLong(funPayContentBodyContainerElement.getElementsByClass("content-with-cd-wide showcase").attr("data-game"));
-            List<LotCounter> lotCounters = new ArrayList<>();
-            List<PreviewOffer> previewOffers = new ArrayList<>();
+            List<ParsedLotCounter> lotCounters = new ArrayList<>();
+            List<ParsedPreviewOffer> previewOffers = new ArrayList<>();
 
             List<Element> funPayCountersElements = funPayDocument.getElementsByClass("counter-list")
                     .first()
@@ -111,7 +110,7 @@ public class JsoupFunPayParser implements FunPayParser {
                 int counterValue = Integer.parseInt(counterItem.getElementsByClass("counter-value").text());
 
                 lotCounters.add(
-                        LotCounter.builder()
+                        ParsedLotCounter.builder()
                                 .lotId(counterLotId)
                                 .param(counterParam)
                                 .counter(counterValue)
@@ -147,14 +146,14 @@ public class JsoupFunPayParser implements FunPayParser {
                 if (previewSellerAvatarPhotoLink.equals("/img/layout/avatar.png")) previewSellerAvatarPhotoLink = null;
 
                 previewOffers.add(
-                        PreviewOffer.builder()
+                        ParsedPreviewOffer.builder()
                                 .offerId(offerId)
                                 .shortDescription(previewOfferShortDescription)
                                 .price(previewOfferPrice)
                                 .isAutoDelivery(isHasPreviewOfferAutoDelivery)
                                 .isPromo(isHasPreviewOfferPromo)
                                 .seller(
-                                        PreviewSeller.builder()
+                                        ParsedPreviewSeller.builder()
                                                 .userId(previewSellerUserId)
                                                 .username(previewSellerUsername)
                                                 .avatarPhotoLink(previewSellerAvatarPhotoLink)
@@ -166,7 +165,7 @@ public class JsoupFunPayParser implements FunPayParser {
                 );
             }
 
-            return Lot.builder()
+            return ParsedLot.builder()
                     .id(lotId)
                     .title(title)
                     .description(description)
@@ -183,8 +182,8 @@ public class JsoupFunPayParser implements FunPayParser {
      * {@inheritDoc}
      */
     @Override
-    public List<PromoGame> parsePromoGames(@NonNull String query) throws FunPayApiException {
-        List<PromoGame> currentPromoGames = new ArrayList<>();
+    public List<ParsedPromoGame> parsePromoGames(@NonNull String query) throws FunPayApiException {
+        List<ParsedPromoGame> currentPromoGames = new ArrayList<>();
 
         RequestBody requestBody = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
@@ -207,7 +206,7 @@ public class JsoupFunPayParser implements FunPayParser {
                 long lotId = Long.parseLong(titleElementHrefAttributeValue.substring(24, titleElementHrefAttributeValue.length() - 1));
                 String title = titleElement.text();
 
-                List<PromoGameCounter> promoGameCounters = new ArrayList<>();
+                List<ParsedPromoGameCounter> promoGameCounters = new ArrayList<>();
 
                 for (Element promoGameCounterElement : promoGameElement.getElementsByClass("list-inline").select("li")) {
                     Element counterTitleElement = promoGameCounterElement.selectFirst("a");
@@ -221,10 +220,10 @@ public class JsoupFunPayParser implements FunPayParser {
 
                     String counterTitle = counterTitleElement.text();
 
-                    promoGameCounters.add(PromoGameCounter.builder().lotId(counterLotId).title(counterTitle).build());
+                    promoGameCounters.add(ParsedPromoGameCounter.builder().lotId(counterLotId).title(counterTitle).build());
                 }
 
-                currentPromoGames.add(PromoGame.builder()
+                currentPromoGames.add(ParsedPromoGame.builder()
                         .lotId(lotId)
                         .title(title)
                         .promoGameCounters(promoGameCounters)
@@ -241,7 +240,7 @@ public class JsoupFunPayParser implements FunPayParser {
      * {@inheritDoc}
      */
     @Override
-    public Offer parseOffer(long offerId) throws FunPayApiException, OfferNotFoundException {
+    public ParsedOffer parseOffer(long offerId) throws FunPayApiException, OfferNotFoundException {
         try (Response funPayHtmlResponse = httpClient.newCall(new Request.Builder().get().url(baseURL + "/lots/offer?id=" + offerId).build()).execute()) {
             String funPayHtmlPageBody = funPayHtmlResponse.body().string();
 
@@ -319,7 +318,7 @@ public class JsoupFunPayParser implements FunPayParser {
             int previewSellerReviewCount = Integer.parseInt(previewSellerReviewCountElement.text().replaceAll("\\D.*", ""));
             boolean isPreviewSellerOnline = funPayDocument.getElementsByClass("media media-user online").first() != null;
 
-            return Offer.builder()
+            return ParsedOffer.builder()
                     .id(offerId)
                     .shortDescription(shortDescription)
                     .detailedDescription(detailedDescription)
@@ -327,7 +326,7 @@ public class JsoupFunPayParser implements FunPayParser {
                     .price(price)
                     .attachmentLinks(attachmentLinks)
                     .parameters(parameters)
-                    .seller(PreviewSeller.builder()
+                    .seller(ParsedPreviewSeller.builder()
                             .userId(previewSellerUserId)
                             .username(previewSellerUsername)
                             .avatarPhotoLink(previewSellerAvatarPhotoLink)
@@ -344,7 +343,7 @@ public class JsoupFunPayParser implements FunPayParser {
      * {@inheritDoc}
      */
     @Override
-    public User parseUser(long userId) throws FunPayApiException, UserNotFoundException {
+    public ParsedUser parseUser(long userId) throws FunPayApiException, UserNotFoundException {
         return parseUserInternal(null, userId);
     }
 
@@ -352,7 +351,7 @@ public class JsoupFunPayParser implements FunPayParser {
      * {@inheritDoc}
      */
     @Override
-    public User parseUser(String goldenKey, long userId) throws FunPayApiException, UserNotFoundException {
+    public ParsedUser parseUser(String goldenKey, long userId) throws FunPayApiException, UserNotFoundException {
         return parseUserInternal(goldenKey, userId);
     }
 
@@ -360,7 +359,7 @@ public class JsoupFunPayParser implements FunPayParser {
      * {@inheritDoc}
      */
     @Override
-    public List<SellerReview> parseSellerReviews(long userId, int pages) throws FunPayApiException, UserNotFoundException {
+    public List<ParsedSellerReview> parseSellerReviews(long userId, int pages) throws FunPayApiException, UserNotFoundException {
         return parseSellerReviewsInternal(null, userId, pages, null);
     }
 
@@ -368,7 +367,7 @@ public class JsoupFunPayParser implements FunPayParser {
      * {@inheritDoc}
      */
     @Override
-    public List<SellerReview> parseSellerReviews(String goldenKey, long userId, int pages) throws FunPayApiException, UserNotFoundException {
+    public List<ParsedSellerReview> parseSellerReviews(String goldenKey, long userId, int pages) throws FunPayApiException, UserNotFoundException {
         return parseSellerReviewsInternal(goldenKey, userId, pages, null);
     }
 
@@ -376,7 +375,7 @@ public class JsoupFunPayParser implements FunPayParser {
      * {@inheritDoc}
      */
     @Override
-    public List<SellerReview> parseSellerReviews(long userId, int pages, int starsFilter) throws FunPayApiException, UserNotFoundException {
+    public List<ParsedSellerReview> parseSellerReviews(long userId, int pages, int starsFilter) throws FunPayApiException, UserNotFoundException {
         return parseSellerReviewsInternal(null, userId, pages, String.valueOf(starsFilter));
     }
 
@@ -384,7 +383,7 @@ public class JsoupFunPayParser implements FunPayParser {
      * {@inheritDoc}
      */
     @Override
-    public List<SellerReview> parseSellerReviews(String goldenKey, long userId, int pages, int starsFilter) throws FunPayApiException, UserNotFoundException {
+    public List<ParsedSellerReview> parseSellerReviews(String goldenKey, long userId, int pages, int starsFilter) throws FunPayApiException, UserNotFoundException {
         return parseSellerReviewsInternal(goldenKey, userId, pages, String.valueOf(starsFilter));
     }
 
@@ -425,7 +424,7 @@ public class JsoupFunPayParser implements FunPayParser {
      * @throws FunPayApiException if the other api-related exception
      * @throws UserNotFoundException if the user with id does not found
      */
-    private User parseUserInternal(String goldenKey, long userId) throws FunPayApiException, UserNotFoundException {
+    private ParsedUser parseUserInternal(String goldenKey, long userId) throws FunPayApiException, UserNotFoundException {
         Request.Builder newCallBuilder = new Request.Builder()
                 .get()
                 .url(baseURL + "/users/" + userId + "/");
@@ -510,7 +509,7 @@ public class JsoupFunPayParser implements FunPayParser {
                 int reviewCount = Integer.parseInt(sellerElement.getElementsByClass("text-mini text-light mb5").text()
                         .replaceAll("\\D.*", ""));
 
-                List<PreviewOffer> previewOffers = new ArrayList<>();
+                List<ParsedPreviewOffer> previewOffers = new ArrayList<>();
 
                 List<Element> previewOfferElements = funPayDocument.getElementsByClass("tc-item");
 
@@ -526,13 +525,13 @@ public class JsoupFunPayParser implements FunPayParser {
                     //Since the promo value is not shown in the profile in offers
                     boolean isHasPreviewOfferPromo = false;
 
-                    previewOffers.add(PreviewOffer.builder()
+                    previewOffers.add(ParsedPreviewOffer.builder()
                             .offerId(offerId)
                             .shortDescription(previewOfferShortDescription)
                             .price(previewOfferPrice)
                             .isAutoDelivery(isHasPreviewOfferAutoDelivery)
                             .isPromo(isHasPreviewOfferPromo)
-                            .seller(PreviewSeller.builder()
+                            .seller(ParsedPreviewSeller.builder()
                                     .userId(userId)
                                     .username(username)
                                     .avatarPhotoLink(avatarPhotoLink)
@@ -542,11 +541,11 @@ public class JsoupFunPayParser implements FunPayParser {
                             .build());
                 }
 
-                List<SellerReview> lastReviews = new ArrayList<>();
+                List<ParsedSellerReview> lastReviews = new ArrayList<>();
 
                 extractReviewsFromReviewsHtml(funPayDocument, lastReviews);
 
-                return Seller.builder()
+                return ParsedSeller.builder()
                         .id(userId)
                         .username(username)
                         .avatarPhotoLink(avatarPhotoLink)
@@ -560,7 +559,7 @@ public class JsoupFunPayParser implements FunPayParser {
                         .lastReviews(lastReviews)
                         .build();
             } else {
-                return User.builder()
+                return ParsedUser.builder()
                         .id(userId)
                         .username(username)
                         .avatarPhotoLink(avatarPhotoLink)
@@ -587,8 +586,8 @@ public class JsoupFunPayParser implements FunPayParser {
      * @throws FunPayApiException if the other api-related exception
      * @throws UserNotFoundException if the user with id does not found/seller
      */
-    private List<SellerReview> parseSellerReviewsInternal(String goldenKey, long userId, int pages, String starsFilter) throws FunPayApiException, UserNotFoundException {
-        List<SellerReview> currentSellerReviews = new ArrayList<>();
+    private List<ParsedSellerReview> parseSellerReviewsInternal(String goldenKey, long userId, int pages, String starsFilter) throws FunPayApiException, UserNotFoundException {
+        List<ParsedSellerReview> currentSellerReviews = new ArrayList<>();
 
         String userIdFormData = String.valueOf(userId);
         String starsFilterFormData = starsFilter == null ? "" : starsFilter;
@@ -640,7 +639,7 @@ public class JsoupFunPayParser implements FunPayParser {
         return currentSellerReviews;
     }
 
-    private void extractReviewsFromReviewsHtml(Document reviewsHtml, List<SellerReview> currentSellerReviews) {
+    private void extractReviewsFromReviewsHtml(Document reviewsHtml, List<ParsedSellerReview> currentSellerReviews) {
         List<Element> reviewContainerElements = reviewsHtml.getElementsByClass("review-container");
 
         for (Element lastReviewElement : reviewContainerElements) {
@@ -689,7 +688,7 @@ public class JsoupFunPayParser implements FunPayParser {
                 }
 
 
-                currentSellerReviews.add(AdvancedSellerReview.builder()
+                currentSellerReviews.add(ParsedAdvancedSellerReview.builder()
                         .gameTitle(lastReviewGameTitle)
                         .price(lastReviewPrice)
                         .text(lastReviewText)
@@ -702,7 +701,7 @@ public class JsoupFunPayParser implements FunPayParser {
                         .createdAt(lastReviewCreatedAtDate)
                         .build());
             } else {
-                currentSellerReviews.add(SellerReview.builder()
+                currentSellerReviews.add(ParsedSellerReview.builder()
                         .gameTitle(lastReviewGameTitle)
                         .price(lastReviewPrice)
                         .text(lastReviewText)

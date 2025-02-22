@@ -12,21 +12,33 @@
  * limitations under the License.
  */
 
-package ru.funpay4j.core.exceptions;
+package ru.funpay4j.client.objects.user;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
+import org.jetbrains.annotations.Nullable;
 
 /**
- * Base class for exception related to the fact that the goldenKey is invalid
+ * This object represents the parsed FunPay seller review
  *
  * @author panic08
- * @since 1.0.3
+ * @since 1.0.6
  */
-public class InvalidGoldenKeyException extends RuntimeException {
-    /**
-     * Initializes a new InvalidGoldenKeyException exception
-     *
-     * @param message exception message
-     */
-    public InvalidGoldenKeyException(String message) {
-        super(message);
-    }
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@SuperBuilder
+public class ParsedSellerReview {
+    private String gameTitle;
+
+    private double price;
+
+    private String text;
+
+    private int stars;
+
+    @Nullable
+    private String sellerReplyText;
 }

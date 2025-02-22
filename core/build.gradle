@@ -3,6 +3,7 @@ plugins {
 }
 
 dependencies {
+    implementation project(":utils")
     implementation "com.squareup.okhttp3:okhttp:${rootProject.ext.okhttpVersion}"
     testImplementation "com.squareup.okhttp3:mockwebserver:${rootProject.ext.okhttpVersion}"
     implementation "com.google.code.gson:gson:${rootProject.ext.gsonVersion}"

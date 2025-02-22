@@ -12,23 +12,39 @@
  * limitations under the License.
  */
 
-package ru.funpay4j.core.objects;
+package ru.funpay4j.client.objects.offer;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import ru.funpay4j.client.objects.user.ParsedPreviewSeller;
+
+import java.util.List;
+import java.util.Map;
 
 /**
- *  This object represents the storage of csrfToken and PHPSESSID
+ * This object represents the parsed FunPay offer
  *
  * @author panic08
- * @since 1.0.4
+ * @since 1.0.6
  */
 @Data
 @AllArgsConstructor
 @Builder
-public class CsrfTokenAndPHPSESSID {
-    private String csrfToken;
+public class ParsedOffer {
+    private long id;
 
-    private String PHPSESSID;
+    private String shortDescription;
+
+    private String detailedDescription;
+
+    private Map<String, String> parameters;
+
+    private double price;
+
+    private List<String> attachmentLinks;
+
+    private boolean isAutoDelivery;
+
+    private ParsedPreviewSeller seller;
 }

@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-package ru.funpay4j.util;
+package ru.funpay4j.utils;
 
 import org.junit.jupiter.api.Test;
 

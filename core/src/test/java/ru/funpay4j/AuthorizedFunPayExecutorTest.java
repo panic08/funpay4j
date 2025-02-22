@@ -22,8 +22,8 @@ import org.junit.jupiter.api.Test;
 import ru.funpay4j.core.AuthorizedFunPayExecutor;
 import ru.funpay4j.core.commands.offer.*;
 import ru.funpay4j.core.commands.user.UpdateAvatar;
-import ru.funpay4j.core.exceptions.InvalidGoldenKeyException;
-import ru.funpay4j.core.exceptions.offer.OfferAlreadyRaisedException;
+import ru.funpay4j.client.exceptions.InvalidGoldenKeyException;
+import ru.funpay4j.client.exceptions.offer.OfferAlreadyRaisedException;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;

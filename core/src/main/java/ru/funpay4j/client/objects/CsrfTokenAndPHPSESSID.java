@@ -12,21 +12,23 @@
  * limitations under the License.
  */
 
-package ru.funpay4j.core.exceptions;
+package ru.funpay4j.client.objects;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
 
 /**
- * Base class for exceptions related to FunPay
+ *  This object represents the storage of csrfToken and PHPSESSID
  *
  * @author panic08
- * @since 1.0.0
+ * @since 1.0.4
  */
-public class FunPayApiException extends Exception {
-    /**
-     * Initializes a new FunPayApiException exception
-     *
-     * @param message exception message
-     */
-    public FunPayApiException(String message) {
-        super(message);
-    }
+@Data
+@AllArgsConstructor
+@Builder
+public class CsrfTokenAndPHPSESSID {
+    private String csrfToken;
+
+    private String PHPSESSID;
 }

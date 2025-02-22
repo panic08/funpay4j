@@ -12,21 +12,21 @@
  * limitations under the License.
  */
 
-package ru.funpay4j.core.exceptions;
+package ru.funpay4j.client.exceptions.offer;
 
 /**
- * Base class for exception related to the fact that the csrf token or PHPSESSID is invalid
+ * Base class for exception related to the fact that the offer already raised
  *
  * @author panic08
  * @since 1.0.3
  */
-public class InvalidCsrfTokenOrPHPSESSIDException extends RuntimeException {
+public class OfferAlreadyRaisedException extends RuntimeException {
     /**
-     * Initializes a new InvalidCsrfTokenOrPHPSESSIDException exception
+     * Initializes a new OfferAlreadyRaisedException exception
      *
      * @param message exception message
      */
-    public InvalidCsrfTokenOrPHPSESSIDException(String message) {
+    public OfferAlreadyRaisedException(String message) {
         super(message);
     }
 }

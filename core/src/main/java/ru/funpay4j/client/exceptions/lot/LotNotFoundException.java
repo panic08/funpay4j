@@ -12,21 +12,21 @@
  * limitations under the License.
  */
 
-package ru.funpay4j.core.exceptions.user;
+package ru.funpay4j.client.exceptions.lot;
 
 /**
- * Base class for exception related to the fact that the user is not found
+ * Base class for exception related to the fact that the lot is not found
  *
  * @author panic08
  * @since 1.0.3
  */
-public class UserNotFoundException extends RuntimeException {
+public class LotNotFoundException extends RuntimeException {
     /**
-     * Initializes a new UserNotFoundException exception
+     * Initializes a new LotNotFoundException exception
      *
      * @param message exception message
      */
-    public UserNotFoundException(String message) {
+    public LotNotFoundException(String message) {
         super(message);
     }
 }

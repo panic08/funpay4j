@@ -14,11 +14,16 @@
 
 package ru.funpay4j.client;
 
-import ru.funpay4j.core.exceptions.FunPayApiException;
-import ru.funpay4j.core.exceptions.offer.OfferNotFoundException;
-import ru.funpay4j.core.exceptions.lot.LotNotFoundException;
-import ru.funpay4j.core.exceptions.user.UserNotFoundException;
-import ru.funpay4j.core.objects.CsrfTokenAndPHPSESSID;
+import ru.funpay4j.client.exceptions.FunPayApiException;
+import ru.funpay4j.client.exceptions.offer.OfferNotFoundException;
+import ru.funpay4j.client.exceptions.lot.LotNotFoundException;
+import ru.funpay4j.client.exceptions.user.UserNotFoundException;
+import ru.funpay4j.client.objects.CsrfTokenAndPHPSESSID;
+import ru.funpay4j.client.objects.game.ParsedPromoGame;
+import ru.funpay4j.client.objects.lot.ParsedLot;
+import ru.funpay4j.client.objects.offer.ParsedOffer;
+import ru.funpay4j.client.objects.user.ParsedSellerReview;
+import ru.funpay4j.client.objects.user.ParsedUser;
 import ru.funpay4j.core.objects.game.PromoGame;
 import ru.funpay4j.core.objects.lot.Lot;
 import ru.funpay4j.core.objects.offer.Offer;
@@ -42,7 +47,7 @@ public interface FunPayParser {
      * @throws FunPayApiException if the other api-related exception
      * @throws LotNotFoundException if the lot with id does not found
      */
-    Lot parseLot(long lotId) throws FunPayApiException, LotNotFoundException;
+    ParsedLot parseLot(long lotId) throws FunPayApiException, LotNotFoundException;
 
     /**
      * Parse promo games
@@ -51,7 +56,7 @@ public interface FunPayParser {
      * @return promo games
      * @throws FunPayApiException if the other api-related exception
      */
-    List<PromoGame> parsePromoGames(String query) throws FunPayApiException;
+    List<ParsedPromoGame> parsePromoGames(String query) throws FunPayApiException;
 
     /**
      * Parse offer
@@ -61,7 +66,7 @@ public interface FunPayParser {
      * @throws FunPayApiException if the other api-related exception
      * @throws OfferNotFoundException if the offer with id does not found
      */
-    Offer parseOffer(long offerId) throws FunPayApiException, OfferNotFoundException;
+    ParsedOffer parseOffer(long offerId) throws FunPayApiException, OfferNotFoundException;
 
     /**
      * Parse user
@@ -71,7 +76,7 @@ public interface FunPayParser {
      * @throws FunPayApiException if the other api-related exception
      * @throws UserNotFoundException if the user with id does not found
      */
-    User parseUser(long userId) throws FunPayApiException, UserNotFoundException;
+    ParsedUser parseUser(long userId) throws FunPayApiException, UserNotFoundException;
 
     /**
      * Parse user authorized
@@ -82,7 +87,7 @@ public interface FunPayParser {
      * @throws FunPayApiException if the other api-related exception
      * @throws UserNotFoundException if the user with id does not found
      */
-    User parseUser(String goldenKey, long userId) throws FunPayApiException, UserNotFoundException;
+    ParsedUser parseUser(String goldenKey, long userId) throws FunPayApiException, UserNotFoundException;
 
     /**
      * Parse seller reviews
@@ -93,7 +98,7 @@ public interface FunPayParser {
      * @throws FunPayApiException if the other api-related exception
      * @throws UserNotFoundException if the user with id does not found/seller
      */
-    List<SellerReview> parseSellerReviews(long userId, int pages) throws FunPayApiException, UserNotFoundException;
+    List<ParsedSellerReview> parseSellerReviews(long userId, int pages) throws FunPayApiException, UserNotFoundException;
 
     /**
      * Parse seller reviews authorized
@@ -105,7 +110,7 @@ public interface FunPayParser {
      * @throws FunPayApiException if the other api-related exception
      * @throws UserNotFoundException if the user with id does not found/seller
      */
-    List<SellerReview> parseSellerReviews(String goldenKey, long userId, int pages) throws FunPayApiException, UserNotFoundException;
+    List<ParsedSellerReview> parseSellerReviews(String goldenKey, long userId, int pages) throws FunPayApiException, UserNotFoundException;
 
     /**
      * Parse seller reviews with stars filter
@@ -117,7 +122,7 @@ public interface FunPayParser {
      * @throws FunPayApiException if the other api-related exception
      * @throws UserNotFoundException if the user with id does not found/seller
      */
-    List<SellerReview> parseSellerReviews(long userId, int pages, int starsFilter) throws FunPayApiException, UserNotFoundException;
+    List<ParsedSellerReview> parseSellerReviews(long userId, int pages, int starsFilter) throws FunPayApiException, UserNotFoundException;
 
     /**
      * Parse seller reviews with stars filter authorized
@@ -130,7 +135,7 @@ public interface FunPayParser {
      * @throws FunPayApiException if the other api-related exception
      * @throws UserNotFoundException if the user with id does not found/seller
      */
-    List<SellerReview> parseSellerReviews(String goldenKey, long userId, int pages, int starsFilter) throws FunPayApiException, UserNotFoundException;
+    List<ParsedSellerReview> parseSellerReviews(String goldenKey, long userId, int pages, int starsFilter) throws FunPayApiException, UserNotFoundException;
 
     /**
      * Parse csrf-token and PHPSESSID
