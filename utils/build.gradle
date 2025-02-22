@@ -1,0 +1,35 @@
+plugins {
+    id 'java'
+}
+
+dependencies {
+    annotationProcessor "org.projectlombok:lombok:${rootProject.ext.lombokVersion}"
+    testImplementation platform('org.junit:junit-bom:5.9.1')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(8)
+    }
+}
+
+tasks.withType(Javadoc).configureEach {
+    failOnError = true
+    options.addStringOption('Xdoclint:all', '-quiet')
+    options.addBooleanOption('Xwerror', true)
+}
+
+tasks.named("build") {
+    dependsOn(javadoc)
+}
+
+test {
+    useJUnitPlatform()
+}
