@@ -14,7 +14,11 @@ if (!JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_1_8)) {
 }
 
 include 'core'
-project(":core").name = 'funpay4j-core'
+project(":core").name = 'core'
 
 include 'examples'
-project(":examples").name = 'funpay4j-examples'
+project(":examples").name = 'examples'
+
+include 'utils'
+project(":utils").name = 'utils'
+
