@@ -16,9 +16,13 @@ if (!JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_1_8)) {
 include 'core'
 project(":core").name = 'core'
 
-include 'examples'
-project(":examples").name = 'examples'
+include 'client'
+project(":client").name = 'client'
 
 include 'utils'
 project(":utils").name = 'utils'
+
+include 'examples'
+project(":examples").name = 'examples'
+
 

@@ -24,11 +24,6 @@ import ru.funpay4j.client.objects.lot.ParsedLot;
 import ru.funpay4j.client.objects.offer.ParsedOffer;
 import ru.funpay4j.client.objects.user.ParsedSellerReview;
 import ru.funpay4j.client.objects.user.ParsedUser;
-import ru.funpay4j.core.objects.game.PromoGame;
-import ru.funpay4j.core.objects.lot.Lot;
-import ru.funpay4j.core.objects.offer.Offer;
-import ru.funpay4j.core.objects.user.SellerReview;
-import ru.funpay4j.core.objects.user.User;
 
 import java.util.List;
 

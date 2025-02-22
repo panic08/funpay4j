@@ -12,14 +12,13 @@
  * limitations under the License.
  */
 
-package ru.funpay4j;
+package ru.funpay4j.core;
 
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import ru.funpay4j.core.FunPayExecutor;
 import ru.funpay4j.core.commands.offer.GetOffer;
 import ru.funpay4j.core.commands.game.GetPromoGames;
 import ru.funpay4j.core.commands.lot.GetLot;

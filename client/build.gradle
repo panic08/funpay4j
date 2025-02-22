@@ -1,9 +1,9 @@
 plugins {
-    id 'java-library'
+    id 'java'
 }
 
 dependencies {
-    api project(":client")
+    implementation project(":utils")
     implementation "com.squareup.okhttp3:okhttp:${rootProject.ext.okhttpVersion}"
     testImplementation "com.squareup.okhttp3:mockwebserver:${rootProject.ext.okhttpVersion}"
     implementation "com.google.code.gson:gson:${rootProject.ext.gsonVersion}"
