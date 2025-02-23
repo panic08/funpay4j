@@ -17,22 +17,27 @@ package ru.funpay4j.core;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
+import ru.funpay4j.client.objects.user.ParsedAdvancedSellerReview;
+import ru.funpay4j.client.objects.user.ParsedSellerReview;
+import ru.funpay4j.client.objects.user.ParsedUser;
 import ru.funpay4j.client.request.SaveOfferRequest;
 import ru.funpay4j.core.commands.offer.*;
 import ru.funpay4j.core.commands.user.GetSellerReviews;
 import ru.funpay4j.core.commands.user.GetUser;
 import ru.funpay4j.core.commands.user.UpdateAvatar;
-import ru.funpay4j.core.exceptions.FunPayApiException;
-import ru.funpay4j.core.exceptions.InvalidCsrfTokenOrPHPSESSIDException;
-import ru.funpay4j.core.exceptions.InvalidGoldenKeyException;
-import ru.funpay4j.core.exceptions.offer.OfferAlreadyRaisedException;
-import ru.funpay4j.core.exceptions.user.UserNotFoundException;
-import ru.funpay4j.core.objects.CsrfTokenAndPHPSESSID;
+import ru.funpay4j.client.exceptions.FunPayApiException;
+import ru.funpay4j.client.exceptions.InvalidCsrfTokenOrPHPSESSIDException;
+import ru.funpay4j.client.exceptions.InvalidGoldenKeyException;
+import ru.funpay4j.client.exceptions.offer.OfferAlreadyRaisedException;
+import ru.funpay4j.client.exceptions.user.UserNotFoundException;
+import ru.funpay4j.client.objects.CsrfTokenAndPHPSESSID;
+import ru.funpay4j.core.objects.user.AdvancedSellerReview;
 import ru.funpay4j.core.objects.user.SellerReview;
 import ru.funpay4j.core.objects.user.User;
 
 import java.net.Proxy;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * This Authorized FunPay executor is used to execute authorized commands
@@ -277,7 +282,16 @@ public class AuthorizedFunPayExecutor extends FunPayExecutor {
      * @throws UserNotFoundException if the user with id does not found
      */
     public User execute(GetUser command) throws FunPayApiException, UserNotFoundException {
-        return funPayParser.parseUser(goldenKey, command.getUserId());
+        ParsedUser user = funPayParser.parseUser(goldenKey, command.getUserId());
+        return User.builder()
+                .id(user.getId())
+                .username(user.getUsername())
+                .avatarPhotoLink(user.getAvatarPhotoLink())
+                .isOnline(user.isOnline())
+                .badges(user.getBadges())
+                .lastSeenAt(user.getLastSeenAt())
+                .registeredAt(user.getRegisteredAt())
+                .build();
     }
 
     /**
@@ -289,11 +303,36 @@ public class AuthorizedFunPayExecutor extends FunPayExecutor {
      * @throws UserNotFoundException if the user with id does not found/seller
      */
     public List<SellerReview> execute(GetSellerReviews command) throws FunPayApiException, UserNotFoundException {
+        List<ParsedSellerReview> sellerReviews;
         if (command.getStarsFilter() != null) {
-            return funPayParser.parseSellerReviews(goldenKey, command.getUserId(), command.getPages(), command.getStarsFilter());
+            sellerReviews = funPayParser.parseSellerReviews(goldenKey, command.getUserId(), command.getPages(), command.getStarsFilter());
         } else {
-            return funPayParser.parseSellerReviews(goldenKey, command.getUserId(), command.getPages());
+            sellerReviews = funPayParser.parseSellerReviews(goldenKey, command.getUserId(), command.getPages());
         }
+        return sellerReviews.stream().map(parsedSellerReview -> {
+            if (parsedSellerReview instanceof ParsedAdvancedSellerReview) {
+                return AdvancedSellerReview.builder()
+                        .senderUserId(((ParsedAdvancedSellerReview) parsedSellerReview).getSenderUserId())
+                        .senderUsername(((ParsedAdvancedSellerReview) parsedSellerReview).getSenderUsername())
+                        .senderAvatarLink(((ParsedAdvancedSellerReview) parsedSellerReview).getSenderAvatarLink())
+                        .orderId(((ParsedAdvancedSellerReview) parsedSellerReview).getOrderId())
+                        .createdAt(((ParsedAdvancedSellerReview) parsedSellerReview).getCreatedAt())
+                        .gameTitle(parsedSellerReview.getGameTitle())
+                        .price(parsedSellerReview.getPrice())
+                        .text(parsedSellerReview.getText())
+                        .stars(parsedSellerReview.getStars())
+                        .sellerReplyText(parsedSellerReview.getSellerReplyText())
+                        .build();
+            } else {
+                return SellerReview.builder()
+                        .gameTitle(parsedSellerReview.getGameTitle())
+                        .price(parsedSellerReview.getPrice())
+                        .text(parsedSellerReview.getText())
+                        .stars(parsedSellerReview.getStars())
+                        .sellerReplyText(parsedSellerReview.getSellerReplyText())
+                        .build();
+            }
+        }).collect(Collectors.toList());
     }
 
     /**

@@ -15,9 +15,9 @@
 package ru.funpay4j.examples.offer;
 
 import ru.funpay4j.core.AuthorizedFunPayExecutor;
-import ru.funpay4j.core.exceptions.FunPayApiException;
-import ru.funpay4j.core.exceptions.InvalidGoldenKeyException;
-import ru.funpay4j.core.exceptions.offer.OfferAlreadyRaisedException;
+import ru.funpay4j.client.exceptions.FunPayApiException;
+import ru.funpay4j.client.exceptions.InvalidGoldenKeyException;
+import ru.funpay4j.client.exceptions.offer.OfferAlreadyRaisedException;
 
 import java.net.InetSocketAddress;
 import java.net.Proxy;

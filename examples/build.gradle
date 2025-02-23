@@ -3,7 +3,7 @@ plugins {
 }
 
 dependencies {
-    implementation project(":funpay4j-core")
+    implementation project(":core")
 }
 
 java {

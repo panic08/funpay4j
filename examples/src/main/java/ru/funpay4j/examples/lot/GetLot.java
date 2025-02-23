@@ -15,8 +15,8 @@
 package ru.funpay4j.examples.lot;
 
 import ru.funpay4j.core.FunPayExecutor;
-import ru.funpay4j.core.exceptions.FunPayApiException;
-import ru.funpay4j.core.exceptions.lot.LotNotFoundException;
+import ru.funpay4j.client.exceptions.FunPayApiException;
+import ru.funpay4j.client.exceptions.lot.LotNotFoundException;
 import ru.funpay4j.core.objects.lot.Lot;
 
 import java.net.InetSocketAddress;

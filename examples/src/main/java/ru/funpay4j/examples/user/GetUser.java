@@ -15,8 +15,8 @@
 package ru.funpay4j.examples.user;
 
 import ru.funpay4j.core.FunPayExecutor;
-import ru.funpay4j.core.exceptions.FunPayApiException;
-import ru.funpay4j.core.exceptions.user.UserNotFoundException;
+import ru.funpay4j.client.exceptions.FunPayApiException;
+import ru.funpay4j.client.exceptions.user.UserNotFoundException;
 import ru.funpay4j.core.objects.user.Seller;
 import ru.funpay4j.core.objects.user.User;
 
