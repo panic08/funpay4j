@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-package ru.funpay4j.client;
+package ru.funpay4j.client.parser;
 
 import ru.funpay4j.client.exceptions.FunPayApiException;
 import ru.funpay4j.client.exceptions.offer.OfferNotFoundException;

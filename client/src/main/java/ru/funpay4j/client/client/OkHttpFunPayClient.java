@@ -12,13 +12,12 @@
  * limitations under the License.
  */
 
-package ru.funpay4j.client.okhttp;
+package ru.funpay4j.client.client;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import lombok.NonNull;
 import okhttp3.*;
-import ru.funpay4j.client.FunPayClient;
 import ru.funpay4j.client.request.SaveOfferRequest;
 import ru.funpay4j.client.exceptions.FunPayApiException;
 import ru.funpay4j.client.exceptions.InvalidCsrfTokenOrPHPSESSIDException;

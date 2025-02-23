@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-package ru.funpay4j.client.jsoup;
+package ru.funpay4j.client.parser;
 
 import com.google.gson.JsonParser;
 import lombok.NonNull;
@@ -28,7 +28,6 @@ import ru.funpay4j.client.objects.offer.ParsedOffer;
 import ru.funpay4j.client.objects.offer.ParsedPreviewOffer;
 import ru.funpay4j.client.objects.user.*;
 import ru.funpay4j.utils.FunPayUserUtil;
-import ru.funpay4j.client.FunPayParser;
 import ru.funpay4j.client.exceptions.FunPayApiException;
 import ru.funpay4j.client.exceptions.offer.OfferNotFoundException;
 import ru.funpay4j.client.exceptions.lot.LotNotFoundException;

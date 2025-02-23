@@ -16,14 +16,14 @@ package ru.funpay4j.core;
 
 import lombok.NonNull;
 import okhttp3.OkHttpClient;
-import ru.funpay4j.client.FunPayClient;
-import ru.funpay4j.client.FunPayParser;
-import ru.funpay4j.client.jsoup.JsoupFunPayParser;
+import ru.funpay4j.client.client.FunPayClient;
+import ru.funpay4j.client.parser.FunPayParser;
+import ru.funpay4j.client.parser.JsoupFunPayParser;
 import ru.funpay4j.client.objects.game.ParsedPromoGame;
 import ru.funpay4j.client.objects.lot.ParsedLot;
 import ru.funpay4j.client.objects.offer.ParsedOffer;
 import ru.funpay4j.client.objects.user.*;
-import ru.funpay4j.client.okhttp.OkHttpFunPayClient;
+import ru.funpay4j.client.client.OkHttpFunPayClient;
 import ru.funpay4j.core.commands.offer.GetOffer;
 import ru.funpay4j.core.commands.game.GetPromoGames;
 import ru.funpay4j.core.commands.lot.GetLot;
