@@ -21,6 +21,7 @@ import ru.funpay4j.client.exceptions.InvalidGoldenKeyException;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This is an example of how to edit offer
@@ -36,19 +37,20 @@ public class EditOffer {
 
 
         try {
+            Map<String, String> fields = new HashMap<>();
+            fields.put("fields[type]", "Одежда");
+            fields.put("fields[hero]", "Abaddon");
+            fields.put("fields[rare]", "Common");
+            fields.put("fields[quality]", "Inscribed");
+            fields.put("fields[method]", "Мгновенно");
+
             executor.execute(ru.funpay4j.core.commands.offer.EditOffer.builder()
                     .lotId(210L)
                     .offerId(53453453L)
                     .price(200D)
                     .amount(5)
                     .shortDescriptionEn("Dota 2 Item!")
-                    .fields(new HashMap<String, String>(){{
-                        put("fields[type]", "Одежда");
-                        put("fields[hero]", "Abaddon");
-                        put("fields[rare]", "Common");
-                        put("fields[quality]", "Inscribed");
-                        put("fields[method]", "Мгновенно");
-                    }})
+                    .fields(fields)
                     .build());
         } catch (FunPayApiException e) {
             throw new RuntimeException(e);

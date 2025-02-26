@@ -19,7 +19,11 @@ import okhttp3.mockwebserver.MockWebServer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import ru.funpay4j.core.commands.offer.*;
+import ru.funpay4j.core.commands.offer.RaiseAllOffers;
+import ru.funpay4j.core.commands.offer.EditOffer;
+import ru.funpay4j.core.commands.offer.CreateOfferImage;
+import ru.funpay4j.core.commands.offer.CreateOffer;
+import ru.funpay4j.core.commands.offer.DeleteOffer;
 import ru.funpay4j.core.commands.user.UpdateAvatar;
 import ru.funpay4j.client.exceptions.InvalidGoldenKeyException;
 import ru.funpay4j.client.exceptions.offer.OfferAlreadyRaisedException;
@@ -28,7 +32,10 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * @author panic08

@@ -30,14 +30,24 @@ import ru.funpay4j.client.objects.lot.ParsedLot;
 import ru.funpay4j.client.objects.lot.ParsedLotCounter;
 import ru.funpay4j.client.objects.offer.ParsedOffer;
 import ru.funpay4j.client.objects.offer.ParsedPreviewOffer;
-import ru.funpay4j.client.objects.user.*;
+import ru.funpay4j.client.objects.user.ParsedUser;
+import ru.funpay4j.client.objects.user.ParsedSeller;
+import ru.funpay4j.client.objects.user.ParsedSellerReview;
+import ru.funpay4j.client.objects.user.ParsedAdvancedSellerReview;
+import ru.funpay4j.client.objects.user.ParsedPreviewSeller;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
-import static org.junit.jupiter.api.Assertions.*;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * @author panic08
@@ -273,17 +283,17 @@ class JsoupFunPayParserTest {
     void testParseCsrfTokenAndPHPSESSID() throws Exception {
         String goldenKey = "some_golden_key";
         String csrfToken = "some_csrf_token";
-        String phpsessid = "some_phpsessid";
+        String phpSessId = "some_phpsessid";
         String html = "<body data-app-data='{\"csrf-token\": \"" + csrfToken + "\"}'></body>";
         mockWebServer.enqueue(new MockResponse()
                 .setBody(html)
-                .addHeader("Set-Cookie", "PHPSESSID=" + phpsessid + "; path=/")
+                .addHeader("Set-Cookie", "PHPSESSID=" + phpSessId + "; path=/")
                 .setResponseCode(200));
 
         CsrfTokenAndPHPSESSID result = parser.parseCsrfTokenAndPHPSESSID(goldenKey);
 
         assertNotNull(result);
         assertEquals(csrfToken, result.getCsrfToken());
-        assertEquals(phpsessid, result.getPHPSESSID());
+        assertEquals(phpSessId, result.getPHPSESSID());
     }
 }

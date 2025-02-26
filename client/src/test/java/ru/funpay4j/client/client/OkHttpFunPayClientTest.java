@@ -27,7 +27,10 @@ import ru.funpay4j.client.request.SaveOfferRequest;
 
 import java.io.IOException;
 import java.util.Collections;
-import static org.junit.jupiter.api.Assertions.*;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * @author panic08
@@ -52,6 +55,7 @@ class OkHttpFunPayClientTest {
     void tearDown() throws IOException {
         this.mockWebServer.shutdown();
     }
+
     @Test
     void testUpdateAvatar() throws Exception {
         String goldenKey = "valid_golden_key";
@@ -113,7 +117,7 @@ class OkHttpFunPayClientTest {
     void testSaveOffer() throws Exception {
         String goldenKey = "valid_golden_key";
         String csrfToken = "valid_csrf_token";
-        String PHPSESSID = "valid_phpsessid";
+        String phpSessId = "valid_phpsessid";
         SaveOfferRequest request = SaveOfferRequest.builder()
                 .offerId(33502824L)
                 .nodeId(149L)
@@ -135,7 +139,7 @@ class OkHttpFunPayClientTest {
 
         mockWebServer.enqueue(new MockResponse().setBody("{\"done\": true}").setResponseCode(200));
 
-        client.saveOffer(goldenKey, csrfToken, PHPSESSID, request);
+        client.saveOffer(goldenKey, csrfToken, phpSessId, request);
 
         assertEquals(1, mockWebServer.getRequestCount());
     }
@@ -144,36 +148,36 @@ class OkHttpFunPayClientTest {
     void testSaveOfferInvalidGoldenKey() throws Exception {
         String goldenKey = "invalid_golden_key";
         String csrfToken = "valid_csrf_token";
-        String PHPSESSID = "valid_phpsessid";
+        String phpSessId = "valid_phpsessid";
         SaveOfferRequest request = SaveOfferRequest.builder().build();
 
         mockWebServer.enqueue(new MockResponse().setResponseCode(403));
 
-        assertThrows(InvalidGoldenKeyException.class, () -> client.saveOffer(goldenKey, csrfToken, PHPSESSID, request));
+        assertThrows(InvalidGoldenKeyException.class, () -> client.saveOffer(goldenKey, csrfToken, phpSessId, request));
     }
 
     @Test
     void testSaveOfferInvalidCsrfTokenOrPHPSESSID() throws Exception {
         String goldenKey = "valid_golden_key";
         String csrfToken = "invalid_csrf_token";
-        String PHPSESSID = "invalid_phpsessid";
+        String phpSessId = "invalid_phpsessid";
         SaveOfferRequest request = SaveOfferRequest.builder().build();
 
         mockWebServer.enqueue(new MockResponse().setBody("{\"msg\": \"Обновите страницу и повторите попытку.\"}").setResponseCode(400));
 
-        assertThrows(InvalidCsrfTokenOrPHPSESSIDException.class, () -> client.saveOffer(goldenKey, csrfToken, PHPSESSID, request));
+        assertThrows(InvalidCsrfTokenOrPHPSESSIDException.class, () -> client.saveOffer(goldenKey, csrfToken, phpSessId, request));
     }
 
     @Test
     void testSaveOfferErrorResponse() throws Exception {
         String goldenKey = "valid_golden_key";
         String csrfToken = "valid_csrf_token";
-        String PHPSESSID = "valid_phpsessid";
+        String phpSessId = "valid_phpsessid";
         SaveOfferRequest request = SaveOfferRequest.builder().build();
 
         mockWebServer.enqueue(new MockResponse().setBody("{\"done\": false, \"error\": \"some error\", \"errors\": {}}").setResponseCode(200));
 
-        assertThrows(RuntimeException.class, () -> client.saveOffer(goldenKey, csrfToken, PHPSESSID, request));
+        assertThrows(RuntimeException.class, () -> client.saveOffer(goldenKey, csrfToken, phpSessId, request));
     }
 
     @Test

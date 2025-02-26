@@ -6,6 +6,22 @@ ext {
 }
 
 allprojects {
+    apply plugin: 'java'
+    apply plugin: 'checkstyle'
+
+    checkstyle {
+        configFile = file("$rootProject.projectDir/src/checkstyle/checkstyle.xml")
+        ignoreFailures = false
+    }
+
+    checkstyleMain {
+        source = 'src/main/java'
+    }
+
+    checkstyleTest {
+        source = 'src/test/java'
+    }
+
     repositories {
         mavenCentral()
     }
