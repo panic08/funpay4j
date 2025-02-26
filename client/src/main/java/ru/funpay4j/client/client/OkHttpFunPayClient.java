@@ -17,7 +17,11 @@ package ru.funpay4j.client.client;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import lombok.NonNull;
-import okhttp3.*;
+import okhttp3.OkHttpClient;
+import okhttp3.Response;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.MultipartBody;
 import ru.funpay4j.client.request.SaveOfferRequest;
 import ru.funpay4j.client.exceptions.FunPayApiException;
 import ru.funpay4j.client.exceptions.InvalidCsrfTokenOrPHPSESSIDException;
@@ -108,7 +112,7 @@ public class OkHttpFunPayClient implements FunPayClient {
      */
     @Override
     public void saveOffer(@NonNull String goldenKey, @NonNull String csrfToken,
-                          @NonNull String PHPSESSID, @NonNull SaveOfferRequest request) throws FunPayApiException, InvalidGoldenKeyException{
+                          @NonNull String phpSessionId, @NonNull SaveOfferRequest request) throws FunPayApiException, InvalidGoldenKeyException{
         MultipartBody.Builder multipartBody = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart("csrf_token", csrfToken)
@@ -138,7 +142,7 @@ public class OkHttpFunPayClient implements FunPayClient {
         }
 
         try (Response response = httpClient.newCall(new Request.Builder().post(multipartBody.build()).url(baseURL + "/lots/offerSave")
-                .addHeader("Cookie", "golden_key=" + goldenKey + "; PHPSESSID=" + PHPSESSID)
+                .addHeader("Cookie", "golden_key=" + goldenKey + "; PHPSESSID=" + phpSessionId)
                 .addHeader("x-requested-with", "XMLHttpRequest")
                 .build()).execute()) {
             String responseBodyString = response.body().string();

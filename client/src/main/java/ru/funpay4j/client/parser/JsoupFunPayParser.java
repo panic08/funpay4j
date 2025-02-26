@@ -16,7 +16,11 @@ package ru.funpay4j.client.parser;
 
 import com.google.gson.JsonParser;
 import lombok.NonNull;
-import okhttp3.*;
+import okhttp3.OkHttpClient;
+import okhttp3.Response;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.MultipartBody;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -26,7 +30,11 @@ import ru.funpay4j.client.objects.lot.ParsedLot;
 import ru.funpay4j.client.objects.lot.ParsedLotCounter;
 import ru.funpay4j.client.objects.offer.ParsedOffer;
 import ru.funpay4j.client.objects.offer.ParsedPreviewOffer;
-import ru.funpay4j.client.objects.user.*;
+import ru.funpay4j.client.objects.user.ParsedPreviewSeller;
+import ru.funpay4j.client.objects.user.ParsedSeller;
+import ru.funpay4j.client.objects.user.ParsedSellerReview;
+import ru.funpay4j.client.objects.user.ParsedUser;
+import ru.funpay4j.client.objects.user.ParsedAdvancedSellerReview;
 import ru.funpay4j.utils.FunPayUserUtil;
 import ru.funpay4j.client.exceptions.FunPayApiException;
 import ru.funpay4j.client.exceptions.offer.OfferNotFoundException;
@@ -36,7 +44,12 @@ import ru.funpay4j.client.objects.CsrfTokenAndPHPSESSID;
 
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.*;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Optional;
 
 /**
  * This implementation of FunPayParser uses Jsoup to parse
@@ -402,12 +415,12 @@ public class JsoupFunPayParser implements FunPayParser {
             String dataAppData = funPayDocument.getElementsByTag("body").attr("data-app-data");
 
             String csrfToken = JsonParser.parseString(dataAppData).getAsJsonObject().get("csrf-token").getAsString();
-            //Use this regex to get the value of the PHPSESSID key from the Set-Cookie header
-            String PHPSESSID = funPayHtmlResponse.header("Set-Cookie").replaceAll(".*PHPSESSID=([^;]*).*", "$1");
+            //Use this regex to get the value of the PHP_SESSION_ID key from the Set-Cookie header
+            String phpSessionId = funPayHtmlResponse.header("Set-Cookie").replaceAll(".*PHPSESSID=([^;]*).*", "$1");
 
             return CsrfTokenAndPHPSESSID.builder()
                     .csrfToken(csrfToken)
-                    .PHPSESSID(PHPSESSID)
+                    .PHPSESSID(phpSessionId)
                     .build();
         } catch (IOException e) {
             throw new FunPayApiException(e.getLocalizedMessage());

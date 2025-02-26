@@ -14,7 +14,11 @@
 
 package ru.funpay4j.core.commands.offer;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NonNull;
 
 /**
  * Use this command to create offer image

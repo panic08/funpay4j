@@ -14,7 +14,11 @@
 
 package ru.funpay4j.core.commands.user;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NonNull;
 
 /**
  * Use this command to get user
