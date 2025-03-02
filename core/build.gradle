@@ -7,7 +7,7 @@ dependencies {
     implementation "com.squareup.okhttp3:okhttp:${rootProject.ext.okhttpVersion}"
     testImplementation "com.squareup.okhttp3:mockwebserver:${rootProject.ext.okhttpVersion}"
     annotationProcessor "org.projectlombok:lombok:${rootProject.ext.lombokVersion}"
-    testImplementation platform('org.junit:junit-bom:5.9.1')
+    testImplementation platform("org.junit:junit-bom:${rootProject.ext.junitVersion}")
     testImplementation 'org.junit.jupiter:junit-jupiter'
 }
 
