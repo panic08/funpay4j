@@ -14,15 +14,16 @@
 
 package ru.funpay4j.core.commands.offer;
 
+import java.util.List;
+import java.util.Map;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.NonNull;
-import org.jetbrains.annotations.Nullable;
+import lombok.Setter;
 
-import java.util.List;
-import java.util.Map;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Use this command to create offer
@@ -35,43 +36,31 @@ import java.util.Map;
 @Builder
 @AllArgsConstructor
 public class CreateOffer {
-    @NonNull
-    private Long lotId;
+    @NonNull private Long lotId;
 
-    @Nullable
-    private String shortDescriptionRu;
+    @Nullable private String shortDescriptionRu;
 
-    @NonNull
-    private String shortDescriptionEn;
+    @NonNull private String shortDescriptionEn;
 
-    @Nullable
-    private String descriptionRu;
+    @Nullable private String descriptionRu;
 
-    @Nullable
-    private String descriptionEn;
+    @Nullable private String descriptionEn;
 
-    @Nullable
-    private String paymentMessageRu;
+    @Nullable private String paymentMessageRu;
 
-    @Nullable
-    private String paymentMessageEn;
+    @Nullable private String paymentMessageEn;
 
-    @Nullable
-    private Map<String, String> fields;
+    @Nullable private Map<String, String> fields;
 
     private boolean isAutoDelivery;
 
     private boolean isActive;
 
-    @Nullable
-    private List<String> secrets;
+    @Nullable private List<String> secrets;
 
-    @Nullable
-    private List<Long> imageIds;
+    @Nullable private List<Long> imageIds;
 
-    @NonNull
-    private Double price;
+    @NonNull private Double price;
 
-    @NonNull
-    private Integer amount;
+    @NonNull private Integer amount;
 }

@@ -14,29 +14,33 @@
 
 package ru.funpay4j.core;
 
+import java.net.Proxy;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import lombok.NonNull;
 import okhttp3.OkHttpClient;
 import ru.funpay4j.client.client.FunPayClient;
-import ru.funpay4j.client.parser.FunPayParser;
-import ru.funpay4j.client.parser.JsoupFunPayParser;
+import ru.funpay4j.client.client.OkHttpFunPayClient;
+import ru.funpay4j.client.exceptions.FunPayApiException;
+import ru.funpay4j.client.exceptions.lot.LotNotFoundException;
+import ru.funpay4j.client.exceptions.offer.OfferNotFoundException;
+import ru.funpay4j.client.exceptions.user.UserNotFoundException;
 import ru.funpay4j.client.objects.game.ParsedPromoGame;
 import ru.funpay4j.client.objects.lot.ParsedLot;
 import ru.funpay4j.client.objects.offer.ParsedOffer;
 import ru.funpay4j.client.objects.user.ParsedAdvancedSellerReview;
-import ru.funpay4j.client.objects.user.ParsedSellerReview;
-import ru.funpay4j.client.objects.user.ParsedUser;
 import ru.funpay4j.client.objects.user.ParsedPreviewSeller;
 import ru.funpay4j.client.objects.user.ParsedSeller;
-import ru.funpay4j.client.client.OkHttpFunPayClient;
-import ru.funpay4j.core.commands.offer.GetOffer;
+import ru.funpay4j.client.objects.user.ParsedSellerReview;
+import ru.funpay4j.client.objects.user.ParsedUser;
+import ru.funpay4j.client.parser.FunPayParser;
+import ru.funpay4j.client.parser.JsoupFunPayParser;
 import ru.funpay4j.core.commands.game.GetPromoGames;
 import ru.funpay4j.core.commands.lot.GetLot;
+import ru.funpay4j.core.commands.offer.GetOffer;
 import ru.funpay4j.core.commands.user.GetSellerReviews;
-import ru.funpay4j.client.exceptions.FunPayApiException;
 import ru.funpay4j.core.commands.user.GetUser;
-import ru.funpay4j.client.exceptions.lot.LotNotFoundException;
-import ru.funpay4j.client.exceptions.offer.OfferNotFoundException;
-import ru.funpay4j.client.exceptions.user.UserNotFoundException;
 import ru.funpay4j.core.objects.game.PromoGame;
 import ru.funpay4j.core.objects.game.PromoGameCounter;
 import ru.funpay4j.core.objects.lot.Lot;
@@ -44,13 +48,10 @@ import ru.funpay4j.core.objects.lot.LotCounter;
 import ru.funpay4j.core.objects.offer.Offer;
 import ru.funpay4j.core.objects.offer.PreviewOffer;
 import ru.funpay4j.core.objects.user.AdvancedSellerReview;
+import ru.funpay4j.core.objects.user.PreviewSeller;
+import ru.funpay4j.core.objects.user.Seller;
 import ru.funpay4j.core.objects.user.SellerReview;
 import ru.funpay4j.core.objects.user.User;
-import ru.funpay4j.core.objects.user.Seller;
-import ru.funpay4j.core.objects.user.PreviewSeller;
-import java.net.Proxy;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * This FunPay executor is used to execute commands
@@ -59,15 +60,11 @@ import java.util.stream.Collectors;
  * @since 1.0.0
  */
 public class FunPayExecutor {
-    @NonNull
-    protected final FunPayParser funPayParser;
+    @NonNull protected final FunPayParser funPayParser;
 
-    @NonNull
-    protected final FunPayClient funPayClient;
+    @NonNull protected final FunPayClient funPayClient;
 
-    /**
-     * Creates a new FunPayExecutor instance
-     */
+    /** Creates a new FunPayExecutor instance */
     public FunPayExecutor() {
         OkHttpClient httpClient = new OkHttpClient();
 
@@ -82,9 +79,7 @@ public class FunPayExecutor {
      * @param proxy proxy for forwarding requests
      */
     public FunPayExecutor(@NonNull String baseURL, @NonNull Proxy proxy) {
-        OkHttpClient httpClient = new OkHttpClient.Builder()
-                .proxy(proxy)
-                .build();
+        OkHttpClient httpClient = new OkHttpClient.Builder().proxy(proxy).build();
 
         this.funPayParser = new JsoupFunPayParser(httpClient, baseURL);
         this.funPayClient = new OkHttpFunPayClient(httpClient, baseURL);
@@ -108,9 +103,7 @@ public class FunPayExecutor {
      * @param proxy proxy for forwarding requests
      */
     public FunPayExecutor(@NonNull Proxy proxy) {
-        OkHttpClient httpClient = new OkHttpClient.Builder()
-                .proxy(proxy)
-                .build();
+        OkHttpClient httpClient = new OkHttpClient.Builder().proxy(proxy).build();
 
         this.funPayParser = new JsoupFunPayParser(httpClient, FunPayURL.BASE_URL);
         this.funPayClient = new OkHttpFunPayClient(httpClient, FunPayURL.BASE_URL);
@@ -131,34 +124,53 @@ public class FunPayExecutor {
                 .gameId(parsedLot.getGameId())
                 .title(parsedLot.getTitle())
                 .description(parsedLot.getDescription())
-                .lotCounters(parsedLot.getLotCounters().stream()
-                        .map(parsedLotCounter -> {
-                            return LotCounter.builder()
-                                    .lotId(parsedLotCounter.getLotId())
-                                    .param(parsedLotCounter.getParam())
-                                    .counter(parsedLotCounter.getCounter())
-                                    .build();
-                        })
-                        .collect(Collectors.toList()))
-                .previewOffers(parsedLot.getPreviewOffers().stream()
-                        .map(parsedPreviewOffer -> {
-                            ParsedPreviewSeller previewSeller = parsedPreviewOffer.getSeller();
-                            return PreviewOffer.builder()
-                                    .offerId(parsedPreviewOffer.getOfferId())
-                                    .shortDescription(parsedPreviewOffer.getShortDescription())
-                                    .price(parsedPreviewOffer.getPrice())
-                                    .isAutoDelivery(parsedPreviewOffer.isAutoDelivery())
-                                    .isPromo(parsedPreviewOffer.isPromo())
-                                    .seller(PreviewSeller.builder()
-                                            .userId(previewSeller.getUserId())
-                                            .username(previewSeller.getUsername())
-                                            .avatarPhotoLink(previewSeller.getAvatarPhotoLink())
-                                            .isOnline(previewSeller.isOnline())
-                                            .reviewCount(previewSeller.getReviewCount())
-                                            .build())
-                                    .build();
-                        })
-                        .collect(Collectors.toList()))
+                .lotCounters(
+                        parsedLot.getLotCounters().stream()
+                                .map(
+                                        parsedLotCounter -> {
+                                            return LotCounter.builder()
+                                                    .lotId(parsedLotCounter.getLotId())
+                                                    .param(parsedLotCounter.getParam())
+                                                    .counter(parsedLotCounter.getCounter())
+                                                    .build();
+                                        })
+                                .collect(Collectors.toList()))
+                .previewOffers(
+                        parsedLot.getPreviewOffers().stream()
+                                .map(
+                                        parsedPreviewOffer -> {
+                                            ParsedPreviewSeller previewSeller =
+                                                    parsedPreviewOffer.getSeller();
+                                            return PreviewOffer.builder()
+                                                    .offerId(parsedPreviewOffer.getOfferId())
+                                                    .shortDescription(
+                                                            parsedPreviewOffer
+                                                                    .getShortDescription())
+                                                    .price(parsedPreviewOffer.getPrice())
+                                                    .isAutoDelivery(
+                                                            parsedPreviewOffer.isAutoDelivery())
+                                                    .isPromo(parsedPreviewOffer.isPromo())
+                                                    .seller(
+                                                            PreviewSeller.builder()
+                                                                    .userId(
+                                                                            previewSeller
+                                                                                    .getUserId())
+                                                                    .username(
+                                                                            previewSeller
+                                                                                    .getUsername())
+                                                                    .avatarPhotoLink(
+                                                                            previewSeller
+                                                                                    .getAvatarPhotoLink())
+                                                                    .isOnline(
+                                                                            previewSeller
+                                                                                    .isOnline())
+                                                                    .reviewCount(
+                                                                            previewSeller
+                                                                                    .getReviewCount())
+                                                                    .build())
+                                                    .build();
+                                        })
+                                .collect(Collectors.toList()))
                 .build();
     }
 
@@ -171,20 +183,29 @@ public class FunPayExecutor {
      */
     public List<PromoGame> execute(GetPromoGames command) throws FunPayApiException {
         List<ParsedPromoGame> promoGame = funPayParser.parsePromoGames(command.getQuery());
-        return promoGame.stream().map(parsedPromoGame -> {
-            return PromoGame.builder()
-                    .lotId(parsedPromoGame.getLotId())
-                    .title(parsedPromoGame.getTitle())
-                    .promoGameCounters(parsedPromoGame.getPromoGameCounters().stream()
-                            .map(parsedPromoGameCounter -> {
-                                return PromoGameCounter.builder()
-                                        .lotId(parsedPromoGameCounter.getLotId())
-                                        .title(parsedPromoGameCounter.getTitle())
-                                        .build();
-                            })
-                            .collect(Collectors.toList()))
-                    .build();
-        }).collect(Collectors.toList());
+        return promoGame.stream()
+                .map(
+                        parsedPromoGame -> {
+                            return PromoGame.builder()
+                                    .lotId(parsedPromoGame.getLotId())
+                                    .title(parsedPromoGame.getTitle())
+                                    .promoGameCounters(
+                                            parsedPromoGame.getPromoGameCounters().stream()
+                                                    .map(
+                                                            parsedPromoGameCounter -> {
+                                                                return PromoGameCounter.builder()
+                                                                        .lotId(
+                                                                                parsedPromoGameCounter
+                                                                                        .getLotId())
+                                                                        .title(
+                                                                                parsedPromoGameCounter
+                                                                                        .getTitle())
+                                                                        .build();
+                                                            })
+                                                    .collect(Collectors.toList()))
+                                    .build();
+                        })
+                .collect(Collectors.toList());
     }
 
     /**
@@ -205,15 +226,15 @@ public class FunPayExecutor {
                 .price(offer.getPrice())
                 .attachmentLinks(offer.getAttachmentLinks())
                 .parameters(offer.getParameters())
-                .seller(PreviewSeller.builder()
-                        .userId(offer.getSeller().getUserId())
-                        .username(offer.getSeller().getUsername())
-                        .avatarPhotoLink(offer.getSeller().getAvatarPhotoLink())
-                        .isOnline(offer.getSeller().isOnline())
-                        .reviewCount(offer.getSeller().getReviewCount())
-                        .build())
+                .seller(
+                        PreviewSeller.builder()
+                                .userId(offer.getSeller().getUserId())
+                                .username(offer.getSeller().getUsername())
+                                .avatarPhotoLink(offer.getSeller().getAvatarPhotoLink())
+                                .isOnline(offer.getSeller().isOnline())
+                                .reviewCount(offer.getSeller().getReviewCount())
+                                .build())
                 .build();
-
     }
 
     /**
@@ -237,32 +258,72 @@ public class FunPayExecutor {
                     .registeredAt(user.getRegisteredAt())
                     .rating(((ParsedSeller) user).getRating())
                     .reviewCount(((ParsedSeller) user).getReviewCount())
-                    .previewOffers(((ParsedSeller) user).getPreviewOffers().stream().map(parsedPreviewOffer -> {
-                        ParsedPreviewSeller previewSeller = parsedPreviewOffer.getSeller();
-                        return PreviewOffer.builder()
-                                .offerId(parsedPreviewOffer.getOfferId())
-                                .shortDescription(parsedPreviewOffer.getShortDescription())
-                                .price(parsedPreviewOffer.getPrice())
-                                .isAutoDelivery(parsedPreviewOffer.isAutoDelivery())
-                                .isPromo(parsedPreviewOffer.isPromo())
-                                .seller(PreviewSeller.builder()
-                                        .userId(previewSeller.getUserId())
-                                        .username(previewSeller.getUsername())
-                                        .avatarPhotoLink(previewSeller.getAvatarPhotoLink())
-                                        .isOnline(previewSeller.isOnline())
-                                        .reviewCount(previewSeller.getReviewCount())
-                                        .build())
-                                .build();
-                    }).collect(Collectors.toList()))
-                    .lastReviews(((ParsedSeller) user).getLastReviews().stream().map(parsedSellerReview -> {
-                        return SellerReview.builder()
-                                .gameTitle(parsedSellerReview.getGameTitle())
-                                .price(parsedSellerReview.getPrice())
-                                .text(parsedSellerReview.getText())
-                                .stars(parsedSellerReview.getStars())
-                                .sellerReplyText(parsedSellerReview.getSellerReplyText())
-                                .build();
-                    }).collect(Collectors.toList()))
+                    .previewOffers(
+                            ((ParsedSeller) user)
+                                    .getPreviewOffers().stream()
+                                            .map(
+                                                    parsedPreviewOffer -> {
+                                                        ParsedPreviewSeller previewSeller =
+                                                                parsedPreviewOffer.getSeller();
+                                                        return PreviewOffer.builder()
+                                                                .offerId(
+                                                                        parsedPreviewOffer
+                                                                                .getOfferId())
+                                                                .shortDescription(
+                                                                        parsedPreviewOffer
+                                                                                .getShortDescription())
+                                                                .price(
+                                                                        parsedPreviewOffer
+                                                                                .getPrice())
+                                                                .isAutoDelivery(
+                                                                        parsedPreviewOffer
+                                                                                .isAutoDelivery())
+                                                                .isPromo(
+                                                                        parsedPreviewOffer
+                                                                                .isPromo())
+                                                                .seller(
+                                                                        PreviewSeller.builder()
+                                                                                .userId(
+                                                                                        previewSeller
+                                                                                                .getUserId())
+                                                                                .username(
+                                                                                        previewSeller
+                                                                                                .getUsername())
+                                                                                .avatarPhotoLink(
+                                                                                        previewSeller
+                                                                                                .getAvatarPhotoLink())
+                                                                                .isOnline(
+                                                                                        previewSeller
+                                                                                                .isOnline())
+                                                                                .reviewCount(
+                                                                                        previewSeller
+                                                                                                .getReviewCount())
+                                                                                .build())
+                                                                .build();
+                                                    })
+                                            .collect(Collectors.toList()))
+                    .lastReviews(
+                            ((ParsedSeller) user)
+                                    .getLastReviews().stream()
+                                            .map(
+                                                    parsedSellerReview -> {
+                                                        return SellerReview.builder()
+                                                                .gameTitle(
+                                                                        parsedSellerReview
+                                                                                .getGameTitle())
+                                                                .price(
+                                                                        parsedSellerReview
+                                                                                .getPrice())
+                                                                .text(parsedSellerReview.getText())
+                                                                .stars(
+                                                                        parsedSellerReview
+                                                                                .getStars())
+                                                                .sellerReplyText(
+                                                                        parsedSellerReview
+                                                                                .getSellerReplyText())
+                                                                .build();
+                                                    })
+                                            .collect(Collectors.toList()))
                     .build();
         } else {
             return User.builder()
@@ -285,36 +346,53 @@ public class FunPayExecutor {
      * @throws FunPayApiException if the other api-related exception
      * @throws UserNotFoundException if the user with id does not found/seller
      */
-    public List<SellerReview> execute(GetSellerReviews command) throws FunPayApiException, UserNotFoundException {
+    public List<SellerReview> execute(GetSellerReviews command)
+            throws FunPayApiException, UserNotFoundException {
         List<ParsedSellerReview> sellerReviews;
         if (command.getStarsFilter() != null) {
-            sellerReviews = funPayParser.parseSellerReviews(command.getUserId(), command.getPages(), command.getStarsFilter());
+            sellerReviews =
+                    funPayParser.parseSellerReviews(
+                            command.getUserId(), command.getPages(), command.getStarsFilter());
         } else {
-            sellerReviews = funPayParser.parseSellerReviews(command.getUserId(), command.getPages());
+            sellerReviews =
+                    funPayParser.parseSellerReviews(command.getUserId(), command.getPages());
         }
-        return sellerReviews.stream().map(parsedSellerReview -> {
-            if (parsedSellerReview instanceof ParsedAdvancedSellerReview) {
-                return AdvancedSellerReview.builder()
-                        .senderUserId(((ParsedAdvancedSellerReview) parsedSellerReview).getSenderUserId())
-                        .senderUsername(((ParsedAdvancedSellerReview) parsedSellerReview).getSenderUsername())
-                        .senderAvatarLink(((ParsedAdvancedSellerReview) parsedSellerReview).getSenderAvatarLink())
-                        .orderId(((ParsedAdvancedSellerReview) parsedSellerReview).getOrderId())
-                        .createdAt(((ParsedAdvancedSellerReview) parsedSellerReview).getCreatedAt())
-                        .gameTitle(parsedSellerReview.getGameTitle())
-                        .price(parsedSellerReview.getPrice())
-                        .text(parsedSellerReview.getText())
-                        .stars(parsedSellerReview.getStars())
-                        .sellerReplyText(parsedSellerReview.getSellerReplyText())
-                        .build();
-            } else {
-                return SellerReview.builder()
-                        .gameTitle(parsedSellerReview.getGameTitle())
-                        .price(parsedSellerReview.getPrice())
-                        .text(parsedSellerReview.getText())
-                        .stars(parsedSellerReview.getStars())
-                        .sellerReplyText(parsedSellerReview.getSellerReplyText())
-                        .build();
-            }
-        }).collect(Collectors.toList());
+        return sellerReviews.stream()
+                .map(
+                        parsedSellerReview -> {
+                            if (parsedSellerReview instanceof ParsedAdvancedSellerReview) {
+                                return AdvancedSellerReview.builder()
+                                        .senderUserId(
+                                                ((ParsedAdvancedSellerReview) parsedSellerReview)
+                                                        .getSenderUserId())
+                                        .senderUsername(
+                                                ((ParsedAdvancedSellerReview) parsedSellerReview)
+                                                        .getSenderUsername())
+                                        .senderAvatarLink(
+                                                ((ParsedAdvancedSellerReview) parsedSellerReview)
+                                                        .getSenderAvatarLink())
+                                        .orderId(
+                                                ((ParsedAdvancedSellerReview) parsedSellerReview)
+                                                        .getOrderId())
+                                        .createdAt(
+                                                ((ParsedAdvancedSellerReview) parsedSellerReview)
+                                                        .getCreatedAt())
+                                        .gameTitle(parsedSellerReview.getGameTitle())
+                                        .price(parsedSellerReview.getPrice())
+                                        .text(parsedSellerReview.getText())
+                                        .stars(parsedSellerReview.getStars())
+                                        .sellerReplyText(parsedSellerReview.getSellerReplyText())
+                                        .build();
+                            } else {
+                                return SellerReview.builder()
+                                        .gameTitle(parsedSellerReview.getGameTitle())
+                                        .price(parsedSellerReview.getPrice())
+                                        .text(parsedSellerReview.getText())
+                                        .stars(parsedSellerReview.getStars())
+                                        .sellerReplyText(parsedSellerReview.getSellerReplyText())
+                                        .build();
+                            }
+                        })
+                .collect(Collectors.toList());
     }
 }

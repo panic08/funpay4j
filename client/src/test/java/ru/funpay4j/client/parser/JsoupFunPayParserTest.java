@@ -14,12 +14,27 @@
 
 package ru.funpay4j.client.parser;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.List;
+import java.util.Map;
+
 import okhttp3.OkHttpClient;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import ru.funpay4j.client.exceptions.lot.LotNotFoundException;
 import ru.funpay4j.client.exceptions.offer.OfferNotFoundException;
 import ru.funpay4j.client.exceptions.user.UserNotFoundException;
@@ -30,24 +45,11 @@ import ru.funpay4j.client.objects.lot.ParsedLot;
 import ru.funpay4j.client.objects.lot.ParsedLotCounter;
 import ru.funpay4j.client.objects.offer.ParsedOffer;
 import ru.funpay4j.client.objects.offer.ParsedPreviewOffer;
-import ru.funpay4j.client.objects.user.ParsedUser;
-import ru.funpay4j.client.objects.user.ParsedSeller;
-import ru.funpay4j.client.objects.user.ParsedSellerReview;
 import ru.funpay4j.client.objects.user.ParsedAdvancedSellerReview;
 import ru.funpay4j.client.objects.user.ParsedPreviewSeller;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.List;
-import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import ru.funpay4j.client.objects.user.ParsedSeller;
+import ru.funpay4j.client.objects.user.ParsedSellerReview;
+import ru.funpay4j.client.objects.user.ParsedUser;
 
 /**
  * @author panic08
@@ -58,11 +60,16 @@ class JsoupFunPayParserTest {
     private MockWebServer mockWebServer;
     private JsoupFunPayParser parser;
 
-    private static final String GET_LOT_HTML_RESPONSE_PATH = "src/test/resources/html/client/getLotResponse.html";
-    private static final String GET_PROMO_GAMES_JSON_RESPONSE_PATH = "src/test/resources/json/client/getPromoGamesResponse.json";
-    private static final String GET_OFFER_HTML_RESPONSE_PATH = "src/test/resources/html/client/getOfferResponse.html";
-    private static final String GET_USER_HTML_RESPONSE_PATH = "src/test/resources/html/client/getUserResponse.html";
-    private static final String GET_SELLER_REVIEWS_HTML_RESPONSE_PATH = "src/test/resources/html/client/getSellerReviewsResponse.html";
+    private static final String GET_LOT_HTML_RESPONSE_PATH =
+            "src/test/resources/html/client/getLotResponse.html";
+    private static final String GET_PROMO_GAMES_JSON_RESPONSE_PATH =
+            "src/test/resources/json/client/getPromoGamesResponse.json";
+    private static final String GET_OFFER_HTML_RESPONSE_PATH =
+            "src/test/resources/html/client/getOfferResponse.html";
+    private static final String GET_USER_HTML_RESPONSE_PATH =
+            "src/test/resources/html/client/getUserResponse.html";
+    private static final String GET_SELLER_REVIEWS_HTML_RESPONSE_PATH =
+            "src/test/resources/html/client/getSellerReviewsResponse.html";
     private static final String BASE_URL = "/";
 
     @BeforeEach
@@ -70,7 +77,8 @@ class JsoupFunPayParserTest {
         this.httpClient = new OkHttpClient();
         this.mockWebServer = new MockWebServer();
         this.mockWebServer.start();
-        this.parser = new JsoupFunPayParser(this.httpClient, this.mockWebServer.url(BASE_URL).toString());
+        this.parser =
+                new JsoupFunPayParser(this.httpClient, this.mockWebServer.url(BASE_URL).toString());
     }
 
     @AfterEach
@@ -110,7 +118,8 @@ class JsoupFunPayParserTest {
 
     @Test
     void testParseLotNotFound() throws Exception {
-        String notFoundHtml = "<div class=\"page-content-full\"><div class=\"page-header\"></div></div>";
+        String notFoundHtml =
+                "<div class=\"page-content-full\"><div class=\"page-header\"></div></div>";
         mockWebServer.enqueue(new MockResponse().setBody(notFoundHtml).setResponseCode(200));
 
         long lotId = 999L;
@@ -119,7 +128,8 @@ class JsoupFunPayParserTest {
 
     @Test
     void testParsePromoGames() throws Exception {
-        String jsonContent = new String(Files.readAllBytes(Paths.get(GET_PROMO_GAMES_JSON_RESPONSE_PATH)));
+        String jsonContent =
+                new String(Files.readAllBytes(Paths.get(GET_PROMO_GAMES_JSON_RESPONSE_PATH)));
         mockWebServer.enqueue(new MockResponse().setBody(jsonContent).setResponseCode(200));
 
         String query = "dota";
@@ -140,7 +150,8 @@ class JsoupFunPayParserTest {
 
     @Test
     void testParseOffer() throws Exception {
-        String htmlContent = new String(Files.readAllBytes(Paths.get(GET_OFFER_HTML_RESPONSE_PATH)));
+        String htmlContent =
+                new String(Files.readAllBytes(Paths.get(GET_OFFER_HTML_RESPONSE_PATH)));
         mockWebServer.enqueue(new MockResponse().setBody(htmlContent).setResponseCode(200));
 
         long offerId = 33502824L;
@@ -169,7 +180,8 @@ class JsoupFunPayParserTest {
 
     @Test
     void testParseOfferNotFound() throws Exception {
-        String notFoundHtml = "<div class=\"page-content-full\"><div class=\"page-header\"></div></div>";
+        String notFoundHtml =
+                "<div class=\"page-content-full\"><div class=\"page-header\"></div></div>";
         mockWebServer.enqueue(new MockResponse().setBody(notFoundHtml).setResponseCode(200));
 
         long offerId = 99999999L;
@@ -235,7 +247,8 @@ class JsoupFunPayParserTest {
 
     @Test
     void testParseUserNotFound() throws Exception {
-        String notFoundHtml = "<div class=\"page-content-full\"><div class=\"page-header\"></div></div>";
+        String notFoundHtml =
+                "<div class=\"page-content-full\"><div class=\"page-header\"></div></div>";
         mockWebServer.enqueue(new MockResponse().setBody(notFoundHtml).setResponseCode(200));
 
         long userId = 999L;
@@ -244,7 +257,8 @@ class JsoupFunPayParserTest {
 
     @Test
     void testParseSellerReviews() throws Exception {
-        String htmlContent = new String(Files.readAllBytes(Paths.get(GET_SELLER_REVIEWS_HTML_RESPONSE_PATH)));
+        String htmlContent =
+                new String(Files.readAllBytes(Paths.get(GET_SELLER_REVIEWS_HTML_RESPONSE_PATH)));
         mockWebServer.enqueue(new MockResponse().setBody(htmlContent).setResponseCode(200));
 
         long userId = 2L;
@@ -285,10 +299,11 @@ class JsoupFunPayParserTest {
         String csrfToken = "some_csrf_token";
         String phpSessId = "some_phpsessid";
         String html = "<body data-app-data='{\"csrf-token\": \"" + csrfToken + "\"}'></body>";
-        mockWebServer.enqueue(new MockResponse()
-                .setBody(html)
-                .addHeader("Set-Cookie", "PHPSESSID=" + phpSessId + "; path=/")
-                .setResponseCode(200));
+        mockWebServer.enqueue(
+                new MockResponse()
+                        .setBody(html)
+                        .addHeader("Set-Cookie", "PHPSESSID=" + phpSessId + "; path=/")
+                        .setResponseCode(200));
 
         CsrfTokenAndPHPSESSID result = parser.parseCsrfTokenAndPHPSESSID(goldenKey);
 

@@ -14,34 +14,34 @@
 
 package ru.funpay4j.core;
 
+import java.net.Proxy;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
-import ru.funpay4j.client.objects.user.ParsedAdvancedSellerReview;
-import ru.funpay4j.client.objects.user.ParsedSellerReview;
-import ru.funpay4j.client.objects.user.ParsedUser;
-import ru.funpay4j.client.request.SaveOfferRequest;
-import ru.funpay4j.core.commands.offer.EditOffer;
-import ru.funpay4j.core.commands.offer.CreateOffer;
-import ru.funpay4j.core.commands.offer.DeleteOffer;
-import ru.funpay4j.core.commands.offer.CreateOfferImage;
-import ru.funpay4j.core.commands.offer.RaiseAllOffers;
-import ru.funpay4j.core.commands.user.GetSellerReviews;
-import ru.funpay4j.core.commands.user.GetUser;
-import ru.funpay4j.core.commands.user.UpdateAvatar;
 import ru.funpay4j.client.exceptions.FunPayApiException;
 import ru.funpay4j.client.exceptions.InvalidCsrfTokenOrPHPSESSIDException;
 import ru.funpay4j.client.exceptions.InvalidGoldenKeyException;
 import ru.funpay4j.client.exceptions.offer.OfferAlreadyRaisedException;
 import ru.funpay4j.client.exceptions.user.UserNotFoundException;
 import ru.funpay4j.client.objects.CsrfTokenAndPHPSESSID;
+import ru.funpay4j.client.objects.user.ParsedAdvancedSellerReview;
+import ru.funpay4j.client.objects.user.ParsedSellerReview;
+import ru.funpay4j.client.objects.user.ParsedUser;
+import ru.funpay4j.client.request.SaveOfferRequest;
+import ru.funpay4j.core.commands.offer.CreateOffer;
+import ru.funpay4j.core.commands.offer.CreateOfferImage;
+import ru.funpay4j.core.commands.offer.DeleteOffer;
+import ru.funpay4j.core.commands.offer.EditOffer;
+import ru.funpay4j.core.commands.offer.RaiseAllOffers;
+import ru.funpay4j.core.commands.user.GetSellerReviews;
+import ru.funpay4j.core.commands.user.GetUser;
+import ru.funpay4j.core.commands.user.UpdateAvatar;
 import ru.funpay4j.core.objects.user.AdvancedSellerReview;
 import ru.funpay4j.core.objects.user.SellerReview;
 import ru.funpay4j.core.objects.user.User;
-
-import java.net.Proxy;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * This Authorized FunPay executor is used to execute authorized commands
@@ -76,7 +76,8 @@ public class AuthorizedFunPayExecutor extends FunPayExecutor {
      * @param baseURL base URL of the primary server
      * @param proxy proxy for forwarding requests
      */
-    public AuthorizedFunPayExecutor(@NonNull String goldenKey, @NonNull String baseURL, @NonNull Proxy proxy) {
+    public AuthorizedFunPayExecutor(
+            @NonNull String goldenKey, @NonNull String baseURL, @NonNull Proxy proxy) {
         super(baseURL, proxy);
 
         this.goldenKey = goldenKey;
@@ -125,7 +126,8 @@ public class AuthorizedFunPayExecutor extends FunPayExecutor {
      * @throws InvalidGoldenKeyException if the golden key is incorrect
      * @throws OfferAlreadyRaisedException if the offer already raised
      */
-    public void execute(RaiseAllOffers command) throws FunPayApiException, InvalidGoldenKeyException, OfferAlreadyRaisedException {
+    public void execute(RaiseAllOffers command)
+            throws FunPayApiException, InvalidGoldenKeyException, OfferAlreadyRaisedException {
         funPayClient.raiseAllOffers(goldenKey, command.getGameId(), command.getLotId());
     }
 
@@ -137,23 +139,24 @@ public class AuthorizedFunPayExecutor extends FunPayExecutor {
      * @throws InvalidGoldenKeyException if the golden key is incorrect
      */
     public void execute(CreateOffer command) throws FunPayApiException, InvalidGoldenKeyException {
-        SaveOfferRequest request = SaveOfferRequest.builder()
-                .nodeId(command.getLotId())
-                .summaryRu(command.getShortDescriptionRu())
-                .summaryEn(command.getShortDescriptionEn())
-                .descRu(command.getDescriptionRu())
-                .descEn(command.getDescriptionEn())
-                .paymentMessageRu(command.getPaymentMessageRu())
-                .paymentMessageEn(command.getPaymentMessageEn())
-                .fields(command.getFields())
-                .isAutoDelivery(command.isAutoDelivery())
-                .isActive(command.isActive())
-                .isDeleted(false)
-                .secrets(command.getSecrets())
-                .images(command.getImageIds())
-                .price(command.getPrice())
-                .amount(command.getAmount())
-                .build();
+        SaveOfferRequest request =
+                SaveOfferRequest.builder()
+                        .nodeId(command.getLotId())
+                        .summaryRu(command.getShortDescriptionRu())
+                        .summaryEn(command.getShortDescriptionEn())
+                        .descRu(command.getDescriptionRu())
+                        .descEn(command.getDescriptionEn())
+                        .paymentMessageRu(command.getPaymentMessageRu())
+                        .paymentMessageEn(command.getPaymentMessageEn())
+                        .fields(command.getFields())
+                        .isAutoDelivery(command.isAutoDelivery())
+                        .isActive(command.isActive())
+                        .isDeleted(false)
+                        .secrets(command.getSecrets())
+                        .images(command.getImageIds())
+                        .price(command.getPrice())
+                        .amount(command.getAmount())
+                        .build();
 
         if (PHPSESSID == null || csrfToken == null) {
             try {
@@ -163,7 +166,7 @@ public class AuthorizedFunPayExecutor extends FunPayExecutor {
             }
         }
 
-        //attempt to regenerate csrfToken and PHPSESSID
+        // attempt to regenerate csrfToken and PHPSESSID
         try {
             funPayClient.saveOffer(goldenKey, csrfToken, PHPSESSID, request);
         } catch (InvalidCsrfTokenOrPHPSESSIDException e) {
@@ -172,7 +175,7 @@ public class AuthorizedFunPayExecutor extends FunPayExecutor {
             try {
                 funPayClient.saveOffer(goldenKey, csrfToken, PHPSESSID, request);
             } catch (InvalidCsrfTokenOrPHPSESSIDException e1) {
-                //TODO: Throw something more contextual than RuntimeException
+                // TODO: Throw something more contextual than RuntimeException
                 throw new RuntimeException(e1.getLocalizedMessage());
             }
         }
@@ -186,24 +189,25 @@ public class AuthorizedFunPayExecutor extends FunPayExecutor {
      * @throws InvalidGoldenKeyException if the golden key is incorrect
      */
     public void execute(EditOffer command) throws FunPayApiException, InvalidGoldenKeyException {
-        SaveOfferRequest request = SaveOfferRequest.builder()
-                .nodeId(command.getLotId())
-                .offerId(command.getOfferId())
-                .summaryRu(command.getShortDescriptionRu())
-                .summaryEn(command.getShortDescriptionEn())
-                .descRu(command.getDescriptionRu())
-                .descEn(command.getDescriptionEn())
-                .paymentMessageRu(command.getPaymentMessageRu())
-                .paymentMessageEn(command.getPaymentMessageEn())
-                .fields(command.getFields())
-                .isAutoDelivery(command.isAutoDelivery())
-                .isActive(command.isActive())
-                .isDeleted(false)
-                .secrets(command.getSecrets())
-                .images(command.getImageIds())
-                .price(command.getPrice())
-                .amount(command.getAmount())
-                .build();
+        SaveOfferRequest request =
+                SaveOfferRequest.builder()
+                        .nodeId(command.getLotId())
+                        .offerId(command.getOfferId())
+                        .summaryRu(command.getShortDescriptionRu())
+                        .summaryEn(command.getShortDescriptionEn())
+                        .descRu(command.getDescriptionRu())
+                        .descEn(command.getDescriptionEn())
+                        .paymentMessageRu(command.getPaymentMessageRu())
+                        .paymentMessageEn(command.getPaymentMessageEn())
+                        .fields(command.getFields())
+                        .isAutoDelivery(command.isAutoDelivery())
+                        .isActive(command.isActive())
+                        .isDeleted(false)
+                        .secrets(command.getSecrets())
+                        .images(command.getImageIds())
+                        .price(command.getPrice())
+                        .amount(command.getAmount())
+                        .build();
 
         if (PHPSESSID == null || csrfToken == null) {
             try {
@@ -213,7 +217,7 @@ public class AuthorizedFunPayExecutor extends FunPayExecutor {
             }
         }
 
-        //attempt to regenerate csrfToken and PHPSESSID
+        // attempt to regenerate csrfToken and PHPSESSID
         try {
             funPayClient.saveOffer(goldenKey, csrfToken, PHPSESSID, request);
         } catch (InvalidCsrfTokenOrPHPSESSIDException e) {
@@ -222,7 +226,7 @@ public class AuthorizedFunPayExecutor extends FunPayExecutor {
             try {
                 funPayClient.saveOffer(goldenKey, csrfToken, PHPSESSID, request);
             } catch (InvalidCsrfTokenOrPHPSESSIDException e1) {
-                //TODO: Throw something more contextual than RuntimeException
+                // TODO: Throw something more contextual than RuntimeException
                 throw new RuntimeException(e1.getLocalizedMessage());
             }
         }
@@ -236,11 +240,12 @@ public class AuthorizedFunPayExecutor extends FunPayExecutor {
      * @throws InvalidGoldenKeyException if the golden key is incorrect
      */
     public void execute(DeleteOffer command) throws FunPayApiException, InvalidGoldenKeyException {
-        SaveOfferRequest request = SaveOfferRequest.builder()
-                .nodeId(command.getLotId())
-                .offerId(command.getOfferId())
-                .isDeleted(true)
-                .build();
+        SaveOfferRequest request =
+                SaveOfferRequest.builder()
+                        .nodeId(command.getLotId())
+                        .offerId(command.getOfferId())
+                        .isDeleted(true)
+                        .build();
 
         if (PHPSESSID == null || csrfToken == null) {
             try {
@@ -250,7 +255,7 @@ public class AuthorizedFunPayExecutor extends FunPayExecutor {
             }
         }
 
-        //attempt to regenerate csrfToken and PHPSESSID
+        // attempt to regenerate csrfToken and PHPSESSID
         try {
             funPayClient.saveOffer(goldenKey, csrfToken, PHPSESSID, request);
         } catch (InvalidCsrfTokenOrPHPSESSIDException e) {
@@ -259,7 +264,7 @@ public class AuthorizedFunPayExecutor extends FunPayExecutor {
             try {
                 funPayClient.saveOffer(goldenKey, csrfToken, PHPSESSID, request);
             } catch (InvalidCsrfTokenOrPHPSESSIDException e1) {
-                //TODO: Throw something more contextual than RuntimeException
+                // TODO: Throw something more contextual than RuntimeException
                 throw new RuntimeException(e1.getLocalizedMessage());
             }
         }
@@ -273,7 +278,8 @@ public class AuthorizedFunPayExecutor extends FunPayExecutor {
      * @throws FunPayApiException if the other api-related exception
      * @throws InvalidGoldenKeyException if the golden key is incorrect
      */
-    public Long execute(CreateOfferImage command) throws FunPayApiException, InvalidGoldenKeyException {
+    public Long execute(CreateOfferImage command)
+            throws FunPayApiException, InvalidGoldenKeyException {
         return funPayClient.addOfferImage(goldenKey, command.getImage());
     }
 
@@ -306,37 +312,58 @@ public class AuthorizedFunPayExecutor extends FunPayExecutor {
      * @throws FunPayApiException if the other api-related exception
      * @throws UserNotFoundException if the user with id does not found/seller
      */
-    public List<SellerReview> execute(GetSellerReviews command) throws FunPayApiException, UserNotFoundException {
+    public List<SellerReview> execute(GetSellerReviews command)
+            throws FunPayApiException, UserNotFoundException {
         List<ParsedSellerReview> sellerReviews;
         if (command.getStarsFilter() != null) {
-            sellerReviews = funPayParser.parseSellerReviews(goldenKey, command.getUserId(), command.getPages(), command.getStarsFilter());
+            sellerReviews =
+                    funPayParser.parseSellerReviews(
+                            goldenKey,
+                            command.getUserId(),
+                            command.getPages(),
+                            command.getStarsFilter());
         } else {
-            sellerReviews = funPayParser.parseSellerReviews(goldenKey, command.getUserId(), command.getPages());
+            sellerReviews =
+                    funPayParser.parseSellerReviews(
+                            goldenKey, command.getUserId(), command.getPages());
         }
-        return sellerReviews.stream().map(parsedSellerReview -> {
-            if (parsedSellerReview instanceof ParsedAdvancedSellerReview) {
-                return AdvancedSellerReview.builder()
-                        .senderUserId(((ParsedAdvancedSellerReview) parsedSellerReview).getSenderUserId())
-                        .senderUsername(((ParsedAdvancedSellerReview) parsedSellerReview).getSenderUsername())
-                        .senderAvatarLink(((ParsedAdvancedSellerReview) parsedSellerReview).getSenderAvatarLink())
-                        .orderId(((ParsedAdvancedSellerReview) parsedSellerReview).getOrderId())
-                        .createdAt(((ParsedAdvancedSellerReview) parsedSellerReview).getCreatedAt())
-                        .gameTitle(parsedSellerReview.getGameTitle())
-                        .price(parsedSellerReview.getPrice())
-                        .text(parsedSellerReview.getText())
-                        .stars(parsedSellerReview.getStars())
-                        .sellerReplyText(parsedSellerReview.getSellerReplyText())
-                        .build();
-            } else {
-                return SellerReview.builder()
-                        .gameTitle(parsedSellerReview.getGameTitle())
-                        .price(parsedSellerReview.getPrice())
-                        .text(parsedSellerReview.getText())
-                        .stars(parsedSellerReview.getStars())
-                        .sellerReplyText(parsedSellerReview.getSellerReplyText())
-                        .build();
-            }
-        }).collect(Collectors.toList());
+        return sellerReviews.stream()
+                .map(
+                        parsedSellerReview -> {
+                            if (parsedSellerReview instanceof ParsedAdvancedSellerReview) {
+                                return AdvancedSellerReview.builder()
+                                        .senderUserId(
+                                                ((ParsedAdvancedSellerReview) parsedSellerReview)
+                                                        .getSenderUserId())
+                                        .senderUsername(
+                                                ((ParsedAdvancedSellerReview) parsedSellerReview)
+                                                        .getSenderUsername())
+                                        .senderAvatarLink(
+                                                ((ParsedAdvancedSellerReview) parsedSellerReview)
+                                                        .getSenderAvatarLink())
+                                        .orderId(
+                                                ((ParsedAdvancedSellerReview) parsedSellerReview)
+                                                        .getOrderId())
+                                        .createdAt(
+                                                ((ParsedAdvancedSellerReview) parsedSellerReview)
+                                                        .getCreatedAt())
+                                        .gameTitle(parsedSellerReview.getGameTitle())
+                                        .price(parsedSellerReview.getPrice())
+                                        .text(parsedSellerReview.getText())
+                                        .stars(parsedSellerReview.getStars())
+                                        .sellerReplyText(parsedSellerReview.getSellerReplyText())
+                                        .build();
+                            } else {
+                                return SellerReview.builder()
+                                        .gameTitle(parsedSellerReview.getGameTitle())
+                                        .price(parsedSellerReview.getPrice())
+                                        .text(parsedSellerReview.getText())
+                                        .stars(parsedSellerReview.getStars())
+                                        .sellerReplyText(parsedSellerReview.getSellerReplyText())
+                                        .build();
+                            }
+                        })
+                .collect(Collectors.toList());
     }
 
     /**
@@ -345,10 +372,12 @@ public class AuthorizedFunPayExecutor extends FunPayExecutor {
      * @throws FunPayApiException if the other api-related exception
      */
     public void updateCsrfTokenAndPHPSESSID() throws FunPayApiException {
-        //TODO: It might be worth reconsidering and finding another way to update csrf and PHPSESSID
+        // TODO: It might be worth reconsidering and finding another way to update csrf and
+        // PHPSESSID
         // that doesn't require making such relatively expensive queries
 
-        CsrfTokenAndPHPSESSID csrfTokenAndPHPSESSID = funPayParser.parseCsrfTokenAndPHPSESSID(goldenKey);
+        CsrfTokenAndPHPSESSID csrfTokenAndPHPSESSID =
+                funPayParser.parseCsrfTokenAndPHPSESSID(goldenKey);
 
         this.csrfToken = csrfTokenAndPHPSESSID.getCsrfToken();
         this.PHPSESSID = csrfTokenAndPHPSESSID.getPHPSESSID();

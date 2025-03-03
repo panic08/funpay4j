@@ -14,11 +14,11 @@
 
 package ru.funpay4j.client.request;
 
-import lombok.Builder;
-import lombok.Getter;
-
 import java.util.List;
 import java.util.Map;
+
+import lombok.Builder;
+import lombok.Getter;
 
 /**
  * This object represents the shell for sending a request to save an offer

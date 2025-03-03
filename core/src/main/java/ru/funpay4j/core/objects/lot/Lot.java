@@ -14,12 +14,12 @@
 
 package ru.funpay4j.core.objects.lot;
 
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import ru.funpay4j.core.objects.offer.PreviewOffer;
-
-import java.util.List;
 
 /**
  * This object represents the FunPay lot

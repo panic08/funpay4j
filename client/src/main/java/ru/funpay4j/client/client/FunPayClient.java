@@ -14,11 +14,11 @@
 
 package ru.funpay4j.client.client;
 
-import ru.funpay4j.client.request.SaveOfferRequest;
 import ru.funpay4j.client.exceptions.FunPayApiException;
 import ru.funpay4j.client.exceptions.InvalidCsrfTokenOrPHPSESSIDException;
 import ru.funpay4j.client.exceptions.InvalidGoldenKeyException;
 import ru.funpay4j.client.exceptions.offer.OfferAlreadyRaisedException;
+import ru.funpay4j.client.request.SaveOfferRequest;
 
 /**
  * Interface for sending thematic requests to FunPay
@@ -35,7 +35,8 @@ public interface FunPayClient {
      * @throws FunPayApiException if the other api-related exception
      * @throws InvalidGoldenKeyException if the golden key is invalid
      */
-    void updateAvatar(String goldenKey, byte[] newAvatar) throws FunPayApiException, InvalidGoldenKeyException;
+    void updateAvatar(String goldenKey, byte[] newAvatar)
+            throws FunPayApiException, InvalidGoldenKeyException;
 
     /**
      * Send a request to raise all offers
@@ -47,7 +48,8 @@ public interface FunPayClient {
      * @throws InvalidGoldenKeyException if the golden key is invalid
      * @throws OfferAlreadyRaisedException if the offer already raised
      */
-    void raiseAllOffers(String goldenKey, long gameId, long lotId) throws FunPayApiException, InvalidGoldenKeyException, OfferAlreadyRaisedException;
+    void raiseAllOffers(String goldenKey, long gameId, long lotId)
+            throws FunPayApiException, InvalidGoldenKeyException, OfferAlreadyRaisedException;
 
     /**
      * Send a request to save offer
@@ -60,8 +62,10 @@ public interface FunPayClient {
      * @throws InvalidGoldenKeyException if the golden key is invalid
      * @throws InvalidCsrfTokenOrPHPSESSIDException if the csrf token or PHPSESSID is invalid
      */
-    void saveOffer(String goldenKey, String csrfToken, String phpSessionId , SaveOfferRequest request) throws FunPayApiException,
-            InvalidGoldenKeyException, InvalidCsrfTokenOrPHPSESSIDException;
+    void saveOffer(
+            String goldenKey, String csrfToken, String phpSessionId, SaveOfferRequest request)
+            throws FunPayApiException, InvalidGoldenKeyException,
+                    InvalidCsrfTokenOrPHPSESSIDException;
 
     /**
      * Send a request to add offer image
@@ -72,5 +76,6 @@ public interface FunPayClient {
      * @throws FunPayApiException if the other api-related exception
      * @throws InvalidGoldenKeyException if the golden key is invalid
      */
-    Long addOfferImage(String goldenKey, byte[] image) throws FunPayApiException, InvalidGoldenKeyException;
+    Long addOfferImage(String goldenKey, byte[] image)
+            throws FunPayApiException, InvalidGoldenKeyException;
 }

@@ -14,14 +14,14 @@
 
 package ru.funpay4j.utils;
 
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author panic08
@@ -84,7 +84,8 @@ class FunPayUserUtilRegisterDateConverterTest {
         String input = "11 июля 2019, 15:52";
         Date result = FunPayUserUtil.convertRegisterDateStringToDate(input);
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat("d MMMM yyyy, HH:mm", Locale.forLanguageTag("ru"));
+        SimpleDateFormat dateFormat =
+                new SimpleDateFormat("d MMMM yyyy, HH:mm", Locale.forLanguageTag("ru"));
         Date expectedDate = dateFormat.parse("11 июля 2019, 15:52");
 
         assertEquals(expectedDate, result);

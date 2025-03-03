@@ -14,11 +14,11 @@
 
 package ru.funpay4j.core.objects.game;
 
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-
-import java.util.List;
 
 /**
  * This object represents the FunPay promo game
