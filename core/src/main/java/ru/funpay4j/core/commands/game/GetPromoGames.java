@@ -17,8 +17,8 @@ package ru.funpay4j.core.commands.game;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.NonNull;
+import lombok.Setter;
 
 /**
  * Use this command to get promo games
@@ -31,6 +31,5 @@ import lombok.NonNull;
 @Builder
 @AllArgsConstructor
 public class GetPromoGames {
-    @NonNull
-    private String query;
+    @NonNull private String query;
 }

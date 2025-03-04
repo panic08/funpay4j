@@ -14,10 +14,10 @@
 
 package ru.funpay4j.client.objects.user;
 
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.EqualsAndHashCode;
-import lombok.AllArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 

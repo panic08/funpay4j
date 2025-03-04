@@ -14,14 +14,14 @@
 
 package ru.funpay4j.utils;
 
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author panic08
@@ -85,7 +85,8 @@ class FunPayUserUtilLastSeenAtConverterTest {
         String input = "Был 11 июля 2019 в 15:52 (5 лет назад)";
         Date result = FunPayUserUtil.convertLastSeenAtStringToDate(input);
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat("d MMMM yyyy 'в' HH:mm", Locale.forLanguageTag("ru"));
+        SimpleDateFormat dateFormat =
+                new SimpleDateFormat("d MMMM yyyy 'в' HH:mm", Locale.forLanguageTag("ru"));
         Date expectedDate = dateFormat.parse("11 июля 2019 в 15:52");
 
         assertEquals(expectedDate, result);

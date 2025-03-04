@@ -14,23 +14,25 @@
 
 package ru.funpay4j.client.client;
 
-import okhttp3.OkHttpClient;
-import okhttp3.mockwebserver.MockResponse;
-import okhttp3.mockwebserver.MockWebServer;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import ru.funpay4j.client.exceptions.InvalidCsrfTokenOrPHPSESSIDException;
-import ru.funpay4j.client.exceptions.InvalidGoldenKeyException;
-import ru.funpay4j.client.exceptions.offer.OfferAlreadyRaisedException;
-import ru.funpay4j.client.request.SaveOfferRequest;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
 import java.util.Collections;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import okhttp3.OkHttpClient;
+import okhttp3.mockwebserver.MockResponse;
+import okhttp3.mockwebserver.MockWebServer;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import ru.funpay4j.client.exceptions.InvalidCsrfTokenOrPHPSESSIDException;
+import ru.funpay4j.client.exceptions.InvalidGoldenKeyException;
+import ru.funpay4j.client.exceptions.offer.OfferAlreadyRaisedException;
+import ru.funpay4j.client.request.SaveOfferRequest;
 
 /**
  * @author panic08
@@ -48,7 +50,9 @@ class OkHttpFunPayClientTest {
         this.httpClient = new OkHttpClient();
         this.mockWebServer = new MockWebServer();
         this.mockWebServer.start();
-        this.client = new OkHttpFunPayClient(this.httpClient, this.mockWebServer.url(BASE_URL).toString());
+        this.client =
+                new OkHttpFunPayClient(
+                        this.httpClient, this.mockWebServer.url(BASE_URL).toString());
     }
 
     @AfterEach
@@ -59,7 +63,7 @@ class OkHttpFunPayClientTest {
     @Test
     void testUpdateAvatar() throws Exception {
         String goldenKey = "valid_golden_key";
-        byte[] newAvatar = new byte[]{1, 2, 3};
+        byte[] newAvatar = new byte[] {1, 2, 3};
 
         mockWebServer.enqueue(new MockResponse().setResponseCode(200));
 
@@ -71,11 +75,12 @@ class OkHttpFunPayClientTest {
     @Test
     void testUpdateAvatarInvalidGoldenKey() throws Exception {
         String goldenKey = "invalid_golden_key";
-        byte[] newAvatar = new byte[]{1, 2, 3};
+        byte[] newAvatar = new byte[] {1, 2, 3};
 
         mockWebServer.enqueue(new MockResponse().setResponseCode(403));
 
-        assertThrows(InvalidGoldenKeyException.class, () -> client.updateAvatar(goldenKey, newAvatar));
+        assertThrows(
+                InvalidGoldenKeyException.class, () -> client.updateAvatar(goldenKey, newAvatar));
     }
 
     @Test
@@ -84,7 +89,8 @@ class OkHttpFunPayClientTest {
         long gameId = 41L;
         long lotId = 149L;
 
-        mockWebServer.enqueue(new MockResponse().setBody("{\"msg\": \"success\"}").setResponseCode(200));
+        mockWebServer.enqueue(
+                new MockResponse().setBody("{\"msg\": \"success\"}").setResponseCode(200));
 
         client.raiseAllOffers(goldenKey, gameId, lotId);
 
@@ -99,7 +105,9 @@ class OkHttpFunPayClientTest {
 
         mockWebServer.enqueue(new MockResponse().setResponseCode(403));
 
-        assertThrows(InvalidGoldenKeyException.class, () -> client.raiseAllOffers(goldenKey, gameId, lotId));
+        assertThrows(
+                InvalidGoldenKeyException.class,
+                () -> client.raiseAllOffers(goldenKey, gameId, lotId));
     }
 
     @Test
@@ -108,9 +116,12 @@ class OkHttpFunPayClientTest {
         long gameId = 41L;
         long lotId = 149L;
 
-        mockWebServer.enqueue(new MockResponse().setBody("{\"msg\": \"Подождите...\"}").setResponseCode(200));
+        mockWebServer.enqueue(
+                new MockResponse().setBody("{\"msg\": \"Подождите...\"}").setResponseCode(200));
 
-        assertThrows(OfferAlreadyRaisedException.class, () -> client.raiseAllOffers(goldenKey, gameId, lotId));
+        assertThrows(
+                OfferAlreadyRaisedException.class,
+                () -> client.raiseAllOffers(goldenKey, gameId, lotId));
     }
 
     @Test
@@ -118,24 +129,25 @@ class OkHttpFunPayClientTest {
         String goldenKey = "valid_golden_key";
         String csrfToken = "valid_csrf_token";
         String phpSessId = "valid_phpsessid";
-        SaveOfferRequest request = SaveOfferRequest.builder()
-                .offerId(33502824L)
-                .nodeId(149L)
-                .isDeleted(false)
-                .isAutoDelivery(true)
-                .isActive(true)
-                .secrets(Collections.singletonList("secret1"))
-                .images(Collections.singletonList(123L))
-                .price(100.0)
-                .amount(10)
-                .summaryRu("Summary RU")
-                .summaryEn("Summary EN")
-                .descRu("Description RU")
-                .descEn("Description EN")
-                .paymentMessageRu("Payment Message RU")
-                .paymentMessageEn("Payment Message EN")
-                .fields(Collections.singletonMap("field1", "value1"))
-                .build();
+        SaveOfferRequest request =
+                SaveOfferRequest.builder()
+                        .offerId(33502824L)
+                        .nodeId(149L)
+                        .isDeleted(false)
+                        .isAutoDelivery(true)
+                        .isActive(true)
+                        .secrets(Collections.singletonList("secret1"))
+                        .images(Collections.singletonList(123L))
+                        .price(100.0)
+                        .amount(10)
+                        .summaryRu("Summary RU")
+                        .summaryEn("Summary EN")
+                        .descRu("Description RU")
+                        .descEn("Description EN")
+                        .paymentMessageRu("Payment Message RU")
+                        .paymentMessageEn("Payment Message EN")
+                        .fields(Collections.singletonMap("field1", "value1"))
+                        .build();
 
         mockWebServer.enqueue(new MockResponse().setBody("{\"done\": true}").setResponseCode(200));
 
@@ -153,7 +165,9 @@ class OkHttpFunPayClientTest {
 
         mockWebServer.enqueue(new MockResponse().setResponseCode(403));
 
-        assertThrows(InvalidGoldenKeyException.class, () -> client.saveOffer(goldenKey, csrfToken, phpSessId, request));
+        assertThrows(
+                InvalidGoldenKeyException.class,
+                () -> client.saveOffer(goldenKey, csrfToken, phpSessId, request));
     }
 
     @Test
@@ -163,9 +177,14 @@ class OkHttpFunPayClientTest {
         String phpSessId = "invalid_phpsessid";
         SaveOfferRequest request = SaveOfferRequest.builder().build();
 
-        mockWebServer.enqueue(new MockResponse().setBody("{\"msg\": \"Обновите страницу и повторите попытку.\"}").setResponseCode(400));
+        mockWebServer.enqueue(
+                new MockResponse()
+                        .setBody("{\"msg\": \"Обновите страницу и повторите попытку.\"}")
+                        .setResponseCode(400));
 
-        assertThrows(InvalidCsrfTokenOrPHPSESSIDException.class, () -> client.saveOffer(goldenKey, csrfToken, phpSessId, request));
+        assertThrows(
+                InvalidCsrfTokenOrPHPSESSIDException.class,
+                () -> client.saveOffer(goldenKey, csrfToken, phpSessId, request));
     }
 
     @Test
@@ -175,17 +194,23 @@ class OkHttpFunPayClientTest {
         String phpSessId = "valid_phpsessid";
         SaveOfferRequest request = SaveOfferRequest.builder().build();
 
-        mockWebServer.enqueue(new MockResponse().setBody("{\"done\": false, \"error\": \"some error\", \"errors\": {}}").setResponseCode(200));
+        mockWebServer.enqueue(
+                new MockResponse()
+                        .setBody("{\"done\": false, \"error\": \"some error\", \"errors\": {}}")
+                        .setResponseCode(200));
 
-        assertThrows(RuntimeException.class, () -> client.saveOffer(goldenKey, csrfToken, phpSessId, request));
+        assertThrows(
+                RuntimeException.class,
+                () -> client.saveOffer(goldenKey, csrfToken, phpSessId, request));
     }
 
     @Test
     void testAddOfferImage() throws Exception {
         String goldenKey = "valid_golden_key";
-        byte[] image = new byte[]{1, 2, 3}; // Пример байтового массива
+        byte[] image = new byte[] {1, 2, 3}; // Пример байтового массива
 
-        mockWebServer.enqueue(new MockResponse().setBody("{\"fileId\": 12345}").setResponseCode(200));
+        mockWebServer.enqueue(
+                new MockResponse().setBody("{\"fileId\": 12345}").setResponseCode(200));
 
         Long fileId = client.addOfferImage(goldenKey, image);
 
@@ -197,7 +222,7 @@ class OkHttpFunPayClientTest {
     @Test
     void testAddOfferImageInvalidGoldenKey() throws Exception {
         String goldenKey = "invalid_golden_key";
-        byte[] image = new byte[]{1, 2, 3};
+        byte[] image = new byte[] {1, 2, 3};
 
         mockWebServer.enqueue(new MockResponse().setResponseCode(403));
 

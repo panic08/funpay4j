@@ -14,28 +14,30 @@
 
 package ru.funpay4j.core;
 
-import okhttp3.mockwebserver.MockResponse;
-import okhttp3.mockwebserver.MockWebServer;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import ru.funpay4j.core.commands.offer.RaiseAllOffers;
-import ru.funpay4j.core.commands.offer.EditOffer;
-import ru.funpay4j.core.commands.offer.CreateOfferImage;
-import ru.funpay4j.core.commands.offer.CreateOffer;
-import ru.funpay4j.core.commands.offer.DeleteOffer;
-import ru.funpay4j.core.commands.user.UpdateAvatar;
-import ru.funpay4j.client.exceptions.InvalidGoldenKeyException;
-import ru.funpay4j.client.exceptions.offer.OfferAlreadyRaisedException;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import okhttp3.mockwebserver.MockResponse;
+import okhttp3.mockwebserver.MockWebServer;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import ru.funpay4j.client.exceptions.InvalidGoldenKeyException;
+import ru.funpay4j.client.exceptions.offer.OfferAlreadyRaisedException;
+import ru.funpay4j.core.commands.offer.CreateOffer;
+import ru.funpay4j.core.commands.offer.CreateOfferImage;
+import ru.funpay4j.core.commands.offer.DeleteOffer;
+import ru.funpay4j.core.commands.offer.EditOffer;
+import ru.funpay4j.core.commands.offer.RaiseAllOffers;
+import ru.funpay4j.core.commands.user.UpdateAvatar;
 
 /**
  * @author panic08
@@ -46,12 +48,14 @@ class AuthorizedFunPayExecutorTest {
 
     private MockWebServer mockWebServer;
 
-    private static final String GET_CSRF_TOKEN_AND_PHPSESSID_HTML_RESPONSE_PATH = "src/test/resources/html/client/getCsrfTokenAndPHPSESSIDResponse.html";
+    private static final String GET_CSRF_TOKEN_AND_PHPSESSID_HTML_RESPONSE_PATH =
+            "src/test/resources/html/client/getCsrfTokenAndPHPSESSIDResponse.html";
 
     @BeforeEach
     void setUp() throws Exception {
         this.mockWebServer = new MockWebServer();
-        this.funPayExecutor = new AuthorizedFunPayExecutor("example", this.mockWebServer.url("/").toString());
+        this.funPayExecutor =
+                new AuthorizedFunPayExecutor("example", this.mockWebServer.url("/").toString());
         this.funPayExecutor.setPHPSESSID("old");
         this.funPayExecutor.setCsrfToken("old");
     }
@@ -66,14 +70,16 @@ class AuthorizedFunPayExecutorTest {
         String oldCsrfToken = funPayExecutor.getCsrfToken();
         String oldPHPSESSID = funPayExecutor.getPHPSESSID();
 
-        String htmlContent = new String(Files.readAllBytes(Paths.get(GET_CSRF_TOKEN_AND_PHPSESSID_HTML_RESPONSE_PATH)));
+        String htmlContent =
+                new String(
+                        Files.readAllBytes(
+                                Paths.get(GET_CSRF_TOKEN_AND_PHPSESSID_HTML_RESPONSE_PATH)));
 
         mockWebServer.enqueue(
                 new MockResponse()
                         .setBody(htmlContent)
                         .setHeader("Set-Cookie", "PHPSESSID=new;")
-                        .setResponseCode(200)
-        );
+                        .setResponseCode(200));
 
         funPayExecutor.updateCsrfTokenAndPHPSESSID();
 
@@ -86,26 +92,24 @@ class AuthorizedFunPayExecutorTest {
 
     @Test
     void testUpdateAvatarInvalidGoldenKeyException() throws Exception {
-        mockWebServer.enqueue(
-                new MockResponse()
-                        .setResponseCode(403)
-        );
+        mockWebServer.enqueue(new MockResponse().setResponseCode(403));
 
-        assertThrows(InvalidGoldenKeyException.class, () -> {
-            funPayExecutor.execute(UpdateAvatar.builder().newAvatar(new byte[] {}).build());
-        });
+        assertThrows(
+                InvalidGoldenKeyException.class,
+                () -> {
+                    funPayExecutor.execute(UpdateAvatar.builder().newAvatar(new byte[] {}).build());
+                });
     }
 
     @Test
     void testRaiseAllOffersInvalidGoldenKeyException() throws Exception {
-        mockWebServer.enqueue(
-                new MockResponse()
-                        .setResponseCode(403)
-        );
+        mockWebServer.enqueue(new MockResponse().setResponseCode(403));
 
-        assertThrows(InvalidGoldenKeyException.class, () -> {
-            funPayExecutor.execute(RaiseAllOffers.builder().lotId(1L).gameId(1L).build());
-        });
+        assertThrows(
+                InvalidGoldenKeyException.class,
+                () -> {
+                    funPayExecutor.execute(RaiseAllOffers.builder().lotId(1L).gameId(1L).build());
+                });
     }
 
     @Test
@@ -113,12 +117,13 @@ class AuthorizedFunPayExecutorTest {
         mockWebServer.enqueue(
                 new MockResponse()
                         .setResponseCode(200)
-                        .setBody("{\"msg\":\"Подождите 4 часа.\", \"error\": 1}")
-        );
+                        .setBody("{\"msg\":\"Подождите 4 часа.\", \"error\": 1}"));
 
-        assertThrows(OfferAlreadyRaisedException.class, () -> {
-            funPayExecutor.execute(RaiseAllOffers.builder().lotId(1L).gameId(1L).build());
-        });
+        assertThrows(
+                OfferAlreadyRaisedException.class,
+                () -> {
+                    funPayExecutor.execute(RaiseAllOffers.builder().lotId(1L).gameId(1L).build());
+                });
     }
 
     @Test
@@ -126,28 +131,37 @@ class AuthorizedFunPayExecutorTest {
         mockWebServer.enqueue(
                 new MockResponse()
                         .setResponseCode(400)
-                        .setBody("{\"msg\": \"Обновите страницу и повторите попытку.\", \"error\": 1}")
-        );
+                        .setBody(
+                                "{\"msg\": \"Обновите страницу и повторите попытку.\", \"error\": 1}"));
 
-        String htmlContent = new String(Files.readAllBytes(Paths.get(GET_CSRF_TOKEN_AND_PHPSESSID_HTML_RESPONSE_PATH)));
+        String htmlContent =
+                new String(
+                        Files.readAllBytes(
+                                Paths.get(GET_CSRF_TOKEN_AND_PHPSESSID_HTML_RESPONSE_PATH)));
 
         mockWebServer.enqueue(
                 new MockResponse()
                         .setBody(htmlContent)
                         .setHeader("Set-Cookie", "PHPSESSID=new;")
-                        .setResponseCode(200)
-        );
+                        .setResponseCode(200));
 
         mockWebServer.enqueue(
                 new MockResponse()
                         .setResponseCode(200)
-                        .setBody("{\"done\":true,\"error\":false,\"errors\":[],\"url\":\"https://funpay.com/lots/210/trade\"}")
-        );
+                        .setBody(
+                                "{\"done\":true,\"error\":false,\"errors\":[],\"url\":\"https://funpay.com/lots/210/trade\"}"));
 
         String currentCsrfToken = funPayExecutor.getCsrfToken();
         String currentPHPSESSID = funPayExecutor.getPHPSESSID();
 
-        funPayExecutor.execute(CreateOffer.builder().lotId(210L).price(5.0).amount(5).shortDescriptionEn("test").fields(new HashMap<>()).build());
+        funPayExecutor.execute(
+                CreateOffer.builder()
+                        .lotId(210L)
+                        .price(5.0)
+                        .amount(5)
+                        .shortDescriptionEn("test")
+                        .fields(new HashMap<>())
+                        .build());
 
         assertNotNull(funPayExecutor.getCsrfToken());
         assertNotNull(funPayExecutor.getPHPSESSID());
@@ -160,27 +174,34 @@ class AuthorizedFunPayExecutorTest {
         mockWebServer.enqueue(
                 new MockResponse()
                         .setResponseCode(400)
-                        .setBody("{\"msg\": \"Обновите страницу и повторите попытку.\", \"error\": 1}")
-        );
+                        .setBody(
+                                "{\"msg\": \"Обновите страницу и повторите попытку.\", \"error\": 1}"));
 
-        String htmlContent = new String(Files.readAllBytes(Paths.get(GET_CSRF_TOKEN_AND_PHPSESSID_HTML_RESPONSE_PATH)));
+        String htmlContent =
+                new String(
+                        Files.readAllBytes(
+                                Paths.get(GET_CSRF_TOKEN_AND_PHPSESSID_HTML_RESPONSE_PATH)));
 
         mockWebServer.enqueue(
                 new MockResponse()
                         .setBody(htmlContent)
                         .setHeader("Set-Cookie", "PHPSESSID=new;")
-                        .setResponseCode(200)
-        );
+                        .setResponseCode(200));
 
-        mockWebServer.enqueue(
-                new MockResponse()
-                        .setResponseCode(200)
-        );
+        mockWebServer.enqueue(new MockResponse().setResponseCode(200));
 
         String currentCsrfToken = funPayExecutor.getCsrfToken();
         String currentPHPSESSID = funPayExecutor.getPHPSESSID();
 
-        funPayExecutor.execute(EditOffer.builder().lotId(210L).offerId(210L).price(5.0).amount(5).shortDescriptionEn("test").fields(new HashMap<>()).build());
+        funPayExecutor.execute(
+                EditOffer.builder()
+                        .lotId(210L)
+                        .offerId(210L)
+                        .price(5.0)
+                        .amount(5)
+                        .shortDescriptionEn("test")
+                        .fields(new HashMap<>())
+                        .build());
 
         assertNotNull(funPayExecutor.getCsrfToken());
         assertNotNull(funPayExecutor.getPHPSESSID());
@@ -193,23 +214,25 @@ class AuthorizedFunPayExecutorTest {
         mockWebServer.enqueue(
                 new MockResponse()
                         .setResponseCode(400)
-                        .setBody("{\"msg\": \"Обновите страницу и повторите попытку.\", \"error\": 1}")
-        );
+                        .setBody(
+                                "{\"msg\": \"Обновите страницу и повторите попытку.\", \"error\": 1}"));
 
-        String htmlContent = new String(Files.readAllBytes(Paths.get(GET_CSRF_TOKEN_AND_PHPSESSID_HTML_RESPONSE_PATH)));
+        String htmlContent =
+                new String(
+                        Files.readAllBytes(
+                                Paths.get(GET_CSRF_TOKEN_AND_PHPSESSID_HTML_RESPONSE_PATH)));
 
         mockWebServer.enqueue(
                 new MockResponse()
                         .setBody(htmlContent)
                         .setHeader("Set-Cookie", "PHPSESSID=new;")
-                        .setResponseCode(200)
-        );
+                        .setResponseCode(200));
 
         mockWebServer.enqueue(
                 new MockResponse()
                         .setResponseCode(200)
-                        .setBody("{\"done\":true,\"error\":false,\"errors\":[],\"url\":\"https://funpay.com/lots/210/trade\"}")
-        );
+                        .setBody(
+                                "{\"done\":true,\"error\":false,\"errors\":[],\"url\":\"https://funpay.com/lots/210/trade\"}"));
 
         String currentCsrfToken = funPayExecutor.getCsrfToken();
         String currentPHPSESSID = funPayExecutor.getPHPSESSID();
@@ -229,10 +252,10 @@ class AuthorizedFunPayExecutorTest {
         mockWebServer.enqueue(
                 new MockResponse()
                         .setBody("{\"fileId\": " + expectedFileId + "}")
-                        .setResponseCode(200)
-        );
+                        .setResponseCode(200));
 
-        Long actualFileId = funPayExecutor.execute(CreateOfferImage.builder().image(new byte[] {}).build());
+        Long actualFileId =
+                funPayExecutor.execute(CreateOfferImage.builder().image(new byte[] {}).build());
 
         assertEquals(expectedFileId, actualFileId);
     }

@@ -14,13 +14,13 @@
 
 package ru.funpay4j.utils;
 
-import lombok.NonNull;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+
+import lombok.NonNull;
 
 /**
  * Util for working with FunPay users
@@ -37,11 +37,13 @@ public class FunPayUserUtil {
      * @return {@link Date} object representing the user's registration date
      * @throws ParseException parsing exception
      */
-    public static Date convertRegisterDateStringToDate(@NonNull String registerDate) throws ParseException {
+    public static Date convertRegisterDateStringToDate(@NonNull String registerDate)
+            throws ParseException {
         if (registerDate.startsWith("сегодня")) {
             Calendar calendar = Calendar.getInstance();
 
-            SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm", Locale.forLanguageTag("ru"));
+            SimpleDateFormat dateFormat =
+                    new SimpleDateFormat("HH:mm", Locale.forLanguageTag("ru"));
 
             String time = registerDate.split(", ")[1];
             Date parsedDate = dateFormat.parse(time);
@@ -56,7 +58,8 @@ public class FunPayUserUtil {
         } else if (registerDate.startsWith("вчера")) {
             Calendar calendar = Calendar.getInstance();
 
-            SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm", Locale.forLanguageTag("ru"));
+            SimpleDateFormat dateFormat =
+                    new SimpleDateFormat("HH:mm", Locale.forLanguageTag("ru"));
 
             String time = registerDate.split(", ")[1];
             Date parsedDate = dateFormat.parse(time);
@@ -74,15 +77,17 @@ public class FunPayUserUtil {
                 Calendar calendar = Calendar.getInstance();
 
                 if (registerDate.split(", ")[0].matches(".*\\d{4}.*")) {
-                    //if the row contains a year
+                    // if the row contains a year
 
-                    SimpleDateFormat dateFormatWithYear = new SimpleDateFormat("d MMMM yyyy, HH:mm", Locale.forLanguageTag("ru"));
+                    SimpleDateFormat dateFormatWithYear =
+                            new SimpleDateFormat("d MMMM yyyy, HH:mm", Locale.forLanguageTag("ru"));
 
                     Date parsedDate = dateFormatWithYear.parse(registerDate);
 
                     calendar.setTime(parsedDate);
                 } else {
-                    SimpleDateFormat dateFormatWithoutYear = new SimpleDateFormat("d MMMM, HH:mm", Locale.forLanguageTag("ru"));
+                    SimpleDateFormat dateFormatWithoutYear =
+                            new SimpleDateFormat("d MMMM, HH:mm", Locale.forLanguageTag("ru"));
 
                     Date parsedDate = dateFormatWithoutYear.parse(registerDate);
 
@@ -106,14 +111,16 @@ public class FunPayUserUtil {
      * @return {@link Date} object representing the user's last seen date
      * @throws ParseException parsing exception
      */
-    public static Date convertLastSeenAtStringToDate(@NonNull String lastSeenAt) throws ParseException {
-        //delete the “(X days/weeks/years ago)” part
+    public static Date convertLastSeenAtStringToDate(@NonNull String lastSeenAt)
+            throws ParseException {
+        // delete the “(X days/weeks/years ago)” part
         lastSeenAt = lastSeenAt.replaceFirst("\\(.*\\)", "").trim();
 
         if (lastSeenAt.contains("сегодня")) {
             Calendar calendar = Calendar.getInstance();
 
-            SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm", Locale.forLanguageTag("ru"));
+            SimpleDateFormat dateFormat =
+                    new SimpleDateFormat("HH:mm", Locale.forLanguageTag("ru"));
             String time = lastSeenAt.split(" ")[3];
 
             Date parsedDate = dateFormat.parse(time);
@@ -128,7 +135,8 @@ public class FunPayUserUtil {
         } else if (lastSeenAt.contains("вчера")) {
             Calendar calendar = Calendar.getInstance();
 
-            SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm", Locale.forLanguageTag("ru"));
+            SimpleDateFormat dateFormat =
+                    new SimpleDateFormat("HH:mm", Locale.forLanguageTag("ru"));
             String time = lastSeenAt.split(" ")[3];
 
             Date parsedDate = dateFormat.parse(time);
@@ -145,15 +153,18 @@ public class FunPayUserUtil {
             Calendar calendar = Calendar.getInstance();
 
             if (lastSeenAt.matches(".*\\d{4}.*")) {
-                //if the row contains a year
+                // if the row contains a year
 
-                SimpleDateFormat dateFormatWithYear = new SimpleDateFormat("Был d MMMM yyyy 'в' HH:mm", Locale.forLanguageTag("ru"));
+                SimpleDateFormat dateFormatWithYear =
+                        new SimpleDateFormat(
+                                "Был d MMMM yyyy 'в' HH:mm", Locale.forLanguageTag("ru"));
 
                 Date parsedDate = dateFormatWithYear.parse(lastSeenAt);
 
                 calendar.setTime(parsedDate);
             } else {
-                SimpleDateFormat dateFormatWithoutYear = new SimpleDateFormat("Был d MMMM 'в' HH:mm", Locale.forLanguageTag("ru"));
+                SimpleDateFormat dateFormatWithoutYear =
+                        new SimpleDateFormat("Был d MMMM 'в' HH:mm", Locale.forLanguageTag("ru"));
 
                 Date parsedDate = dateFormatWithoutYear.parse(lastSeenAt);
 
@@ -168,17 +179,20 @@ public class FunPayUserUtil {
     }
 
     /**
-     * Converts a string representation of the advanced seller review created at date to a {@link Date} object
+     * Converts a string representation of the advanced seller review created at date to a {@link
+     * Date} object
      *
      * @param createdAt the date of created at as a string that needs to be converted
      * @return {@link Date} object representing the parsed date and time
      * @throws ParseException parsing exception
      */
-    public static Date convertAdvancedSellerReviewCreatedAtToDate(@NonNull String createdAt) throws ParseException {
+    public static Date convertAdvancedSellerReviewCreatedAtToDate(@NonNull String createdAt)
+            throws ParseException {
         if (createdAt.startsWith("сегодня")) {
             Calendar calendar = Calendar.getInstance();
 
-            SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm", Locale.forLanguageTag("ru"));
+            SimpleDateFormat dateFormat =
+                    new SimpleDateFormat("HH:mm", Locale.forLanguageTag("ru"));
 
             String time = createdAt.split(", ")[1];
             Date parsedDate = dateFormat.parse(time);
@@ -193,7 +207,8 @@ public class FunPayUserUtil {
         } else if (createdAt.startsWith("вчера")) {
             Calendar calendar = Calendar.getInstance();
 
-            SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm", Locale.forLanguageTag("ru"));
+            SimpleDateFormat dateFormat =
+                    new SimpleDateFormat("HH:mm", Locale.forLanguageTag("ru"));
 
             String time = createdAt.split(", ")[1];
             Date parsedDate = dateFormat.parse(time);
@@ -211,15 +226,18 @@ public class FunPayUserUtil {
                 Calendar calendar = Calendar.getInstance();
 
                 if (createdAt.split(", ")[0].matches(".*\\d{4}.*")) {
-                    //if the row contains a year
+                    // if the row contains a year
 
-                    SimpleDateFormat dateFormatWithYear = new SimpleDateFormat("d MMMM yyyy в HH:mm", Locale.forLanguageTag("ru"));
+                    SimpleDateFormat dateFormatWithYear =
+                            new SimpleDateFormat(
+                                    "d MMMM yyyy в HH:mm", Locale.forLanguageTag("ru"));
 
                     Date parsedDate = dateFormatWithYear.parse(createdAt);
 
                     calendar.setTime(parsedDate);
                 } else {
-                    SimpleDateFormat dateFormatWithoutYear = new SimpleDateFormat("d MMMM в HH:mm", Locale.forLanguageTag("ru"));
+                    SimpleDateFormat dateFormatWithoutYear =
+                            new SimpleDateFormat("d MMMM в HH:mm", Locale.forLanguageTag("ru"));
 
                     Date parsedDate = dateFormatWithoutYear.parse(createdAt);
 
@@ -235,5 +253,4 @@ public class FunPayUserUtil {
             return null;
         }
     }
-
 }

@@ -17,8 +17,8 @@ package ru.funpay4j.core.commands.lot;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.NonNull;
+import lombok.Setter;
 
 /**
  * Use this command to get lot
@@ -31,6 +31,5 @@ import lombok.NonNull;
 @Builder
 @AllArgsConstructor
 public class GetLot {
-    @NonNull
-    private Long lotId;
+    @NonNull private Long lotId;
 }

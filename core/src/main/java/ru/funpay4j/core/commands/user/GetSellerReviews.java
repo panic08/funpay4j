@@ -17,8 +17,9 @@ package ru.funpay4j.core.commands.user;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.NonNull;
+import lombok.Setter;
+
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -32,12 +33,9 @@ import org.jetbrains.annotations.Nullable;
 @Builder
 @AllArgsConstructor
 public class GetSellerReviews {
-    @NonNull
-    private Long userId;
+    @NonNull private Long userId;
 
-    @NonNull
-    private Integer pages;
+    @NonNull private Integer pages;
 
-    @Nullable
-    private Integer starsFilter;
+    @Nullable private Integer starsFilter;
 }

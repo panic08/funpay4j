@@ -14,14 +14,15 @@
 
 package ru.funpay4j.core.objects.user;
 
+import java.util.Date;
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.Date;
-import java.util.List;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * This object represents the FunPay user
@@ -38,15 +39,13 @@ public class User {
 
     private String username;
 
-    @Nullable
-    private String avatarPhotoLink;
+    @Nullable private String avatarPhotoLink;
 
     private boolean isOnline;
 
     private List<String> badges;
 
-    @Nullable
-    private Date lastSeenAt;
+    @Nullable private Date lastSeenAt;
 
     private Date registeredAt;
 }

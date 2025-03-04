@@ -14,6 +14,8 @@
 
 package ru.funpay4j.core.objects.user;
 
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -21,8 +23,6 @@ import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import ru.funpay4j.core.objects.offer.PreviewOffer;
-
-import java.util.List;
 
 /**
  * This object represents the FunPay seller

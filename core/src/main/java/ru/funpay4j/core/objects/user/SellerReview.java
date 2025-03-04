@@ -18,6 +18,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -39,6 +40,5 @@ public class SellerReview {
 
     private int stars;
 
-    @Nullable
-    private String sellerReplyText;
+    @Nullable private String sellerReplyText;
 }

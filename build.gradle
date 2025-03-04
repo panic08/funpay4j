@@ -1,3 +1,12 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.diffplug.spotless:spotless-plugin-gradle:5.17.0'
+    }
+}
+
 ext {
     jsoupVersion = '1.18.3'
     okhttpVersion = '4.12.0'
@@ -7,20 +16,27 @@ ext {
 }
 
 allprojects {
-    apply plugin: 'java'
-    apply plugin: 'checkstyle'
+    group = 'ru.funpay4j'
+    version = '1.0.6'
+}
 
-    checkstyle {
-        configFile = file("$rootProject.projectDir/src/checkstyle/checkstyle.xml")
-        ignoreFailures = false
-    }
+def javaVersion = JavaVersion.current()
 
-    checkstyleMain {
-        source = 'src/main/java'
-    }
+subprojects { subproject ->
+    if (subproject.name != 'examples' && javaVersion.compareTo(JavaVersion.VERSION_1_8) == 0) {
+        apply plugin: 'com.diffplug.spotless'
 
-    checkstyleTest {
-        source = 'src/test/java'
+        spotless {
+            java {
+                target("src/main/java/**/*.java", "src/test/java/**/*.java")
+
+                googleJavaFormat().aosp()
+                importOrder("java", "javax", "org", "com")
+                removeUnusedImports()
+                trimTrailingWhitespace()
+                endWithNewline()
+            }
+        }
     }
 
     repositories {
@@ -35,6 +51,4 @@ allprojects {
         options.encoding = 'UTF-8'
     }
 
-    group = 'ru.funpay4j'
-    version = '1.0.6'
 }

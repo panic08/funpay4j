@@ -14,13 +14,13 @@
 
 package ru.funpay4j.core.objects.offer;
 
+import java.util.List;
+import java.util.Map;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import ru.funpay4j.core.objects.user.PreviewSeller;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * This object represents the FunPay offer

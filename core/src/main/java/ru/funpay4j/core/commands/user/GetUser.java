@@ -17,8 +17,8 @@ package ru.funpay4j.core.commands.user;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.NonNull;
+import lombok.Setter;
 
 /**
  * Use this command to get user
@@ -31,6 +31,5 @@ import lombok.NonNull;
 @Builder
 @AllArgsConstructor
 public class GetUser {
-    @NonNull
-    private Long userId;
+    @NonNull private Long userId;
 }

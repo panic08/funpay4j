@@ -18,6 +18,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -35,8 +36,7 @@ public class ParsedPreviewUser {
 
     private String username;
 
-    @Nullable
-    private String avatarPhotoLink;
+    @Nullable private String avatarPhotoLink;
 
     private boolean isOnline;
 }
