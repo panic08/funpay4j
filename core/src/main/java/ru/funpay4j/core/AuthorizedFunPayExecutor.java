@@ -27,6 +27,8 @@ import ru.funpay4j.client.exceptions.InvalidGoldenKeyException;
 import ru.funpay4j.client.exceptions.offer.OfferAlreadyRaisedException;
 import ru.funpay4j.client.exceptions.user.UserNotFoundException;
 import ru.funpay4j.client.objects.CsrfTokenAndPHPSESSID;
+import ru.funpay4j.client.objects.transaction.ParsedTransaction;
+import ru.funpay4j.client.objects.transaction.ParsedTransactionType;
 import ru.funpay4j.client.objects.user.ParsedAdvancedSellerReview;
 import ru.funpay4j.client.objects.user.ParsedSellerReview;
 import ru.funpay4j.client.objects.user.ParsedUser;
@@ -36,9 +38,12 @@ import ru.funpay4j.core.commands.offer.CreateOfferImage;
 import ru.funpay4j.core.commands.offer.DeleteOffer;
 import ru.funpay4j.core.commands.offer.EditOffer;
 import ru.funpay4j.core.commands.offer.RaiseAllOffers;
+import ru.funpay4j.core.commands.transaction.GetTransactions;
 import ru.funpay4j.core.commands.user.GetSellerReviews;
 import ru.funpay4j.core.commands.user.GetUser;
 import ru.funpay4j.core.commands.user.UpdateAvatar;
+import ru.funpay4j.core.objects.transaction.Transaction;
+import ru.funpay4j.core.objects.transaction.TransactionStatus;
 import ru.funpay4j.core.objects.user.AdvancedSellerReview;
 import ru.funpay4j.core.objects.user.SellerReview;
 import ru.funpay4j.core.objects.user.User;
@@ -302,6 +307,47 @@ public class AuthorizedFunPayExecutor extends FunPayExecutor {
                 .lastSeenAt(user.getLastSeenAt())
                 .registeredAt(user.getRegisteredAt())
                 .build();
+    }
+
+    /**
+     * Execute to get transactions authorized
+     *
+     * @param command command that will be executed
+     * @return transactions
+     * @throws FunPayApiException if the other api-related exception
+     * @throws UserNotFoundException if the user with id does not found
+     * @throws InvalidGoldenKeyException if the golden key is incorrect
+     */
+    public List<Transaction> execute(GetTransactions command)
+            throws FunPayApiException, UserNotFoundException, InvalidGoldenKeyException {
+        List<ParsedTransaction> transactions;
+        if (command.getType() != null) {
+            transactions =
+                    funPayParser.parseTransactions(
+                            goldenKey,
+                            command.getUserId(),
+                            ParsedTransactionType.valueOf(command.getType().name()),
+                            command.getPages());
+        } else {
+            transactions =
+                    funPayParser.parseTransactions(
+                            goldenKey, command.getUserId(), null, command.getPages());
+        }
+        return transactions.stream()
+                .map(
+                        parsedTransaction -> {
+                            return Transaction.builder()
+                                    .id(parsedTransaction.getId())
+                                    .title(parsedTransaction.getTitle())
+                                    .status(
+                                            TransactionStatus.valueOf(
+                                                    parsedTransaction.getStatus().name()))
+                                    .paymentNumber(parsedTransaction.getPaymentNumber())
+                                    .date(parsedTransaction.getDate())
+                                    .price(parsedTransaction.getPrice())
+                                    .build();
+                        })
+                .collect(Collectors.toList());
     }
 
     /**

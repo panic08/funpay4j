@@ -15,6 +15,7 @@
 package ru.funpay4j.core;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -22,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.List;
 
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
@@ -37,7 +39,9 @@ import ru.funpay4j.core.commands.offer.CreateOfferImage;
 import ru.funpay4j.core.commands.offer.DeleteOffer;
 import ru.funpay4j.core.commands.offer.EditOffer;
 import ru.funpay4j.core.commands.offer.RaiseAllOffers;
+import ru.funpay4j.core.commands.transaction.GetTransactions;
 import ru.funpay4j.core.commands.user.UpdateAvatar;
+import ru.funpay4j.core.objects.transaction.Transaction;
 
 /**
  * @author panic08
@@ -50,6 +54,8 @@ class AuthorizedFunPayExecutorTest {
 
     private static final String GET_CSRF_TOKEN_AND_PHPSESSID_HTML_RESPONSE_PATH =
             "src/test/resources/html/client/getCsrfTokenAndPHPSESSIDResponse.html";
+    private static final String GET_TRANSACTIONS_HTML_RESPONSE_PATH =
+            "src/test/resources/html/client/getTransactionsResponse.html";
 
     @BeforeEach
     void setUp() throws Exception {
@@ -258,5 +264,29 @@ class AuthorizedFunPayExecutorTest {
                 funPayExecutor.execute(CreateOfferImage.builder().image(new byte[] {}).build());
 
         assertEquals(expectedFileId, actualFileId);
+    }
+
+    @Test
+    void testGetTransactions() throws Exception {
+        String htmlContent =
+                new String(Files.readAllBytes(Paths.get(GET_TRANSACTIONS_HTML_RESPONSE_PATH)));
+        mockWebServer.enqueue(new MockResponse().setBody(htmlContent).setResponseCode(200));
+
+        long userId = 123L;
+        int pages = 1;
+
+        List<Transaction> result =
+                funPayExecutor.execute(
+                        GetTransactions.builder().userId(userId).pages(pages).build());
+
+        assertNotNull(result);
+
+        Transaction firstTransaction = result.get(0);
+        assertEquals(75266034L, firstTransaction.getId());
+        assertEquals(-68.52, firstTransaction.getPrice());
+        assertNotNull(firstTransaction.getTitle());
+        assertNotNull(firstTransaction.getStatus());
+        assertNotNull(firstTransaction.getDate());
+        assertFalse(firstTransaction.getTitle().isEmpty());
     }
 }

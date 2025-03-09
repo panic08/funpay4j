@@ -45,6 +45,7 @@ import ru.funpay4j.client.objects.lot.ParsedLot;
 import ru.funpay4j.client.objects.lot.ParsedLotCounter;
 import ru.funpay4j.client.objects.offer.ParsedOffer;
 import ru.funpay4j.client.objects.offer.ParsedPreviewOffer;
+import ru.funpay4j.client.objects.transaction.ParsedTransaction;
 import ru.funpay4j.client.objects.user.ParsedAdvancedSellerReview;
 import ru.funpay4j.client.objects.user.ParsedPreviewSeller;
 import ru.funpay4j.client.objects.user.ParsedSeller;
@@ -70,6 +71,8 @@ class JsoupFunPayParserTest {
             "src/test/resources/html/client/getUserResponse.html";
     private static final String GET_SELLER_REVIEWS_HTML_RESPONSE_PATH =
             "src/test/resources/html/client/getSellerReviewsResponse.html";
+    private static final String GET_TRANSACTIONS_HTML_RESPONSE_PATH =
+            "src/test/resources/html/client/getTransactionsResponse.html";
     private static final String BASE_URL = "/";
 
     @BeforeEach
@@ -291,6 +294,42 @@ class JsoupFunPayParserTest {
         long userId = 999L;
         int pages = 1;
         assertThrows(UserNotFoundException.class, () -> parser.parseSellerReviews(userId, pages));
+    }
+
+    @Test
+    void testParseTransactions() throws Exception {
+        String htmlContent =
+                new String(Files.readAllBytes(Paths.get(GET_TRANSACTIONS_HTML_RESPONSE_PATH)));
+        mockWebServer.enqueue(new MockResponse().setBody(htmlContent).setResponseCode(200));
+
+        String goldenKey = "test-golden-key";
+        long userId = 123L;
+        int pages = 1;
+
+        List<ParsedTransaction> result = parser.parseTransactions(goldenKey, userId, pages);
+
+        assertNotNull(result);
+
+        ParsedTransaction firstTransaction = result.get(0);
+        assertEquals(75266034L, firstTransaction.getId());
+        assertEquals(-68.52, firstTransaction.getPrice());
+        assertNotNull(firstTransaction.getTitle());
+        assertNotNull(firstTransaction.getStatus());
+        assertNotNull(firstTransaction.getDate());
+        assertFalse(firstTransaction.getTitle().isEmpty());
+    }
+
+    @Test
+    void testParseTransactionsUserNotFound() throws Exception {
+        mockWebServer.enqueue(new MockResponse().setResponseCode(400));
+
+        String goldenKey = "test-golden-key";
+        long userId = 999L;
+        int pages = 1;
+
+        assertThrows(
+                UserNotFoundException.class,
+                () -> parser.parseTransactions(goldenKey, userId, pages));
     }
 
     @Test

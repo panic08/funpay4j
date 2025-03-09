@@ -35,6 +35,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
 import ru.funpay4j.client.exceptions.FunPayApiException;
+import ru.funpay4j.client.exceptions.InvalidGoldenKeyException;
 import ru.funpay4j.client.exceptions.lot.LotNotFoundException;
 import ru.funpay4j.client.exceptions.offer.OfferNotFoundException;
 import ru.funpay4j.client.exceptions.user.UserNotFoundException;
@@ -45,6 +46,9 @@ import ru.funpay4j.client.objects.lot.ParsedLot;
 import ru.funpay4j.client.objects.lot.ParsedLotCounter;
 import ru.funpay4j.client.objects.offer.ParsedOffer;
 import ru.funpay4j.client.objects.offer.ParsedPreviewOffer;
+import ru.funpay4j.client.objects.transaction.ParsedTransaction;
+import ru.funpay4j.client.objects.transaction.ParsedTransactionStatus;
+import ru.funpay4j.client.objects.transaction.ParsedTransactionType;
 import ru.funpay4j.client.objects.user.ParsedAdvancedSellerReview;
 import ru.funpay4j.client.objects.user.ParsedPreviewSeller;
 import ru.funpay4j.client.objects.user.ParsedSeller;
@@ -481,6 +485,21 @@ public class JsoupFunPayParser implements FunPayParser {
 
     /** {@inheritDoc} */
     @Override
+    public List<ParsedTransaction> parseTransactions(
+            String goldenKey, long userId, ParsedTransactionType type, int pages)
+            throws FunPayApiException, UserNotFoundException, InvalidGoldenKeyException {
+        return parseTransactionsInternal(goldenKey, userId, type, pages);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public List<ParsedTransaction> parseTransactions(String goldenKey, long userId, int pages)
+            throws FunPayApiException, UserNotFoundException, InvalidGoldenKeyException {
+        return parseTransactionsInternal(goldenKey, userId, null, pages);
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public CsrfTokenAndPHPSESSID parseCsrfTokenAndPHPSESSID(@NonNull String goldenKey)
             throws FunPayApiException {
         // We send a request to /unknown URL that doesn't exist to get a page where it will be
@@ -698,6 +717,139 @@ public class JsoupFunPayParser implements FunPayParser {
         } catch (IOException e) {
             throw new FunPayApiException(e.getLocalizedMessage());
         }
+    }
+
+    /**
+     * Common method to parse transactions
+     *
+     * @param goldenKey golden key which will be used to authorize the user
+     * @param userId user id by which transactions pages will be parsed
+     * @param type type of transaction will be parsed
+     * @param pages number of pages indicating how many transactions will be parsed
+     * @return transactions
+     * @throws FunPayApiException if the other api-related exception
+     * @throws UserNotFoundException if the user with id does not found
+     * @throws InvalidGoldenKeyException if the golden key is incorrect
+     */
+    private List<ParsedTransaction> parseTransactionsInternal(
+            String goldenKey, long userId, ParsedTransactionType type, int pages)
+            throws FunPayApiException, UserNotFoundException, InvalidGoldenKeyException {
+        List<ParsedTransaction> parsedTransactions = new ArrayList<>();
+
+        String userIdFormData = String.valueOf(userId);
+        String continueArg = null;
+        String typeStr;
+        if (type == null) {
+            typeStr = "";
+        } else {
+            switch (type) {
+                case PAYMENT:
+                    typeStr = "replenishment";
+                    break;
+                case WITHDRAW:
+                    typeStr = "withdraw";
+                    break;
+                case ORDER:
+                    typeStr = "order";
+                    break;
+                case OTHER:
+                    typeStr = "other";
+                    break;
+                default:
+                    typeStr = "";
+                    break;
+            }
+        }
+
+        for (int currentPageCount = 0; currentPageCount < pages; currentPageCount++) {
+            RequestBody requestBody =
+                    new MultipartBody.Builder()
+                            .setType(MultipartBody.FORM)
+                            .addFormDataPart("user_id", userIdFormData)
+                            .addFormDataPart("filter", typeStr)
+                            .addFormDataPart("continue", continueArg == null ? "" : continueArg)
+                            .build();
+
+            Request.Builder newCallBuilder =
+                    new Request.Builder()
+                            .post(requestBody)
+                            .url(baseURL + "/users/transactions")
+                            .addHeader("x-requested-with", "XMLHttpRequest");
+
+            if (goldenKey != null) {
+                newCallBuilder.addHeader("Cookie", "golden_key=" + goldenKey);
+            }
+
+            try (Response funPayHtmlResponse =
+                    httpClient.newCall(newCallBuilder.build()).execute()) {
+                if (funPayHtmlResponse.code() == 400) {
+                    throw new UserNotFoundException(
+                            "User with userId " + userId + " does not found");
+                } else if (funPayHtmlResponse.code() == 403) {
+                    throw new InvalidGoldenKeyException("goldenKey is invalid");
+                }
+
+                Document transactionsHtml = Jsoup.parse(funPayHtmlResponse.body().string());
+                List<Element> transactionElements = transactionsHtml.getElementsByClass("tc-item");
+
+                for (Element transactionElement : transactionElements) {
+                    String classAttribute = transactionElement.attr("class");
+
+                    ParsedTransactionStatus status;
+                    if (classAttribute.endsWith("complete")) {
+                        status = ParsedTransactionStatus.COMPLETED;
+                    } else if (classAttribute.endsWith("cancel")) {
+                        status = ParsedTransactionStatus.CANCELED;
+                    } else {
+                        status = ParsedTransactionStatus.WAITING;
+                    }
+                    long id =
+                            Long.parseLong(
+                                    transactionElement.attribute("data-transaction").getValue());
+                    String title = transactionElement.getElementsByClass("tc-title").text();
+                    String paymentNumber =
+                            transactionElement.getElementsByClass("tc-payment-number").text();
+                    double price =
+                            Double.parseDouble(
+                                    transactionElement
+                                            .getElementsByClass("tc-price")
+                                            .text()
+                                            .replace("−", "-")
+                                            .replaceAll("[^0-9.-]", ""));
+                    Date date =
+                            FunPayUserUtil.convertRegisterDateStringToDate(
+                                    transactionElement.getElementsByClass("tc-date-time").text());
+
+                    parsedTransactions.add(
+                            ParsedTransaction.builder()
+                                    .id(id)
+                                    .title(title)
+                                    .price(price)
+                                    .paymentNumber(paymentNumber)
+                                    .status(status)
+                                    .date(date)
+                                    .build());
+
+                    Element dynTableFormElement =
+                            transactionsHtml.getElementsByClass("dyn-table-form").first();
+
+                    if (dynTableFormElement == null) break;
+
+                    List<Element> inputElements = dynTableFormElement.select("input");
+
+                    Element continueElement = inputElements.isEmpty() ? null : inputElements.get(1);
+
+                    if (continueElement == null || continueElement.attr("value").isEmpty()) break;
+
+                    continueArg = continueElement.attr("value");
+                }
+            } catch (IOException e) {
+                throw new FunPayApiException(e.getLocalizedMessage());
+            } catch (ParseException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return parsedTransactions;
     }
 
     /**
