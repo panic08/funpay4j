@@ -17,6 +17,7 @@ package ru.funpay4j.client.parser;
 import java.util.List;
 
 import ru.funpay4j.client.exceptions.FunPayApiException;
+import ru.funpay4j.client.exceptions.InvalidGoldenKeyException;
 import ru.funpay4j.client.exceptions.lot.LotNotFoundException;
 import ru.funpay4j.client.exceptions.offer.OfferNotFoundException;
 import ru.funpay4j.client.exceptions.user.UserNotFoundException;
@@ -24,6 +25,8 @@ import ru.funpay4j.client.objects.CsrfTokenAndPHPSESSID;
 import ru.funpay4j.client.objects.game.ParsedPromoGame;
 import ru.funpay4j.client.objects.lot.ParsedLot;
 import ru.funpay4j.client.objects.offer.ParsedOffer;
+import ru.funpay4j.client.objects.transaction.ParsedTransaction;
+import ru.funpay4j.client.objects.transaction.ParsedTransactionType;
 import ru.funpay4j.client.objects.user.ParsedSellerReview;
 import ru.funpay4j.client.objects.user.ParsedUser;
 
@@ -92,10 +95,11 @@ public interface FunPayParser {
      * @param pages number of pages indicating how many seller reviews will be parsed
      * @return sellerReviews
      * @throws FunPayApiException if the other api-related exception
-     * @throws UserNotFoundException if the user with id does not found/seller
+     * @throws UserNotFoundException if the user with id does not found
+     * @throws InvalidGoldenKeyException if the golden key is incorrect
      */
     List<ParsedSellerReview> parseSellerReviews(long userId, int pages)
-            throws FunPayApiException, UserNotFoundException;
+            throws FunPayApiException, UserNotFoundException, InvalidGoldenKeyException;
 
     /**
      * Parse seller reviews authorized
@@ -105,10 +109,11 @@ public interface FunPayParser {
      * @param pages number of pages indicating how many seller reviews will be parsed
      * @return sellerReviews
      * @throws FunPayApiException if the other api-related exception
-     * @throws UserNotFoundException if the user with id does not found/seller
+     * @throws UserNotFoundException if the user with id does not found
+     * @throws InvalidGoldenKeyException if the golden key is incorrect
      */
     List<ParsedSellerReview> parseSellerReviews(String goldenKey, long userId, int pages)
-            throws FunPayApiException, UserNotFoundException;
+            throws FunPayApiException, UserNotFoundException, InvalidGoldenKeyException;
 
     /**
      * Parse seller reviews with stars filter
@@ -136,6 +141,34 @@ public interface FunPayParser {
      */
     List<ParsedSellerReview> parseSellerReviews(
             String goldenKey, long userId, int pages, int starsFilter)
+            throws FunPayApiException, UserNotFoundException;
+
+    /**
+     * Parse transactions with type authorized
+     *
+     * @param goldenKey golden key which will be used to authorize the user
+     * @param userId user id by which transactions pages will be parsed
+     * @param type type of transaction will be parsed
+     * @param pages number of pages indicating how many transactions will be parsed
+     * @return transactions
+     * @throws FunPayApiException if the other api-related exception
+     * @throws UserNotFoundException if the user with id does not found/seller
+     */
+    List<ParsedTransaction> parseTransactions(
+            String goldenKey, long userId, ParsedTransactionType type, int pages)
+            throws FunPayApiException, UserNotFoundException;
+
+    /**
+     * Parse transactions authorized
+     *
+     * @param goldenKey golden key which will be used to authorize the user
+     * @param userId user id by which transactions pages will be parsed
+     * @param pages number of pages indicating how many transactions will be parsed
+     * @return transactions
+     * @throws FunPayApiException if the other api-related exception
+     * @throws UserNotFoundException if the user with id does not found/seller
+     */
+    List<ParsedTransaction> parseTransactions(String goldenKey, long userId, int pages)
             throws FunPayApiException, UserNotFoundException;
 
     /**
