@@ -153,10 +153,11 @@ public interface FunPayParser {
      * @return transactions
      * @throws FunPayApiException if the other api-related exception
      * @throws UserNotFoundException if the user with id does not found/seller
+     * @throws InvalidGoldenKeyException if the golden key is incorrect
      */
     List<ParsedTransaction> parseTransactions(
             String goldenKey, long userId, ParsedTransactionType type, int pages)
-            throws FunPayApiException, UserNotFoundException;
+            throws FunPayApiException, UserNotFoundException, InvalidGoldenKeyException;
 
     /**
      * Parse transactions authorized
@@ -167,9 +168,10 @@ public interface FunPayParser {
      * @return transactions
      * @throws FunPayApiException if the other api-related exception
      * @throws UserNotFoundException if the user with id does not found/seller
+     * @throws InvalidGoldenKeyException if the golden key is incorrect
      */
     List<ParsedTransaction> parseTransactions(String goldenKey, long userId, int pages)
-            throws FunPayApiException, UserNotFoundException;
+            throws FunPayApiException, UserNotFoundException, InvalidGoldenKeyException;
 
     /**
      * Parse csrf-token and PHPSESSID
