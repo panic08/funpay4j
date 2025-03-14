@@ -14,6 +14,12 @@
 
 package ru.funpay4j.client.objects.transaction;
 
+/**
+ * Represents the status of a parsed FunPay transaction
+ *
+ * @author panic08
+ * @since 1.0.6
+ */
 public enum ParsedTransactionStatus {
     COMPLETED,
     CANCELED,
