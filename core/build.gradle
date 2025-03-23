@@ -4,11 +4,11 @@ plugins {
 
 dependencies {
     api project(":client")
-    implementation "com.squareup.okhttp3:okhttp:${rootProject.ext.okhttpVersion}"
-    testImplementation "com.squareup.okhttp3:mockwebserver:${rootProject.ext.okhttpVersion}"
-    annotationProcessor "org.projectlombok:lombok:${rootProject.ext.lombokVersion}"
-    testImplementation platform("org.junit:junit-bom:${rootProject.ext.junitVersion}")
-    testImplementation 'org.junit.jupiter:junit-jupiter'
+    implementation libs.okhttp
+    testImplementation libs.mockwebserver
+    annotationProcessor libs.lombok
+    testImplementation platform(libs.junitBom)
+    testImplementation libs.junit
 }
 
 configurations {
