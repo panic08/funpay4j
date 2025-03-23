@@ -4,13 +4,13 @@ plugins {
 
 dependencies {
     implementation project(":utils")
-    implementation "com.squareup.okhttp3:okhttp:${rootProject.ext.okhttpVersion}"
-    testImplementation "com.squareup.okhttp3:mockwebserver:${rootProject.ext.okhttpVersion}"
-    implementation "com.google.code.gson:gson:${rootProject.ext.gsonVersion}"
-    implementation "org.jsoup:jsoup:${rootProject.ext.jsoupVersion}"
-    annotationProcessor "org.projectlombok:lombok:${rootProject.ext.lombokVersion}"
-    testImplementation platform("org.junit:junit-bom:${rootProject.ext.junitVersion}")
-    testImplementation 'org.junit.jupiter:junit-jupiter'
+    implementation libs.okhttp
+    testImplementation libs.mockwebserver
+    implementation libs.gson
+    implementation libs.jsoup
+    annotationProcessor libs.lombok
+    testImplementation platform(libs.junitBom)
+    testImplementation libs.junit
 }
 
 configurations {

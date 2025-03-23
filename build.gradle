@@ -1,29 +1,21 @@
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'com.diffplug.spotless:spotless-plugin-gradle:5.17.0'
-    }
+plugins {
+    alias(libs.plugins.spotless)
 }
 
-ext {
-    jsoupVersion = '1.18.3'
-    okhttpVersion = '4.12.0'
-    gsonVersion = '2.12.1'
-    lombokVersion = '1.18.36'
-    junitVersion = '5.9.1'
-}
 
 allprojects {
     group = 'ru.funpay4j'
     version = '1.0.6'
+
+    repositories {
+        mavenCentral()
+    }
 }
 
 def javaVersion = JavaVersion.current()
 
 subprojects { subproject ->
-    if (subproject.name != 'examples' && javaVersion.compareTo(JavaVersion.VERSION_1_8) == 0) {
+    if (subproject.name != 'examples' && javaVersion == JavaVersion.VERSION_1_8) {
         apply plugin: 'com.diffplug.spotless'
 
         spotless {
@@ -37,10 +29,6 @@ subprojects { subproject ->
                 endWithNewline()
             }
         }
-    }
-
-    repositories {
-        mavenCentral()
     }
 
     tasks.withType(Test).configureEach {

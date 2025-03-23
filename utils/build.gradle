@@ -3,9 +3,9 @@ plugins {
 }
 
 dependencies {
-    annotationProcessor "org.projectlombok:lombok:${rootProject.ext.lombokVersion}"
-    testImplementation platform("org.junit:junit-bom:${rootProject.ext.junitVersion}")
-    testImplementation 'org.junit.jupiter:junit-jupiter'
+    annotationProcessor libs.lombok
+    testImplementation platform(libs.junitBom)
+    testImplementation libs.junit
 }
 
 configurations {
