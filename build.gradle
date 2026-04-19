@@ -4,7 +4,7 @@ plugins {
 
 
 allprojects {
-    group = 'com.therepanic.funpay4j'
+    group = 'io.github.therepanic.funpay4j'
     version = '1.0.7'
 
     repositories {
