@@ -2,7 +2,6 @@ plugins {
     alias(libs.plugins.spotless)
 }
 
-
 allprojects {
     group = 'io.github.therepanic.funpay4j'
     version = '1.0.7'
@@ -13,6 +12,7 @@ allprojects {
 }
 
 def javaVersion = JavaVersion.current()
+def publishedModules = ['core', 'client', 'utils']
 
 subprojects { subproject ->
     if (subproject.name != 'examples' && javaVersion == JavaVersion.VERSION_1_8) {
@@ -39,4 +39,66 @@ subprojects { subproject ->
         options.encoding = 'UTF-8'
     }
 
+    if (subproject.name in publishedModules) {
+        apply plugin: 'maven-publish'
+        apply plugin: 'signing'
+
+        plugins.withId('java') {
+            java {
+                withJavadocJar()
+                withSourcesJar()
+            }
+        }
+
+        publishing {
+            publications {
+                mavenJava(MavenPublication) {
+                    plugins.withId('java') {
+                        from components.java
+                    }
+                    groupId = 'io.github.therepanic.funpay4j'
+                    artifactId = subproject.name
+                    version = project.version
+
+                    pom {
+                        name = "funpay4j-${subproject.name}"
+                        description = 'Java wrapper for FunPay private api'
+                        url = 'https://github.com/therepanic/funpay4j'
+
+                        licenses {
+                            license {
+                                name = 'The Unlicense'
+                                url = 'https://unlicense.org'
+                            }
+                        }
+                        developers {
+                            developer {
+                                id = 'therepanic'
+                                name = 'therepanic'
+                            }
+                        }
+                        scm {
+                            connection = 'scm:git:git://github.com/therepanic/funpay4j.git'
+                            developerConnection = 'scm:git:ssh://github.com/therepanic/funpay4j.git'
+                            url = 'https://github.com/therepanic/funpay4j'
+                        }
+                    }
+                }
+            }
+            repositories {
+                maven {
+                    name = "Central"
+                    url = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+                    credentials {
+                        username = project.findProperty("ossrhUsername") ?: System.getenv("OSSRH_USERNAME")
+                        password = project.findProperty("ossrhPassword") ?: System.getenv("OSSRH_PASSWORD")
+                    }
+                }
+            }
+        }
+
+        signing {
+            sign publishing.publications.mavenJava
+        }
+    }
 }
