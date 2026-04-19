@@ -1,17 +1,3 @@
-/*
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package io.github.therepanic.funpay4j.parser;
 
 import java.io.IOException;
@@ -361,7 +347,7 @@ public class JsoupFunPayParser implements FunPayParser {
 
             boolean isAutoDelivery =
                     !funPayDocument.getElementsByClass("offer-header-auto-dlv-label").isEmpty();
-            // Select a floating point number from a string like "from 1111.32 ₽"
+            // Select a floating point number from a string like "from 1111.32 в‚Ѕ"
             double price =
                     Double.parseDouble(totalPriceValue.replaceAll("[^0-9.]", "").split("\\s+")[0]);
             List<String> attachmentLinks = new ArrayList<>();
@@ -878,7 +864,7 @@ public class JsoupFunPayParser implements FunPayParser {
                                     transactionElement
                                             .getElementsByClass("tc-price")
                                             .text()
-                                            .replace("−", "-")
+                                            .replace("в€’", "-")
                                             .replaceAll("[^0-9.-]", ""));
                     Date date =
                             FunPayUserUtil.convertRegisterDateStringToDate(
@@ -1033,7 +1019,7 @@ public class JsoupFunPayParser implements FunPayParser {
                             .split(", ");
 
             String lastReviewGameTitle = gameTitlePriceSplit[0];
-            // Select a floating point number from a string like "from 1111.32 ₽"
+            // Select a floating point number from a string like "from 1111.32 в‚Ѕ"
             double lastReviewPrice =
                     Double.parseDouble(
                             gameTitlePriceSplit[gameTitlePriceSplit.length - 1].replaceAll(
