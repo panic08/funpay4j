@@ -4,7 +4,7 @@
 [![CI](https://github.com/therepanic/funpay4j/actions/workflows/build.yml/badge.svg)](https://github.com/therepanic/funpay4j/actions/workflows/build.yml)
 [![GitHub release](https://img.shields.io/github/v/release/therepanic/funpay4j)](https://github.com/therepanic/funpay4j/releases)
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.therepanic.funpay4j/core)](https://central.sonatype.com/artifact/io.github.therepanic.funpay4j/core)
-[![Apache License](http://img.shields.io/badge/license-ASL-blue.svg)](https://github.com/therepanic/funpay4j/blob/master/COPYING)
+[![Unlicense](https://img.shields.io/badge/license-Unlicense-blue.svg)](https://unlicense.org/)
 
 ---
 
@@ -27,7 +27,7 @@ The funpay4j library is a Java wrapper for FunPay private api
 #### Example for gradle:
 ```java
 dependencies {
-    implementation 'io.github.therepanic.funpay4j:core:1.0.7'
+    implementation 'io.github.therepanic.funpay4j:core:1.0.8'
 }
 ```
 
@@ -37,7 +37,7 @@ dependencies {
     <dependency>
         <groupId>io.github.therepanic.funpay4j</groupId>
         <artifactId>core</artifactId>
-        <version>1.0.7</version>
+        <version>1.0.8</version>
     </dependency>
 </dependencies>
 ```
@@ -63,7 +63,7 @@ This library is for personal use and for educational purposes due to the fact th
 - Please, do not use this library to spam (botting, spam messaging, etc...)
 - Use reasonable (human) delay in between sending requests
 
-Contributors are not responsible for usage and maintainability. Due to the nature of this project, some features of the library are not guaranteed as they make change and break in the future. This library is licensed under ASL
+Contributors are not responsible for usage and maintainability. Due to the nature of this project, some features of the library are not guaranteed as they make change and break in the future. This library is released under The Unlicense
 
 ## Quick Usage
 
