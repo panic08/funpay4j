@@ -88,10 +88,10 @@ subprojects { subproject ->
             repositories {
                 maven {
                     name = "Central"
-                    url = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+                    url = "https://ossrh-staging-api.central.sonatype.com/service/local/staging/deploy/maven2/"
                     credentials {
-                        username = project.findProperty("ossrhUsername") ?: System.getenv("OSSRH_USERNAME")
-                        password = project.findProperty("ossrhPassword") ?: System.getenv("OSSRH_PASSWORD")
+                        username = project.findProperty("centralPortalUsername") ?: System.getenv("CENTRAL_PORTAL_USERNAME")
+                        password = project.findProperty("centralPortalPassword") ?: System.getenv("CENTRAL_PORTAL_PASSWORD")
                     }
                 }
             }
