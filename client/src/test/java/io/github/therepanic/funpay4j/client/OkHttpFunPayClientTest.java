@@ -103,9 +103,7 @@ class OkHttpFunPayClientTest {
         long lotId = 149L;
 
         mockWebServer.enqueue(
-                new MockResponse()
-                        .setBody("{\"msg\": \"Подождите...\"}")
-                        .setResponseCode(200));
+                new MockResponse().setBody("{\"msg\": \"Подождите...\"}").setResponseCode(200));
 
         assertThrows(
                 OfferAlreadyRaisedException.class,
@@ -167,8 +165,7 @@ class OkHttpFunPayClientTest {
 
         mockWebServer.enqueue(
                 new MockResponse()
-                        .setBody(
-                                "{\"msg\": \"Обновите страницу и повторите попытку.\"}")
+                        .setBody("{\"msg\": \"Обновите страницу и повторите попытку.\"}")
                         .setResponseCode(400));
 
         assertThrows(

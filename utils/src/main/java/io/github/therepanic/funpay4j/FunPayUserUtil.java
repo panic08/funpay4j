@@ -145,8 +145,7 @@ public class FunPayUserUtil {
                 calendar.setTime(parsedDate);
             } else {
                 SimpleDateFormat dateFormatWithoutYear =
-                        new SimpleDateFormat(
-                                "Был d MMMM 'в' HH:mm", Locale.forLanguageTag("ru"));
+                        new SimpleDateFormat("Был d MMMM 'в' HH:mm", Locale.forLanguageTag("ru"));
 
                 Date parsedDate = dateFormatWithoutYear.parse(lastSeenAt);
 
