@@ -17,7 +17,6 @@ package io.github.therepanic.funpay4j.objects.offer;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-
 import io.github.therepanic.funpay4j.objects.user.PreviewSeller;
 
 /**

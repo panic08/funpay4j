@@ -22,7 +22,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
-
 import io.github.therepanic.funpay4j.objects.offer.ParsedPreviewOffer;
 
 /**

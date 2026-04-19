@@ -35,6 +35,7 @@ import org.jsoup.nodes.Element;
 import org.jspecify.annotations.Nullable;
 
 import com.google.gson.JsonParser;
+
 import io.github.therepanic.funpay4j.FunPayUserUtil;
 import io.github.therepanic.funpay4j.exceptions.FunPayApiException;
 import io.github.therepanic.funpay4j.exceptions.InvalidGoldenKeyException;

@@ -26,6 +26,7 @@ import okhttp3.Response;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+
 import io.github.therepanic.funpay4j.exceptions.FunPayApiException;
 import io.github.therepanic.funpay4j.exceptions.InvalidCsrfTokenOrPHPSESSIDException;
 import io.github.therepanic.funpay4j.exceptions.InvalidGoldenKeyException;

@@ -20,7 +20,6 @@ import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-
 import io.github.therepanic.funpay4j.objects.user.ParsedPreviewUser;
 
 /**
