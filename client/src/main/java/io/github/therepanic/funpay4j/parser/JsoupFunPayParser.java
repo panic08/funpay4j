@@ -347,7 +347,7 @@ public class JsoupFunPayParser implements FunPayParser {
 
             boolean isAutoDelivery =
                     !funPayDocument.getElementsByClass("offer-header-auto-dlv-label").isEmpty();
-            // Select a floating point number from a string like "from 1111.32 в‚Ѕ"
+            // Select a floating point number from a string like "from 1111.32 ₽"
             double price =
                     Double.parseDouble(totalPriceValue.replaceAll("[^0-9.]", "").split("\\s+")[0]);
             List<String> attachmentLinks = new ArrayList<>();
@@ -864,7 +864,7 @@ public class JsoupFunPayParser implements FunPayParser {
                                     transactionElement
                                             .getElementsByClass("tc-price")
                                             .text()
-                                            .replace("в€’", "-")
+                                            .replace("−", "-")
                                             .replaceAll("[^0-9.-]", ""));
                     Date date =
                             FunPayUserUtil.convertRegisterDateStringToDate(
@@ -1019,7 +1019,7 @@ public class JsoupFunPayParser implements FunPayParser {
                             .split(", ");
 
             String lastReviewGameTitle = gameTitlePriceSplit[0];
-            // Select a floating point number from a string like "from 1111.32 в‚Ѕ"
+            // Select a floating point number from a string like "from 1111.32 ₽"
             double lastReviewPrice =
                     Double.parseDouble(
                             gameTitlePriceSplit[gameTitlePriceSplit.length - 1].replaceAll(
